@@ -1,0 +1,28 @@
+
+.scene {
+  height: 100%;
+  overflow:hidden;
+}
+.homepage {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background: url("img/homepage.jpg") no-repeat fixed center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+.homepage-content {
+  height:100%;
+}
+
+.aside {
+  height: 100%;
+  background-color: rgba(111,111,111,0.9);
+}
+
+.main-content {
+  height: 100%;
+  /*background-color: rgba(211,211,211,0.9);*/
+}
