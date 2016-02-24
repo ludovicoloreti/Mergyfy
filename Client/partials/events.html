@@ -1,0 +1,173 @@
+<div class="container homepage">
+  <div class="row homepage-content" style="padding:0 10px;">
+    <div class="col-md-3 aside">
+
+      <h2>Events</h2>
+      <ul class="nav nav-pills">
+        <li class="active"><a ng-click="changeEvents(true)" data-toggle="pill">Vicino</a></li>
+        <li class=""><a ng-click="changeEvents(false)" data-toggle="pill">Partecipo</a></li>
+      </ul>
+      <div class="row " style="margin:0px;">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search for...">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+              </span>
+        </div><!-- /input-group -->
+      </div>
+
+      <div class="docs-cont">
+        <!--REPLACE WITH ng-repeat-->
+        <!--TAB 1-->
+        <div class="pill-content" ng-show="eventsNavbar">
+          <div class="pill-pane active" id="near">
+            <div class="row doc-thumb-container">
+              <div class="image-cont col-md-3"><img src="css/img/place.png" class="img-responsive doc-img" alt="Responsive image"></div>
+              <div class="text-cont col-md-9">
+                <h3>Evento Vicino</h3>
+                <p>[[Lorem Ipsum è un testo segnaposto utilizzato nel settore della tipografia e della stampa...]]</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--TAB 2-->
+        <div class="pill-content" ng-hide="eventsNavbar" style="overflow: scroll; height: 90%;">
+          <div class="pill-pane active" id="joined">
+
+            <div class="media clearfix doc-thumb-container">
+              <div class="pull-left media-top">
+                  <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+              </div>
+              <div class="">
+                <h4 class="">Evento Partecipo</h4>
+                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+              </div>
+            </div>
+
+            <div class="media clearfix doc-thumb-container">
+              <div class="pull-left media-top">
+                <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+              </div>
+              <div class="">
+                <h4 class="">Evento Partecipo</h4>
+                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+              </div>
+            </div>
+
+            <div class="media clearfix doc-thumb-container">
+              <div class="pull-left media-top">
+                <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+              </div>
+              <div class="">
+                <h4 class="">Evento Partecipo</h4>
+                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+              </div>
+            </div>
+
+            <div class="media clearfix doc-thumb-container">
+              <div class="pull-left media-top">
+                <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+              </div>
+              <div class="">
+                <h4 class="">Evento Partecipo</h4>
+                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+              </div>
+            </div>
+
+            <div class="media clearfix doc-thumb-container">
+              <div class="pull-left media-top">
+                <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+              </div>
+              <div class="">
+                <h4 class="">Evento Partecipo</h4>
+                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+              </div>
+            </div>
+
+            <div class="media clearfix doc-thumb-container">
+              <div class="pull-left media-top">
+                <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+              </div>
+              <div class="">
+                <h4 class="">Evento Partecipo</h4>
+                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+              </div>
+            </div>
+
+
+
+          </div>
+
+        </div>
+
+
+
+
+        <!--STOP REPLACE-->
+      </div>
+
+
+    </div>
+
+    <div class="col-md-9 main-content" ng-init="init()">
+      <div class="row">
+        <!--<div id="map-canvas" class="col-md-12"></div>-->
+        <div map-lazy-load="https://maps.google.com/maps/api/js">
+          <ng-map default-style="true" center="44.494907, 11.326638" zoom="13">
+            <marker position="44.501482, 11.330802" title="Hello World!"></marker>
+            <marker position="44.494907, 11.326638" title="Hello World!"></marker>
+            <!--<marker position="44.4972646,11.3471621" title="Hello World!"></marker>-->
+            <marker id="foo" position="44.4972646,11.3471621"
+                    on-click="map.showInfoWindow(event, 'bar')">
+            </marker>
+            <info-window id="bar" max-width="300">
+              <div ng-non-bindable>
+                <div class="col-md-12">
+                  <h2>Titolo Evento</h2>
+                  <p><strong>Category: </strong>
+                    <span class="label label-primary tags">sport</span>
+                    <span class="label label-success tags">meeting</span>
+                    <span class="label label-warning tags">workshop</span>
+                  </p>
+                  <p><i>Creator: Mario Rossi 24/03/2016</i></p>
+                  <h3>Description</h3>
+                  <p>[[ Description This is a great place to introduce your company or project and describe what you do. This about page
+                    features general company information, employee bios, and other helpful elements. ]]</p>
+                  <span><b>Start:</b> 00/00/2016</span>
+                  <span><b>Stop:</b> 00/00/2016</span>
+                </div>
+                <div class="col-md-12">
+                  <h3>Partecipanti</h3>
+                </div>
+
+                <div class="col-md-2">
+                  <img class="img-responsive img-circle text-center" src="http://api.randomuser.me/portraits/men/49.jpg" width="34" height="34">
+                  <h3 class="small" style="margin-top:5px;">John Smith<br>
+                  </h3>
+                </div>
+
+                <div class="col-md-2">
+                  <img class="img-responsive img-circle text-center" src="http://api.randomuser.me/portraits/men/49.jpg" width="34" height="34">
+                  <h3 class="small" style="margin-top:5px;">John Smith<br>
+                  </h3>
+                </div>
+
+                <div class="row-fluid">
+                  <div class="col-md-12">
+                    <div class="col-md-5 pull-right">
+                      <button class="btn">View event <span class="glyphicon glyphicon-share"></span></button>
+                    </div>
+
+                  </div><!--/col-->
+                </div>
+
+              </div>
+            </info-window>
+          </ng-map>
+        </div>
+      </div>
+      <script type="text/javascript" src="js/map.js"></script>
+    </div>
+  </div>
+</div>

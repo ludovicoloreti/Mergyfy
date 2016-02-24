@@ -11,6 +11,7 @@
   background: url("img/homepage.jpg") no-repeat fixed center;
   width: 100%;
   height: 100%;
+  padding: 0px;
 }
 .homepage-content {
   height:100%;
@@ -54,4 +55,28 @@
 #map-canvas {
   height:400px;
 }
+.document-container {
+  overflow: scroll;
+  height:80%;
+}
+.document {
+  width: 92%;
+  padding:20px 30px;
+  height: 200%;/*auto;*/
+  min-height: 70%;
+  margin: 15px auto;
+  background-color: #ffffff;
+  box-shadow: 4px 3px 30px rgba(0,0,0,0.5);
+  border-radius: 4px;
 
+}
+
+.insert-node {
+  background-color: #ffffff;
+  position: fixed;
+  bottom:0;
+  right:0;
+  width:75%;
+  padding: 10px 15px;
+  hight:40%;
+}

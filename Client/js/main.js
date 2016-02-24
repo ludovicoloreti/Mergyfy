@@ -18,11 +18,13 @@ app.config(['$routeProvider', function ($routeProvider) {
   // Home
     .when("/", {templateUrl: "partials/home.html", controller: "HomeCtrl"})
     // Pages
-    .when("/event", {templateUrl: "partials/event.html",controller: "EventCtrl"})
-    .when("/faq", {templateUrl: "partials/faq.html", controller: "PageCtrl"})
+    .when("/events", {templateUrl: "partials/events.html",controller: "EventsCtrl"})
+    .when("/doc", {templateUrl: "partials/document.html", controller: "PageCtrl"})
     .when("/profile", {templateUrl: "partials/profile.html", controller: "PageCtrl"})
     .when("/services", {templateUrl: "partials/services.html", controller: "PageCtrl"})
-    .when("/contact", {templateUrl: "partials/contact.html", controller: "PageCtrl"})
+    .when("/addevent", {templateUrl: "partials/addevent.html", controller: "PageCtrl"})
+    .when("/event", {templateUrl: "partials/event.html", controller: "EventCtrl"})
+
     // Blog
     .when("/blog", {templateUrl: "partials/blog.html", controller: "BlogCtrl"})
     .when("/blog/post", {templateUrl: "partials/blog_item.html", controller: "BlogCtrl"})
@@ -46,11 +48,13 @@ app.controller('BlogCtrl', function (/* $scope, $location, $http */) {
 // nuovo controller
 app.controller('HomeCtrl', function ($scope) {
     $scope.clock = Date.now();
+});
 
-
+app.controller('EventCtrl', function(){
 
 });
-app.controller('EventCtrl', function ($scope, $compile, $window, NgMap) {
+
+app.controller('EventsCtrl', function ($scope, $compile, $window, NgMap) {
   $scope.eventsNavbar = true;
   $scope.changeEvents = function( bool ) {
     $scope.eventsNavbar = bool;
@@ -101,63 +105,7 @@ app.controller('EventCtrl', function ($scope, $compile, $window, NgMap) {
   // google.maps.event.addDomListener(window, 'load', initialize);
   google.maps.event.addDomListener(window, "resize", resize);
 
-  /*$scope.centerOnMe = function() {
 
-   if(!$scope.map) {
-   return;
-   }
-
-   navigator.geolocation.getCurrentPosition(function(pos) {
-   var miaPosizione = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-   $scope.map.setCenter(miaPosizione);
-   var mappa2Options = {
-   center: miaPosizione,
-   zoom: 15,
-   mapTypeId: google.maps.MapTypeId.ROADMAP
-   };
-   var mappa2 = new google.maps.Map(document.getElementById("map-canvas"),
-   mappa2Options);
-   /!* Portami in piazza Scaravilli :D *!/
-   var directionsService = new google.maps.DirectionsService();
-   var directionsDisplay = new google.maps.DirectionsRenderer();
-   plazaScaravilli = new google.maps.LatLng(44.497063, 11.352284);
-   var request = {
-   origin : miaPosizione,
-   destination : plazaScaravilli,
-   travelMode : google.maps.TravelMode.WALKING
-   };
-   directionsService.route(request, function(response, status) {
-   if (status == google.maps.DirectionsStatus.OK) {
-   directionsDisplay.setDirections(response);
-   }
-   });
-
-   directionsDisplay.setMap(mappa2);
-
-   }, function(error) {
-   switch(error.code) {
-   case error.PERMISSION_DENIED:
-   alert('Impossibile stabilire la posizione: \n' + error.message);
-   $window.location.reload(true);
-   break;
-   case error.POSITION_UNAVAILABLE:
-   alert('Impossibile stabilire la posizione: \n' + error.message);
-   $window.location.reload(true);
-   break;
-   case error.TIMEOUT:
-   alert('Tempo impiegato troppo lungo: \n' + error.message);
-   $window.location.reload(true);
-   break;
-   case error.UNKNOWN_ERROR:
-   alert('Errore nello stabilire la posizione: \n' + error.message);
-   $window.location.reload(true);
-   break;
-   default:
-   alert('Impossibile stabilire la posizione: ' + error.message);
-   $window.location.reload(true);
-   }
-   });
-   }*/
 });
 // fine nuovo controller
 

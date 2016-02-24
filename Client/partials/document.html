@@ -1,4 +1,5 @@
-<div class="container-fluid homepage">
+<div style="overflow:scroll; height:100%">
+<div class="container homepage">
   <div class="row-fluid homepage-content">
     <div class="col-md-3 aside">
       <div>
@@ -64,12 +65,59 @@
 
 
     </div>
-    <div class="col-md-9 main-content" style="background-color: transparent;">
-        <h1> {{ clock  | date:'HH:mm:'}} </h1>
+    <div class="col-md-9 main-content center-block" style="background-color: rgba(152, 152, 152, 0.87);;">
+      <div class="document-container">
+        <div class="document">
+          <h1>Nome documento</h1>
+          <p><i>Mario Rossi</i></p>
+
+        </div>
+      </div>
 
 
+      <div class="insert-node">
+        <form>
+          <div class="row">
+            <fieldset class="form-group col-md-5">
+              <label>Titolo nodo (opzionale)</label>
+              <input type="text" class="form-control" id="note-title"></input>
+
+            </fieldset>
+            <div class="col-md-7">
+              <span class="glyphicon glyphicon-chevron-down pull-right" > on click botttom 0</span>
+            </div>
+          </div>
+          <div class="row">
+            <fieldset class="form-group col-md-7">
+              <label for="exampleTextarea">Inserisci qui la tua nota</label>
+              <textarea class="form-control" id="exampleTextarea" rows="4"></textarea>
+            </fieldset>
+            <fieldset class="form-group col-md-5">
+              <label for="exampleInputFile">Carica immagine</label>
+              <input type="file" class="form-control-file  block well well-sm" id="exampleInputFile">
+              <small class="text-muted">
+                <select class="c-select">
+                  <option selected disabled>Tipo nodo</option>
+                  <option value="1">Testo</option>
+                  <option value="2">Immagine</option>
+                  <option value="3">Codice</option>
+                  <option value="3">link</option>
+
+                </select>
+            </fieldset>
+            <button type="submit" class="btn btn-primary">Aggiungi nodo</button>
+            <button type="submit" class="btn btn-primary pull-right">Fine</button>
+          </div>
+
+
+
+
+
+        </form>
+
+      </div>
     </div>
   </div>
 </div>
-
+</div>
 
