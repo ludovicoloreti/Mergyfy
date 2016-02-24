@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS groups(
   name varchar(100) not null,
   creationdate timestamp not null default current_timestamp(),
   image varchar(300),
-  description varchar(2000) not null default "No description."
+  description varchar(2000) not null default "No description.",
 ) engine=INNODB;
 
 /* MEMBERS */
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS events (
   id int(11) auto_increment  primary key,
   name varchar(100) not null,
   place int references place(id) on delete set null on update cascade,
-  creationdate timestamp not null,
+  creationdate timestamp default current_timestamp,
   startdate timestamp,
   stopdate timestamp,
   creator int references user(id)on delete set null on update cascade,
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS partecipations (
   id int auto_increment primary key,
   event_id int not null references event(id),
   user_id int not null references user(id),
-  status ENUM('accepted','declined','waiting') default 'waiting'
+  status ENUM('accepted','declined','waiting') default 'waiting',
 ) engine=INNODB;
 
 /******************** VIEWS *************************/
@@ -324,9 +324,33 @@ BEGIN
 END |
 DELIMITER ;
 
+/* updateUser */
+DELIMITER |
+CREATE PROCEDURE updateUser( IN idI INT,
+ IN nameI varchar(100),
+ IN lastnameI varchar(100),
+ IN bornI date,
+ IN typeI var(30),
+ IN profileI varchar(300),
+ IN lat DECIMAL(11,8),
+ IN lng DECIMAL(11,8),
+ IN passwordI varchar(300),
+ IN mailI varchar(150),
+ IN delated INT)
+BEGIN
+  UPDATE users
+    SET (name = nameI, lastname = lastnameI, born = bornI,
+      type = typeI, profilepicture = profileI, actual_lat = lat,
+        actual_lng = lng, password = passwordI, mail = mailI, delated = delatedI )
+         WHERE id = idI;
+END |
+DELIMITER ;
+
+
+
 /* setPosition( pos ) */
 DELIMITER |
-CREATE PROCEDURE setPosition(IN uid INT, IN lat DECIMAL(11,8), IN lng DECIMAL(11,8) )
+CREATE PROCEDURE updatePosition(IN uid INT, IN lat DECIMAL(11,8), IN lng DECIMAL(11,8) )
 BEGIN
   UPDATE users SET actual_lat = lat, actual_lng = lng WHERE (id = uid);
 END |
@@ -348,11 +372,89 @@ BEGIN
 END |
 DELIMITER ;
 
-/* getUserDoc( id ) */
+/* addEvent */
 DELIMITER |
-CREATE PROCEDURE getUserDoc(IN userid INT)
+CREATE PROCEDURE addEvent(IN nameI VARCHAR(100), IN placeID INT, IN startdateI TIMESTAMP, IN stopdateI TIMESTAMP, IN creatorI INT, IN typeI ENUM, IN descriptionI VARCHAR(2000))
+BEGIN
+  INSERT INTO events (name, place, startdate, stopdate, creator, type, description) VALUES (nameI, placeID, startdateI, stopdateI, creatorI, typeI, descriptionI);
+END |
+DELIMITER ;
+
+/* updateEvent */
+DELIMITER |
+CREATE PROCEDURE updateEvent(IN idI INT, IN nameI VARCHAR(100), IN placeI INT, IN startdateI TIMESTAMP, IN stopdateI TIMESTAMP, IN creatorI INT, IN typeI VARCHAR(10), IN descriptionI VARCHAR(2000), IN categoryI INT)
+BEGIN
+  UPDATE events SET (id=idI, name=nameI, place = placeI, startdate = startdateI, stopdate = stopdateI,
+    creator = creatorI, type = typeI, description = descriptionI, category = categoryI)
+    WHERE id = idI;
+END |
+DELIMITER ;
+
+/* AddPlace */
+DELIMITER |
+CREATE PROCEDURE addPlace(IN latI DECIMAL(11,8), IN lngI DECIMAL(11,8), IN nameI VARCHAR(100), IN addressI VARCHAR(200), IN capI VARCHAR(10), IN cityI VARCHAR(50), IN nationI VARCHAR(50))
+BEGIN
+  INSERT INTO places (lat, lng, name, address, cap, city, nation) VALUES (latI, lngI, nameI, addressI, capI, cityI, nationI);
+END |
+DELIMITER ;
+
+/* addCategory */
+DELIMITER |
+CREATE PROCEDURE addCategory(IN nameI VARCHAR(100), IN descriptionI VARCHAR(2000), IN colourI VARCHAR(6))
+BEGIN
+  INSERT INTO categories (name, description, colour) VALUES (nameI, descriptionI, colourI);
+END |
+DELIMITER ;
+
+/* getCategories */
+DELIMITER |
+CREATE PROCEDURE getCategories()
+BEGIN
+  SELECT * FROM categories;
+END |
+DELIMITER ;
+
+/* updateCategory */
+DELIMITER |
+CREATE PROCEDURE updateCategory(IN idI INT, IN nameI VARCHAR(100), IN descriptionI VARCHAR(2000), IN colourI VARCHAR(6))
+BEGIN
+  UPDATE categories
+    SET (name = nameI, description = descriptionI, colour = colourI)
+    WHERE id= idI;
+END |
+DELIMITER ;
+
+/* getUserDocs( id ) */
+DELIMITER |
+CREATE PROCEDURE getUserDocs(IN userid INT)
 BEGIN
   SELECT * FROM documents WHERE (creator = userid);
+END |
+DELIMITER ;
+
+/*getUserDoc (idDoc) */
+DELIMITER |
+CREATE PROCEDURE getUserDoc(IN docid INT)
+BEGIN
+  SELECT * FROM documents WHERE id = docid;
+END |
+DELIMITER ;
+
+/* createDoc */
+DELIMITER |
+CREATE PROCEDURE createDoc(IN creatorI INT, IN nameI VARCHAR(100), IN eventI INT, IN publicI INT)
+BEGIN
+  INSERT INTO documents (creator, name, event, public) VALUES (creatorI, nameI, eventI, publicI);
+END |
+DELIMITER ;
+
+/* updateDoc() */
+DELIMITER |
+CREATE PROCEDURE updateDoc(IN idI INT, IN creatorI INT, IN nameI VARCHAR(100), IN eventI INT, IN publicI INT)
+BEGIN
+  UPDATE documents
+    SET (creator = creatorI, name = nameI, event = eventI, public = publicI);
+    WHERE id = idI;
 END |
 DELIMITER ;
 
@@ -382,6 +484,97 @@ BEGIN
 END |
 DELIMITER ;
 
+/* createGroup */
+DELIMITER |
+CREATE  PROCEDURE createGroup(IN nameI VARCHAR (100), IN imageI VARCHAR(300), IN descriptionI VARCHAR(2000), IN categoryIdI INT)
+BEGIN
+  INSERT INTO groups (name, image, description, categoryid)
+    VALUES (name, imageI, descriptionI, categoryIdI);
+END |
+DELIMITER ;
+
+/* updateGroup() */
+DELIMITER |
+CREATE PROCEDURE updateGroup(IN idI INT, IN nameI VARCHAR(100), IN imageI VARCHAR(300), IN descriptionI VARCHAR(2000))
+BEGIN
+  UPDATE groups
+    SET (name = nameI, image = imageI, description = descriptionI)
+    WHERE id = idI;
+END |
+DELIMITER ;
+
+/* getGroupInfo() */
+DELIMITER |
+CREATE PROCEDURE getGroupInfo(IN idI INT)
+BEGIN
+  SELECT * FROM groups WHERE id = idI;
+END |
+DELIMITER ;
+
+/* getPlace */
+DELIMITER |
+CREATE PROCEDURE getPlace(IN idI INT)
+BEGIN
+  SELECT * FROM places WHERE id = idI;
+END |
+DELIMITER ;
+
+/* AddMember to a Group */
+DELIMITER |
+CREATE  PROCEDURE addMember(IN idUserI IN, IN idGroupI INT)
+BEGIN
+  IF((SELECT count(*) FROM members WHERE idgroup = idGroupI) = 0)
+  THEN
+    INSERT INTO members (iduser, idgroup, role) VALUES (idUserI, idGroupI, 'admin');
+  ELSE
+    INSERT INTO members (iduser, idgroup) VALUES (idUserI, idGroupI);
+  ENDIF
+END |
+DELIMITER ;
+
+/* addPartecipant to an Event */
+DELIMITER |
+CREATE PROCEDURE addPartecipant(IN eventId INT, IN userId INT)
+BEGIN
+  INSERT INTO partecipations (event_id, user_id) VALUES (eventId, userId);
+END |
+DELIMITER ;
+
+/* updatePartecipation */
+DELIMITER |
+CREATE PROCEDURE updatePartecipation(IN idI INT, IN eventId INT, IN userId INT, IN statusI VARCHAR(20));
+BEGIN
+  UPDATE parteciparions
+    SET ( event_id = eventId, user_id = userId, status = statusI)
+    WHERE id = idI;
+END |
+DELIMITER ;
+
+/* addNote */
+DELIMITER |
+CREATE PROCEDURE addNote(IN typeI VARCHAR(7), IN contentI TEXT, IN descriptionI VARCHAR(200))
+BEGIN
+  INSERT INTO notes (type, content, description) VALUES (typeI, contentI, descriptionI);
+END |
+DELIMITER ;
+
+/* getNote */
+DELIMITER |
+CREATE PROCEDURE getNote(IN idI INT)
+BEGIN
+  SELECT * FROM notes WHER id = idI;
+END |
+DELIMITER ;
+
+/* updateNote */
+DELIMITER |
+CREATE PROCEDURE updateNote(IN idI INT, IN typeI VARCHAR(7), IN contentI TEXT, IN description VARCHAR(200))
+BEGIN
+  UPDATE notes
+    SET (type = typeI, content = contentI, description = descriptionI)
+    WHERE id = idI;
+END |
+DELIMITER ;
 
 /* search( string )*/
 SELECT nome, cognome FROM element WHERE ( CONCAT_WS(' ', nome, cognome) LIKE '%{$textParam}%' OR CONCAT_WS(' ', cognome, nome) LIKE '%{$textParam}%') LIMIT 10;
