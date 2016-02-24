@@ -11,7 +11,6 @@
   background: url("img/homepage.jpg") no-repeat fixed center;
   width: 100%;
   height: 100%;
-  padding: 0;
 }
 .homepage-content {
   height:100%;
@@ -19,7 +18,7 @@
 
 .aside {
   height: 100%;
-  background-color: rgba(111,111,111,0.9);
+  background-color: rgba(212, 212, 214, 0.88);
 
 }
 .docs-cont {
@@ -29,7 +28,13 @@
   padding:0px;
 }
 .doc-thumb-container {
-  border-top: solid 1px rgba(157, 160, 163, 1);
+  margin: 5px 0px;
+  background-color: rgb(225, 232, 237);
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  color: #292f33;
+
 }
 
 .image-cont, .text-cont, .text-cont h3 {
@@ -38,7 +43,7 @@
 }
 .doc-img {
   margin:15px 5px;
-  height: 50px;
+  height: 35px;
 }
 .main-content {
   height: 100%;
@@ -49,3 +54,4 @@
 #map-canvas {
   height:400px;
 }
+

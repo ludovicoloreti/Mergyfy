@@ -1,0 +1,146 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   '-g',
+1 verbose cli   'bower' ]
+2 info using npm@3.6.0
+3 info using node@v5.7.0
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readGlobalPackageData
+7 silly fetchPackageMetaData bower
+8 silly fetchNamedPackageData bower
+9 silly mapToRegistry name bower
+10 silly mapToRegistry using default registry
+11 silly mapToRegistry registry https://registry.npmjs.org/
+12 silly mapToRegistry uri https://registry.npmjs.org/bower
+13 verbose request uri https://registry.npmjs.org/bower
+14 verbose request no auth needed
+15 info attempt registry request try #1 at 12:10:58 PM
+16 verbose request id 5a4cfd8ccb42b167
+17 http request GET https://registry.npmjs.org/bower
+18 http 200 https://registry.npmjs.org/bower
+19 verbose headers { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+19 verbose headers   etag: '"S76KM5ZVH8HSKXS96KI43GG3"',
+19 verbose headers   'content-type': 'application/json',
+19 verbose headers   'cache-control': 'max-age=300',
+19 verbose headers   'content-length': '169106',
+19 verbose headers   'accept-ranges': 'bytes',
+19 verbose headers   date: 'Wed, 24 Feb 2016 11:11:00 GMT',
+19 verbose headers   via: '1.1 varnish',
+19 verbose headers   age: '18',
+19 verbose headers   connection: 'keep-alive',
+19 verbose headers   'x-served-by': 'cache-fra1229-FRA',
+19 verbose headers   'x-cache': 'HIT',
+19 verbose headers   'x-cache-hits': '5',
+19 verbose headers   'x-timer': 'S1456312260.750336,VS0,VE0',
+19 verbose headers   vary: 'Accept' }
+20 silly get cb [ 200,
+20 silly get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+20 silly get     etag: '"S76KM5ZVH8HSKXS96KI43GG3"',
+20 silly get     'content-type': 'application/json',
+20 silly get     'cache-control': 'max-age=300',
+20 silly get     'content-length': '169106',
+20 silly get     'accept-ranges': 'bytes',
+20 silly get     date: 'Wed, 24 Feb 2016 11:11:00 GMT',
+20 silly get     via: '1.1 varnish',
+20 silly get     age: '18',
+20 silly get     connection: 'keep-alive',
+20 silly get     'x-served-by': 'cache-fra1229-FRA',
+20 silly get     'x-cache': 'HIT',
+20 silly get     'x-cache-hits': '5',
+20 silly get     'x-timer': 'S1456312260.750336,VS0,VE0',
+20 silly get     vary: 'Accept' } ]
+21 verbose get saving bower to /Users/filippoboiani/.npm/registry.npmjs.org/bower/.cache.json
+22 verbose correctMkdir /Users/filippoboiani/.npm correctMkdir not in flight; initializing
+23 verbose makeDirectory /Users/filippoboiani/.npm creation not in flight; initializing
+24 silly makeDirectory /Users/filippoboiani/.npm uid: 501 gid: 20
+25 silly install normalizeTree
+26 silly loadCurrentTree Finishing
+27 silly loadIdealTree Starting
+28 silly install loadIdealTree
+29 silly cloneCurrentTree Starting
+30 silly install cloneCurrentTreeToIdealTree
+31 silly cloneCurrentTree Finishing
+32 silly loadShrinkwrap Starting
+33 silly install loadShrinkwrap
+34 silly loadShrinkwrap Finishing
+35 silly loadAllDepsIntoIdealTree Starting
+36 silly install loadAllDepsIntoIdealTree
+37 silly resolveWithNewModule bower@1.7.7 checking installable status
+38 silly cache add args [ 'bower', null ]
+39 verbose cache add spec bower
+40 silly cache add parsed spec Result {
+40 silly cache add   raw: 'bower',
+40 silly cache add   scope: null,
+40 silly cache add   name: 'bower',
+40 silly cache add   rawSpec: '',
+40 silly cache add   spec: 'latest',
+40 silly cache add   type: 'tag' }
+41 silly addNamed bower@latest
+42 verbose addNamed "latest" is being treated as a dist-tag for bower
+43 info addNameTag [ 'bower', 'latest' ]
+44 silly mapToRegistry name bower
+45 silly mapToRegistry using default registry
+46 silly mapToRegistry registry https://registry.npmjs.org/
+47 silly mapToRegistry uri https://registry.npmjs.org/bower
+48 verbose addNameTag registry:https://registry.npmjs.org/bower not in flight; fetching
+49 verbose get https://registry.npmjs.org/bower not expired, no request
+50 silly addNameTag next cb for bower with tag latest
+51 silly addNamed bower@1.7.7
+52 verbose addNamed "1.7.7" is a plain semver version for bower
+53 silly mapToRegistry name bower
+54 silly mapToRegistry using default registry
+55 silly mapToRegistry registry https://registry.npmjs.org/
+56 silly mapToRegistry uri https://registry.npmjs.org/bower
+57 verbose addRemoteTarball https://registry.npmjs.org/bower/-/bower-1.7.7.tgz not in flight; adding
+58 verbose addRemoteTarball [ 'https://registry.npmjs.org/bower/-/bower-1.7.7.tgz',
+58 verbose addRemoteTarball   '2fd7ff3ebdcba5a8ffcd84c397c8fdfe9f825f92' ]
+59 info retry fetch attempt 1 at 12:10:59 PM
+60 info attempt registry request try #1 at 12:10:59 PM
+61 http fetch GET https://registry.npmjs.org/bower/-/bower-1.7.7.tgz
+62 http fetch 200 https://registry.npmjs.org/bower/-/bower-1.7.7.tgz
+63 silly fetchAndShaCheck shasum 2fd7ff3ebdcba5a8ffcd84c397c8fdfe9f825f92
+64 verbose addTmpTarball /var/folders/0r/j88lsxxn215440_j8hpdbf3c0000gn/T/npm-3472-bd4f0a6b/registry.npmjs.org/bower/-/bower-1.7.7.tgz not in flight; adding
+65 verbose addTmpTarball already have metadata; skipping unpack for bower@1.7.7
+66 verbose correctMkdir /Users/filippoboiani/.npm correctMkdir not in flight; initializing
+67 silly cache afterAdd bower@1.7.7
+68 verbose afterAdd /Users/filippoboiani/.npm/bower/1.7.7/package/package.json not in flight; writing
+69 verbose correctMkdir /Users/filippoboiani/.npm correctMkdir not in flight; initializing
+70 verbose afterAdd /Users/filippoboiani/.npm/bower/1.7.7/package/package.json written
+71 silly loadAllDepsIntoIdealTree Finishing
+72 silly idealTree:prePrune lib
+72 silly idealTree:prePrune └── bower@1.7.7
+73 silly loadIdealTree Finishing
+74 silly currentTree lib
+75 silly idealTree lib
+75 silly idealTree └── bower@1.7.7
+76 silly generateActionsToTake Starting
+77 silly install generateActionsToTake
+78 warn checkPermissions Missing write access to /usr/local/lib/node_modules
+79 silly rollbackFailedOptional Starting
+80 silly rollbackFailedOptional Finishing
+81 silly runTopLevelLifecycles Starting
+82 silly runTopLevelLifecycles Finishing
+83 silly install printInstalled
+84 verbose stack Error: EACCES: permission denied, access '/usr/local/lib/node_modules'
+84 verbose stack     at Error (native)
+85 verbose cwd /Applications/MAMP/htdocs/MF
+86 error Darwin 15.0.0
+87 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "install" "-g" "bower"
+88 error node v5.7.0
+89 error npm  v3.6.0
+90 error path /usr/local/lib/node_modules
+91 error code EACCES
+92 error errno -13
+93 error syscall access
+94 error Error: EACCES: permission denied, access '/usr/local/lib/node_modules'
+94 error     at Error (native)
+94 error  { [Error: EACCES: permission denied, access '/usr/local/lib/node_modules']
+94 error   errno: -13,
+94 error   code: 'EACCES',
+94 error   syscall: 'access',
+94 error   path: '/usr/local/lib/node_modules' }
+95 error Please try running this command again as root/Administrator.
+96 verbose exit [ -13, true ]

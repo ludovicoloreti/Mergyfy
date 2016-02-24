@@ -1,3 +1,4 @@
+/*
 
 var map;
 function initialize() {
@@ -35,3 +36,4 @@ function resize() {
 
 google.maps.event.addDomListener(window, 'load', initialize);
 google.maps.event.addDomListener(window, "resize", resize);
+*/
