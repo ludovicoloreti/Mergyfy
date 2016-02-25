@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS groups(
   name varchar(100) not null,
   creationdate timestamp not null default current_timestamp(),
   image varchar(300),
-  description varchar(2000) not null default "No description.",
+  description varchar(2000) not null default "No description."
 ) engine=INNODB;
 
 /* MEMBERS */
@@ -135,13 +135,13 @@ CREATE TABLE IF NOT EXISTS partecipations (
   id int auto_increment primary key,
   event_id int not null references event(id),
   user_id int not null references user(id),
-  status ENUM('accepted','declined','waiting') default 'waiting',
+  status ENUM('accepted','declined','waiting') default 'waiting'
 ) engine=INNODB;
 
 /******************** VIEWS *************************/
 
-CREATE VIEW usersInfo(userid, name, lastname, born, subscriptiondate, type, profilepicture, email) AS
-  SELECT id, name, lastname, born, subscriptiondate, type, profilepicture, email FROM users;
+CREATE VIEW usersInfo(userid, name, lastname, born, subscriptiondate, type, profilepicture, mail) AS
+  SELECT id, name, lastname, born, subscriptiondate, type, profilepicture, mail FROM users;
 
 /* TODO */
 
@@ -152,13 +152,17 @@ CREATE VIEW usersInfo(userid, name, lastname, born, subscriptiondate, type, prof
 */
 DELIMITER //
 create trigger check_age
-BEFORE INSERT ON merge.user
+BEFORE INSERT ON merge.users
 FOR EACH ROW
 BEGIN
   -- CURRENT_TIMESTAMP() - UNIX_TIMESTAMP(NEW.born) > 1009846861  -- 14yo in timestamp
 	IF (NEW.born IS NULL) OR ( (YEAR(CURRENT_TIMESTAMP()) - YEAR(NEW.born) - (DATE_FORMAT(CURRENT_TIMESTAMP(), '%m%d') < DATE_FORMAT(NEW.born, '%m%d'))) < 14 )
   THEN
       SIGNAL sqlstate '45000' set message_text = "Age must be more than 14 yo";
+	END IF;
+	IF (NEW.mail NOT REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$' )
+  THEN
+      SIGNAL sqlstate '45000' set message_text = "Invalid email address";
 	END IF;
 END //
 DELIMITER ;
@@ -167,29 +171,18 @@ DELIMITER ;
   Checks the if the creation date is correct
   (it can be omitted since we use a stored procedure and set creation with current_timestamp)
 */
-DELIMITER //
-create trigger check_event_creation
-BEFORE INSERT ON merge.event
-FOR EACH ROW
-BEGIN
-	IF ( (NEW.creation IS NULL) OR (NEW.creation > CURRENT_TIMESTAMP()) )
-  THEN
-      SIGNAL sqlstate '45000' set message_text = "Invalid creation date";
-	END IF;
-END //
-DELIMITER ;
-
-/* 3 - check_mail
+/* MERGED TRIGGER
+  3 - check_mail
   Checks if the email provided by the user is correct.
 */
 DELIMITER //
-create trigger check_mail
-BEFORE INSERT ON merge.users
+create trigger check_event_creation
+BEFORE INSERT ON merge.events
 FOR EACH ROW
 BEGIN
-	IF (NEW.mail NOT REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$' )
+	IF ( (NEW.creationdate IS NULL) OR (NEW.creationdate > CURRENT_TIMESTAMP()) )
   THEN
-      SIGNAL sqlstate '45000' set message_text = "Invalid email address";
+      SIGNAL sqlstate '45000' set message_text = "Invalid creation date";
 	END IF;
 END //
 DELIMITER ;
@@ -330,18 +323,18 @@ CREATE PROCEDURE updateUser( IN idI INT,
  IN nameI varchar(100),
  IN lastnameI varchar(100),
  IN bornI date,
- IN typeI var(30),
+ IN typeI varchar(30),
  IN profileI varchar(300),
  IN lat DECIMAL(11,8),
  IN lng DECIMAL(11,8),
  IN passwordI varchar(300),
  IN mailI varchar(150),
- IN delated INT)
+ IN delatedI INT)
 BEGIN
   UPDATE users
-    SET (name = nameI, lastname = lastnameI, born = bornI,
+    SET name = nameI, lastname = lastnameI, born = bornI,
       type = typeI, profilepicture = profileI, actual_lat = lat,
-        actual_lng = lng, password = passwordI, mail = mailI, delated = delatedI )
+        actual_lng = lng, password = passwordI, mail = mailI, delated = delatedI
          WHERE id = idI;
 END |
 DELIMITER ;
@@ -374,9 +367,10 @@ DELIMITER ;
 
 /* addEvent */
 DELIMITER |
-CREATE PROCEDURE addEvent(IN nameI VARCHAR(100), IN placeID INT, IN startdateI TIMESTAMP, IN stopdateI TIMESTAMP, IN creatorI INT, IN typeI ENUM, IN descriptionI VARCHAR(2000))
+CREATE PROCEDURE addEvent(IN nameI VARCHAR(100), IN placeID INT, IN startdateI TIMESTAMP, IN stopdateI TIMESTAMP, IN creatorI INT, IN typeI VARCHAR(20), IN descriptionI VARCHAR(2000))
 BEGIN
-  INSERT INTO events (name, place, startdate, stopdate, creator, type, description) VALUES (nameI, placeID, startdateI, stopdateI, creatorI, typeI, descriptionI);
+  INSERT INTO events (name, place, startdate, stopdate, creator, type, description)
+    VALUES (nameI, placeID, startdateI, stopdateI, creatorI, typeI, descriptionI);
 END |
 DELIMITER ;
 
@@ -384,8 +378,8 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE updateEvent(IN idI INT, IN nameI VARCHAR(100), IN placeI INT, IN startdateI TIMESTAMP, IN stopdateI TIMESTAMP, IN creatorI INT, IN typeI VARCHAR(10), IN descriptionI VARCHAR(2000), IN categoryI INT)
 BEGIN
-  UPDATE events SET (id=idI, name=nameI, place = placeI, startdate = startdateI, stopdate = stopdateI,
-    creator = creatorI, type = typeI, description = descriptionI, category = categoryI)
+  UPDATE events SET id=idI, name=nameI, place = placeI, startdate = startdateI, stopdate = stopdateI,
+    creator = creatorI, type = typeI, description = descriptionI, category = categoryI
     WHERE id = idI;
 END |
 DELIMITER ;
@@ -402,7 +396,8 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE addCategory(IN nameI VARCHAR(100), IN descriptionI VARCHAR(2000), IN colourI VARCHAR(6))
 BEGIN
-  INSERT INTO categories (name, description, colour) VALUES (nameI, descriptionI, colourI);
+  INSERT INTO categories (name, description, colour)
+  VALUES (nameI, descriptionI, colourI);
 END |
 DELIMITER ;
 
@@ -419,7 +414,7 @@ DELIMITER |
 CREATE PROCEDURE updateCategory(IN idI INT, IN nameI VARCHAR(100), IN descriptionI VARCHAR(2000), IN colourI VARCHAR(6))
 BEGIN
   UPDATE categories
-    SET (name = nameI, description = descriptionI, colour = colourI)
+    SET name = nameI, description = descriptionI, colour = colourI
     WHERE id= idI;
 END |
 DELIMITER ;
@@ -453,7 +448,7 @@ DELIMITER |
 CREATE PROCEDURE updateDoc(IN idI INT, IN creatorI INT, IN nameI VARCHAR(100), IN eventI INT, IN publicI INT)
 BEGIN
   UPDATE documents
-    SET (creator = creatorI, name = nameI, event = eventI, public = publicI);
+    SET creator = creatorI, name = nameI, event = eventI, public = publicI
     WHERE id = idI;
 END |
 DELIMITER ;
@@ -498,7 +493,7 @@ DELIMITER |
 CREATE PROCEDURE updateGroup(IN idI INT, IN nameI VARCHAR(100), IN imageI VARCHAR(300), IN descriptionI VARCHAR(2000))
 BEGIN
   UPDATE groups
-    SET (name = nameI, image = imageI, description = descriptionI)
+    SET name = nameI, image = imageI, description = descriptionI
     WHERE id = idI;
 END |
 DELIMITER ;
@@ -521,14 +516,14 @@ DELIMITER ;
 
 /* AddMember to a Group */
 DELIMITER |
-CREATE  PROCEDURE addMember(IN idUserI IN, IN idGroupI INT)
+CREATE  PROCEDURE addMember(IN idUserI INT, IN idGroupI INT)
 BEGIN
   IF((SELECT count(*) FROM members WHERE idgroup = idGroupI) = 0)
   THEN
     INSERT INTO members (iduser, idgroup, role) VALUES (idUserI, idGroupI, 'admin');
   ELSE
     INSERT INTO members (iduser, idgroup) VALUES (idUserI, idGroupI);
-  ENDIF
+  END IF ;
 END |
 DELIMITER ;
 
@@ -542,10 +537,10 @@ DELIMITER ;
 
 /* updatePartecipation */
 DELIMITER |
-CREATE PROCEDURE updatePartecipation(IN idI INT, IN eventId INT, IN userId INT, IN statusI VARCHAR(20));
+CREATE PROCEDURE updatePartecipation(IN idI INT, IN eventId INT, IN userId INT, IN statusI VARCHAR(20))
 BEGIN
   UPDATE parteciparions
-    SET ( event_id = eventId, user_id = userId, status = statusI)
+    SET event_id = eventId, user_id = userId, status = statusI
     WHERE id = idI;
 END |
 DELIMITER ;
@@ -562,7 +557,7 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE getNote(IN idI INT)
 BEGIN
-  SELECT * FROM notes WHER id = idI;
+  SELECT * FROM notes WHERE id = idI;
 END |
 DELIMITER ;
 
@@ -571,14 +566,8 @@ DELIMITER |
 CREATE PROCEDURE updateNote(IN idI INT, IN typeI VARCHAR(7), IN contentI TEXT, IN description VARCHAR(200))
 BEGIN
   UPDATE notes
-    SET (type = typeI, content = contentI, description = descriptionI)
+    SET type = typeI, content = contentI, description = descriptionI
     WHERE id = idI;
 END |
 DELIMITER ;
 
-/* search( string )*/
-SELECT nome, cognome FROM element WHERE ( CONCAT_WS(' ', nome, cognome) LIKE '%{$textParam}%' OR CONCAT_WS(' ', cognome, nome) LIKE '%{$textParam}%') LIMIT 10;
-
-/******************** GRANT PERMISSIONS **********************/
-CREATE USER 'user'@'localhost' IDENTIFIED BY 'user-password';
-CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin-password-3h5CHx34t2D';

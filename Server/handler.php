@@ -18,6 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);
 }
 
+include_once "database.php";
+foreach (glob("Objects/*.php") as $filename)
+{
+    include_once $filename;
+}
+
+
 $dataJson = file_get_contents("php://input");
 $action = $_REQUEST['action'];
 $model = $_REQUEST['model'];

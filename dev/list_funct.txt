@@ -1,4 +1,7 @@
-- login( user_mail, user_password ) > User or -1
+
+											Model		Action
+
+- login( user_mail, user_password ) > User or -1  					User		Login
 
 - (search) userNearEvents( user_id, distance ) > List of events
 - (search) suggestedEvents( lat, lng ) > List of events

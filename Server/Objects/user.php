@@ -225,7 +225,20 @@ class User {
 
 
 
+    public function login($data){
+        /*$data.user{
+            mail: ..,
+            password: ...
+        }*/
 
+        print_r($data);
+
+        $db = new Database();
+        $db->callProcedure("login", $param);
+        $result = $db->getResult();
+
+        echo json_encode($result);
+    }
 
 
 
