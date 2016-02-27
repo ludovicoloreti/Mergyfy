@@ -298,12 +298,12 @@ DELIMITER ;
 
 /* login() */
 DELIMITER |
-CREATE PROCEDURE login( IN usermail VARCHAR(150), IN userpassword VARCHAR(300), IN lat DECIMAL(11,8), IN lng DECIMAL(11,8), OUT uid INT )
+CREATE PROCEDURE login( IN usermail VARCHAR(150), IN userpassword VARCHAR(300), IN lat DECIMAL(11,8), IN lng DECIMAL(11,8))
 BEGIN
   DECLARE uid INT default -1;
   SELECT id INTO uid FROM users WHERE (mail = usermail) AND (password = userpassword) LIMIT 1;
   IF (uid <> -1) THEN
-    call setPostion(uid, lat, lng);
+    call updatePosition(uid, lat, lng);
     call getUser(uid);
   END IF;
 END |
@@ -341,7 +341,7 @@ DELIMITER ;
 
 
 
-/* setPosition( pos ) */
+/* updatePosition( pos ) */
 DELIMITER |
 CREATE PROCEDURE updatePosition(IN uid INT, IN lat DECIMAL(11,8), IN lng DECIMAL(11,8) )
 BEGIN

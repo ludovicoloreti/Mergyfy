@@ -226,16 +226,26 @@ class User {
 
 
     public function login($data){
-        /*$data.user{
-            mail: ..,
-            password: ...
-        }*/
 
-        print_r($data);
+        $param = json_decode($data);
+        $param = $param->param;
+
+        $sending = new JsonUtilities();
+        $sending = $sending->fromJsonToArray($param);
 
         $db = new Database();
-        $db->callProcedure("login", $param);
+        $db->callProcedure("login", $sending);
         $result = $db->getResult();
+
+        /*
+         *
+         *
+         *
+         * SET SESSION!!!!!!!
+         *
+         *
+         *
+         */
 
         echo json_encode($result);
     }

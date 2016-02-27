@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 include_once "database.php";
+include_once "Functions/jsonUtilities.php";
 foreach (glob("Objects/*.php") as $filename)
 {
     include_once $filename;
