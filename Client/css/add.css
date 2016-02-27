@@ -80,3 +80,14 @@
   padding: 10px 15px;
   hight:40%;
 }
+
+.search-place {
+  position: absolute;
+  margin-top: 10px;
+  z-index: 100;
+  left: 130px
+}
+.search-place input {
+  width:400px;
+  padding:5px;
+}

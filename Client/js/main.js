@@ -22,7 +22,7 @@ app.config(['$routeProvider', function ($routeProvider) {
     .when("/doc", {templateUrl: "partials/document.html", controller: "PageCtrl"})
     .when("/profile", {templateUrl: "partials/profile.html", controller: "PageCtrl"})
     .when("/services", {templateUrl: "partials/services.html", controller: "PageCtrl"})
-    .when("/addevent", {templateUrl: "partials/addevent.html", controller: "PageCtrl"})
+    .when("/addevent", {templateUrl: "partials/addevent.html", controller: "EventCtrl"})
     .when("/event", {templateUrl: "partials/event.html", controller: "EventCtrl"})
 
     // Blog
@@ -51,6 +51,14 @@ app.controller('HomeCtrl', function ($scope) {
 });
 
 app.controller('EventCtrl', function(){
+  console.log("ciao");
+  $scope.invia = function( address ){
+    var coordinates = getGeoLocation("via jacchia 7 casalecchio di reno");
+    console.log(coordinates);
+  }
+
+  // https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyCmhQc5fBRF5OUDFAawn9L0ZBolUlSw_8k
+  // bisogna usare questo circa
 
 });
 
