@@ -79,6 +79,9 @@ app.controller('DocCtrl', function($scope){
   $scope.toggleView = function() {
     $scope.toggle = ($scope.toggle) ? false : true;
   };
+
+  $scope.title= "";
+  $scope.text= "";
 });
 
 app.controller('EventsCtrl', function ($scope, $compile, $window, NgMap) {

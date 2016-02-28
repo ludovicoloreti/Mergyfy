@@ -98,6 +98,11 @@
         <div class="document">
           <h1>Nome documento</h1>
           <p><i>Mario Rossi</i></p>
+          <div class="text-cont"></div>
+          <div class="new-node">
+            <h4>{{title}}</h4>
+            <p>{{text}}</p>
+          </div>
 
         </div>
       </div>
@@ -108,7 +113,7 @@
           <div class="row">
             <fieldset class="form-group col-md-5">
               <label>Titolo nodo (opzionale)</label>
-              <input type="text" class="form-control" id="note-title"/>
+              <input type="text" class="form-control" id="note-title" ng-model="title"/>
 
             </fieldset>
             <div class="col-md-7">
@@ -118,11 +123,11 @@
           <div class="row">
             <fieldset class="form-group col-md-7">
               <label for="exampleTextarea">Inserisci qui la tua nota</label>
-              <textarea class="form-control" id="exampleTextarea" rows="4"></textarea>
+              <textarea class="form-control" id="exampleTextarea" rows="4" ng-model="text"></textarea>
             </fieldset>
             <fieldset class="form-group col-md-5">
               <label for="exampleInputFile">Carica immagine</label>
-              <input type="file" class="form-control-file  block well well-sm" id="exampleInputFile">
+              <input type="file" class="form-control-file  block well well-sm"  id="exampleInputFile">
               <small class="text-muted">
                 <select class="c-select">
                   <option selected disabled>Tipo nodo</option>
