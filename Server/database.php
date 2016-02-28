@@ -32,6 +32,27 @@ class Database extends PDO{
         return $this->conn;
     }
 
+
+    public function stndQuery($query, $parameters){
+        $this->stmt = $this->conn->prepare($query);
+
+        foreach($parameters as $key=>&$value){
+            $this->stmt->bindParam($key+1, $value);
+        }
+
+        if($this->stmt){
+            try {
+                $this->stmt->execute();
+            }catch(error $e){
+
+                echo $e;
+            }
+            return true;
+        } else{
+            return $this->conn->getErrors();
+        }
+    }
+
     /*
      *
      */

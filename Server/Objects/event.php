@@ -183,4 +183,41 @@ class event{
     {
         $this->categoryid = $categoryid;
     }
+
+
+
+    /**
+     * UserNearEvents
+     *
+     * return all the events near one selected user
+     * @param data {id, distance)
+     */
+    public static function userNearEvents($data){
+        $param = json_decode($data);
+
+        $sending = new JsonUtilities();
+        $sending = $sending->fromJsonToArray($param->param);
+
+
+        $db = new Database();
+        $db->callProcedure("userNearEvents", $sending);
+        $result = $db->getResult();
+
+        echo json_encode($result);
+    }
+
+    /**
+     * suggestedEvent
+     *
+     * return all the events nearby the geolocation
+     * @param data {lat, lng}
+     */
+    public static function suggestedEvent($data){
+        $param = json_decode($data);
+
+        $sending = new JsonUtilities();
+        $sending = $sending->fromJsonToArray($param->param);
+
+        $db = new Database();
+    }
 }

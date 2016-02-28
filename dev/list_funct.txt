@@ -1,10 +1,10 @@
 
-											Model		Action
+											Model		Action		Done
 
-- login( user_mail, user_password ) > User or -1  					User		Login
+- login( user_mail, user_password ) > User or -1  					User		Login		!!!
 
-- (search) userNearEvents( user_id, distance ) > List of events
-- (search) suggestedEvents( lat, lng ) > List of events
+- (search) userNearEvents( user_id, distance ) > List of events			Event		userNearEvent	!!!
+- (search) suggestedEvents( lat, lng ) > List of events				
 - (search) suggestedPlaces( lat, lng ) > List of places
 
 - getUser( user_id ) > User or -1

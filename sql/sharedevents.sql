@@ -258,7 +258,7 @@ BEGIN
   -- Get actual user's lat and lng given the userID
   SELECT actual_lng, actual_lat INTO userLng, userLat FROM users WHERE (id = userid) LIMIT 1;
   -- Find Events
-  SELECT ev.id as eventId, ev.name as eventName, ev.creation as dateCreation, ev.start as dateStart, ev.stop as dateStop, ev.description as eventDesc,
+  SELECT ev.id as eventId, ev.name as eventName, ev.creationdate as dateCreation, ev.startdate as dateStart, ev.stopdate as dateStop, ev.description as eventDesc,
          u.id as creatorId, u.name as creatorName, u.lastname as creatorLastname,
          pl.id as placeId, pl.name as placeName, pl.address as placeAddress, pl.lat as placeLat, pl.lng as placeLng,
          ( 3959 * acos( cos( radians(userLat) ) * cos( radians( pl.lat ) ) * cos( radians( pl.lng ) - radians(userLng) ) + sin( radians(userLat) ) * sin( radians( pl.lat ) ) ) ) AS distance
@@ -369,8 +369,17 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE addEvent(IN nameI VARCHAR(100), IN placeID INT, IN startdateI TIMESTAMP, IN stopdateI TIMESTAMP, IN creatorI INT, IN typeI VARCHAR(20), IN descriptionI VARCHAR(2000))
 BEGIN
-  INSERT INTO events (name, place, startdate, stopdate, creator, type, description)
-    VALUES (nameI, placeID, startdateI, stopdateI, creatorI, typeI, descriptionI);
+  DECLARE canPrivatise VARCHAR(20);
+  SELECT type INTO canPrivatise FROM users WHERE id = creator;
+
+  IF type = "private" AND canPrivatise = "basic"
+  THEN
+    SIGNAL sqlstate '45000' set message_text = "You can't write here!";
+  ELSE
+    INSERT INTO events (name, place, startdate, stopdate, creator, type, description)
+      VALUES (nameI, placeID, startdateI, stopdateI, creatorI, typeI, descriptionI);
+  END IF;
+
 END |
 DELIMITER ;
 

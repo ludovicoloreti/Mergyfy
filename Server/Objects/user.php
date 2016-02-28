@@ -228,10 +228,9 @@ class User {
     public function login($data){
 
         $param = json_decode($data);
-        $param = $param->param;
 
         $sending = new JsonUtilities();
-        $sending = $sending->fromJsonToArray($param);
+        $sending = $sending->fromJsonToArray($param->param);
 
         $db = new Database();
         $db->callProcedure("login", $sending);
