@@ -19,12 +19,13 @@ app.config(['$routeProvider', function ($routeProvider) {
     .when("/", {templateUrl: "partials/home.html", controller: "HomeCtrl"})
     // Pages
     .when("/events", {templateUrl: "partials/events.html",controller: "EventsCtrl"})
-    .when("/doc", {templateUrl: "partials/document.html", controller: "PageCtrl"})
+    .when("/doc", {templateUrl: "partials/document.html", controller: "DocCtrl"})
     .when("/profile", {templateUrl: "partials/profile.html", controller: "PageCtrl"})
-    .when("/services", {templateUrl: "partials/services.html", controller: "PageCtrl"})
+    .when("/groups", {templateUrl: "partials/groups.html", controller: "GroupsCtrl"})
     .when("/addevent", {templateUrl: "partials/addevent.html", controller: "EventCtrl"})
     .when("/event", {templateUrl: "partials/event.html", controller: "EventCtrl"})
-
+    .when("/group", {templateUrl: "partials/group.html", controller: "GroupCtrl"})
+    .when("/addgroup", {templateUrl: "partials/addgroup.html", controller: "AddGroupCtrl"})
     // Blog
     .when("/blog", {templateUrl: "partials/blog.html", controller: "BlogCtrl"})
     .when("/blog/post", {templateUrl: "partials/blog_item.html", controller: "BlogCtrl"})
@@ -38,11 +39,22 @@ app.run(function($rootScope, NgMap) {
   });
 });
 
-/**
- * Controls the Blog
- */
-app.controller('BlogCtrl', function (/* $scope, $location, $http */) {
+app.controller('GroupsCtrl', function (/* $scope, $location, $http */) {
   console.log("Blog Controller reporting for duty.");
+});
+
+app.controller('GroupCtrl', function ($scope) {
+  $scope.edit = false;
+  $scope.editGroup = function() {
+    $scope.edit = true;
+  };
+
+  $scope.saveChanges = function() {
+    $scope.edit = false;
+  };
+});
+
+app.controller('AddGroupCtrl', function (/* $scope, $location, $http */) {
 });
 
 // nuovo controller
@@ -50,16 +62,23 @@ app.controller('HomeCtrl', function ($scope) {
     $scope.clock = Date.now();
 });
 
-app.controller('EventCtrl', function(){
+app.controller('EventCtrl', function($scope){
   console.log("ciao");
-  $scope.invia = function( address ){
-    var coordinates = getGeoLocation("via jacchia 7 casalecchio di reno");
-    console.log(coordinates);
-  }
+  $scope.custom = true;
+  $scope.toggleCustom = function() {
+    $scope.custom = $scope.custom === false ? true: false;
+  };
 
   // https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyCmhQc5fBRF5OUDFAawn9L0ZBolUlSw_8k
   // bisogna usare questo circa
 
+});
+
+app.controller('DocCtrl', function($scope){
+  $scope.toggle = false;
+  $scope.toggleView = function() {
+    $scope.toggle = ($scope.toggle) ? false : true;
+  };
 });
 
 app.controller('EventsCtrl', function ($scope, $compile, $window, NgMap) {

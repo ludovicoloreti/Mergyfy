@@ -1,5 +1,5 @@
-<div style="overflow:scroll; height:95%">
-  <div class="container">
+<div style="overflow:hidden; height:95%">
+  <div class="container" style="padding-top: 20px;overflow:hidden; height:100%">
 
     <div class="col-md-6" map-lazy-load="https://maps.google.com/maps/api/js">
 
@@ -9,68 +9,90 @@
       </ng-map>
     </div>
 
-    <div class="col-md-6" style="padding-top:15px;">
-      <form>
-        <fieldset class="form-group col-md-12">
-          <label >Titolo evento</label>
-          <input type="text" class="form-control" id="" placeholder="Inserisci titolo">
-        </fieldset>
-
-        <fieldset class="form-group col-md-12">
-          <label for="event-description">Descrizione</label>
-          <textarea class="form-control" id="event-description" placeholder="Inserisci testo" rows="4"></textarea>
-        </fieldset>
-
-        <fieldset class="clearfix col-md-12" style="padding:0px;">
-          <legend style="padding-left:15px;">Place</legend>
+    <div class="col-md-6" style="padding-top:15px; height:100%; overflow: scroll;">
+      <div style="">
+        <form>
           <fieldset class="form-group col-md-12">
-            <label >Nome posto</label>
-            <input type="text" class="form-control" id="" placeholder="Nome">
+            <label >Titolo evento</label>
+            <input type="text" class="form-control" id="" placeholder="Inserisci titolo">
           </fieldset>
 
           <fieldset class="form-group col-md-12">
-            <label >Indirizzo</label>
-            <input ng-model="vm.address" class="form-control"  placeholder="Indirizzo" >
+            <label for="event-description">Descrizione</label>
+            <textarea class="form-control" id="event-description" placeholder="Inserisci testo" rows="4"></textarea>
           </fieldset>
 
-          <fieldset class="form-group col-md-6">
-            <label >Città</label>
-            <input ng-model="vm.city" type="text" class="form-control col-md-6" id="" placeholder="Città">
+          <fieldset class="clearfix col-md-12" style="padding:0px;">
+            <legend style="padding-left:15px;">Place</legend>
+            <fieldset class="form-group col-md-12">
+              <label >Nome posto</label>
+              <input type="text" class="form-control" id="" placeholder="Nome">
+            </fieldset>
+
+            <fieldset class="form-group col-md-12">
+              <label >Indirizzo</label>
+              <input ng-model="vm.address" class="form-control"  placeholder="Indirizzo" >
+            </fieldset>
+
+            <fieldset class="form-group col-md-6">
+              <label >Città</label>
+              <input ng-model="vm.city" type="text" class="form-control col-md-6" id="" placeholder="Città">
+            </fieldset>
+
+            <fieldset class="form-group col-md-6">
+              <label >Cap</label>
+              <input type="text" class="form-control" id="" placeholder="Cap">
+            </fieldset>
+
+            <fieldset class="form-group col-md-12">
+              <label >Paese</label>
+              <input type="text" class="form-control" id="" placeholder="Nation">
+            </fieldset>
           </fieldset>
 
-          <fieldset class="form-group col-md-6">
-            <label >Cap</label>
-            <input type="text" class="form-control" id="" placeholder="Cap">
-          </fieldset>
 
           <fieldset class="form-group col-md-12">
-            <label >Paese</label>
-            <input type="text" class="form-control" id="" placeholder="Nation">
+            <label>Categoria</label>
+            <select class="c-select">
+              <option value="1">Sport</option>
+              <option value="2">Meeting</option>
+              <option value="3">Workshop</option>
+              <option value="3">Altro</option>
+            </select>
           </fieldset>
-        </fieldset>
+          <fieldset class="col-md-12 clearfix">
+            start + stop ?
+          </fieldset>
 
+          <div class="col-md-12 clearfix">
+            <button class="btn btn-primary" ng-click="toggleCustom()">Invita</button>
+            <button type="submit" ng-click="" class="btn btn-primary">Crea evento</button>
+          </div>
 
-        <fieldset class="form-group col-md-12">
-          <label>Categoria</label>
-          <select class="c-select">
-            <option value="1">Sport</option>
-            <option value="2">Meeting</option>
-            <option value="3">Workshop</option>
-            <option value="3">Altro</option>
-          </select>
-        </fieldset>
-        <fieldset class="col-md-12 clearfix">
-          start + stop ?
-        </fieldset>
+        </form>
+      </div>
 
-        <div class="col-md-12 clearfix">
-          <button class="btn btn-primary">Invita</button>
-          <button type="submit" ng-click="invia(vm.address+''+vm.city)" class="btn btn-primary">Crea evento</button>
+    </div>
+    <div class="col-md-12 overlay" ng-hide="custom" >
+      <div class="col-md-6 overlay-box">
+        <h1>Aggiugni invitati</h1>
+
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search for...">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button">Go!</button>
+            </span>
+        </div>
+        <div class="search-results">
+
         </div>
 
-      </form>
-
-
+        <h4>Persone che hai invitato</h4>
+        <div class="invited-list">
+            nessuno
+        </div>
+        <button class="btn btn-primary" ng-click="toggleCustom()">Invita</button>
+      </div>
     </div>
 
   </div>
