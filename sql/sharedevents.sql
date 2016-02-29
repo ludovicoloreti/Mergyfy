@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS events (
   id int(11) auto_increment  primary key,
   name varchar(100) not null,
   place int references place(id) on delete set null on update cascade,
-  creationdate timestamp not null,
+  creationdate timestamp default current_timestamp,
   startdate timestamp,
   stopdate timestamp,
   creator int references user(id)on delete set null on update cascade,
@@ -140,8 +140,8 @@ CREATE TABLE IF NOT EXISTS partecipations (
 
 /******************** VIEWS *************************/
 
-CREATE VIEW usersInfo(userid, name, lastname, born, subscriptiondate, type, profilepicture, email) AS
-  SELECT id, name, lastname, born, subscriptiondate, type, profilepicture, email FROM users;
+CREATE VIEW usersInfo(userid, name, lastname, born, subscriptiondate, type, profilepicture, mail) AS
+  SELECT id, name, lastname, born, subscriptiondate, type, profilepicture, mail FROM users;
 
 /* TODO */
 
@@ -152,13 +152,17 @@ CREATE VIEW usersInfo(userid, name, lastname, born, subscriptiondate, type, prof
 */
 DELIMITER //
 create trigger check_age
-BEFORE INSERT ON merge.user
+BEFORE INSERT ON merge.users
 FOR EACH ROW
 BEGIN
   -- CURRENT_TIMESTAMP() - UNIX_TIMESTAMP(NEW.born) > 1009846861  -- 14yo in timestamp
 	IF (NEW.born IS NULL) OR ( (YEAR(CURRENT_TIMESTAMP()) - YEAR(NEW.born) - (DATE_FORMAT(CURRENT_TIMESTAMP(), '%m%d') < DATE_FORMAT(NEW.born, '%m%d'))) < 14 )
   THEN
       SIGNAL sqlstate '45000' set message_text = "Age must be more than 14 yo";
+	END IF;
+	IF (NEW.mail NOT REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$' )
+  THEN
+      SIGNAL sqlstate '45000' set message_text = "Invalid email address";
 	END IF;
 END //
 DELIMITER ;
@@ -167,29 +171,18 @@ DELIMITER ;
   Checks the if the creation date is correct
   (it can be omitted since we use a stored procedure and set creation with current_timestamp)
 */
-DELIMITER //
-create trigger check_event_creation
-BEFORE INSERT ON merge.event
-FOR EACH ROW
-BEGIN
-	IF ( (NEW.creation IS NULL) OR (NEW.creation > CURRENT_TIMESTAMP()) )
-  THEN
-      SIGNAL sqlstate '45000' set message_text = "Invalid creation date";
-	END IF;
-END //
-DELIMITER ;
-
-/* 3 - check_mail
+/* MERGED TRIGGER
+  3 - check_mail
   Checks if the email provided by the user is correct.
 */
 DELIMITER //
-create trigger check_mail
-BEFORE INSERT ON merge.users
+create trigger check_event_creation
+BEFORE INSERT ON merge.events
 FOR EACH ROW
 BEGIN
-	IF (NEW.mail NOT REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$' )
+	IF ( (NEW.creationdate IS NULL) OR (NEW.creationdate > CURRENT_TIMESTAMP()) )
   THEN
-      SIGNAL sqlstate '45000' set message_text = "Invalid email address";
+      SIGNAL sqlstate '45000' set message_text = "Invalid creation date";
 	END IF;
 END //
 DELIMITER ;
@@ -265,7 +258,7 @@ BEGIN
   -- Get actual user's lat and lng given the userID
   SELECT actual_lng, actual_lat INTO userLng, userLat FROM users WHERE (id = userid) LIMIT 1;
   -- Find Events
-  SELECT ev.id as eventId, ev.name as eventName, ev.creation as dateCreation, ev.start as dateStart, ev.stop as dateStop, ev.description as eventDesc,
+  SELECT ev.id as eventId, ev.name as eventName, ev.creationdate as dateCreation, ev.startdate as dateStart, ev.stopdate as dateStop, ev.description as eventDesc,
          u.id as creatorId, u.name as creatorName, u.lastname as creatorLastname,
          pl.id as placeId, pl.name as placeName, pl.address as placeAddress, pl.lat as placeLat, pl.lng as placeLng,
          ( 3959 * acos( cos( radians(userLat) ) * cos( radians( pl.lat ) ) * cos( radians( pl.lng ) - radians(userLng) ) + sin( radians(userLat) ) * sin( radians( pl.lat ) ) ) ) AS distance
@@ -305,12 +298,12 @@ DELIMITER ;
 
 /* login() */
 DELIMITER |
-CREATE PROCEDURE login( IN usermail VARCHAR(150), IN userpassword VARCHAR(300), IN lat DECIMAL(11,8), IN lng DECIMAL(11,8) )
+CREATE PROCEDURE login( IN usermail VARCHAR(150), IN userpassword VARCHAR(300), IN lat DECIMAL(11,8), IN lng DECIMAL(11,8))
 BEGIN
   DECLARE uid INT default -1;
   SELECT id INTO uid FROM users WHERE (mail = usermail) AND (password = userpassword) LIMIT 1;
   IF (uid <> -1) THEN
-    call setPostion(uid, lat, lng);
+    call updatePosition(uid, lat, lng);
     call getUser(uid);
   END IF;
 END |
@@ -324,9 +317,33 @@ BEGIN
 END |
 DELIMITER ;
 
-/* setPosition( pos ) */
+/* updateUser */
 DELIMITER |
-CREATE PROCEDURE setPosition(IN uid INT, IN lat DECIMAL(11,8), IN lng DECIMAL(11,8) )
+CREATE PROCEDURE updateUser( IN idI INT,
+ IN nameI varchar(100),
+ IN lastnameI varchar(100),
+ IN bornI date,
+ IN typeI varchar(30),
+ IN profileI varchar(300),
+ IN lat DECIMAL(11,8),
+ IN lng DECIMAL(11,8),
+ IN passwordI varchar(300),
+ IN mailI varchar(150),
+ IN delatedI INT)
+BEGIN
+  UPDATE users
+    SET name = nameI, lastname = lastnameI, born = bornI,
+      type = typeI, profilepicture = profileI, actual_lat = lat,
+        actual_lng = lng, password = passwordI, mail = mailI, delated = delatedI
+         WHERE id = idI;
+END |
+DELIMITER ;
+
+
+
+/* updatePosition( pos ) */
+DELIMITER |
+CREATE PROCEDURE updatePosition(IN uid INT, IN lat DECIMAL(11,8), IN lng DECIMAL(11,8) )
 BEGIN
   UPDATE users SET actual_lat = lat, actual_lng = lng WHERE (id = uid);
 END |
@@ -348,11 +365,100 @@ BEGIN
 END |
 DELIMITER ;
 
-/* getUserDoc( id ) */
+/* addEvent */
 DELIMITER |
-CREATE PROCEDURE getUserDoc(IN userid INT)
+CREATE PROCEDURE addEvent(IN nameI VARCHAR(100), IN placeID INT, IN startdateI TIMESTAMP, IN stopdateI TIMESTAMP, IN creatorI INT, IN typeI VARCHAR(20), IN descriptionI VARCHAR(2000))
+BEGIN
+  DECLARE canPrivatise VARCHAR(20);
+  SELECT type INTO canPrivatise FROM users WHERE id = creator;
+
+  IF type = "private" AND canPrivatise = "basic"
+  THEN
+    SIGNAL sqlstate '45000' set message_text = "You can't write here!";
+  ELSE
+    INSERT INTO events (name, place, startdate, stopdate, creator, type, description)
+      VALUES (nameI, placeID, startdateI, stopdateI, creatorI, typeI, descriptionI);
+  END IF;
+
+END |
+DELIMITER ;
+
+/* updateEvent */
+DELIMITER |
+CREATE PROCEDURE updateEvent(IN idI INT, IN nameI VARCHAR(100), IN placeI INT, IN startdateI TIMESTAMP, IN stopdateI TIMESTAMP, IN creatorI INT, IN typeI VARCHAR(10), IN descriptionI VARCHAR(2000), IN categoryI INT)
+BEGIN
+  UPDATE events SET id=idI, name=nameI, place = placeI, startdate = startdateI, stopdate = stopdateI,
+    creator = creatorI, type = typeI, description = descriptionI, category = categoryI
+    WHERE id = idI;
+END |
+DELIMITER ;
+
+/* AddPlace */
+DELIMITER |
+CREATE PROCEDURE addPlace(IN latI DECIMAL(11,8), IN lngI DECIMAL(11,8), IN nameI VARCHAR(100), IN addressI VARCHAR(200), IN capI VARCHAR(10), IN cityI VARCHAR(50), IN nationI VARCHAR(50))
+BEGIN
+  INSERT INTO places (lat, lng, name, address, cap, city, nation) VALUES (latI, lngI, nameI, addressI, capI, cityI, nationI);
+END |
+DELIMITER ;
+
+/* addCategory */
+DELIMITER |
+CREATE PROCEDURE addCategory(IN nameI VARCHAR(100), IN descriptionI VARCHAR(2000), IN colourI VARCHAR(6))
+BEGIN
+  INSERT INTO categories (name, description, colour)
+  VALUES (nameI, descriptionI, colourI);
+END |
+DELIMITER ;
+
+/* getCategories */
+DELIMITER |
+CREATE PROCEDURE getCategories()
+BEGIN
+  SELECT * FROM categories;
+END |
+DELIMITER ;
+
+/* updateCategory */
+DELIMITER |
+CREATE PROCEDURE updateCategory(IN idI INT, IN nameI VARCHAR(100), IN descriptionI VARCHAR(2000), IN colourI VARCHAR(6))
+BEGIN
+  UPDATE categories
+    SET name = nameI, description = descriptionI, colour = colourI
+    WHERE id= idI;
+END |
+DELIMITER ;
+
+/* getUserDocs( id ) */
+DELIMITER |
+CREATE PROCEDURE getUserDocs(IN userid INT)
 BEGIN
   SELECT * FROM documents WHERE (creator = userid);
+END |
+DELIMITER ;
+
+/*getUserDoc (idDoc) */
+DELIMITER |
+CREATE PROCEDURE getUserDoc(IN docid INT)
+BEGIN
+  SELECT * FROM documents WHERE id = docid;
+END |
+DELIMITER ;
+
+/* createDoc */
+DELIMITER |
+CREATE PROCEDURE createDoc(IN creatorI INT, IN nameI VARCHAR(100), IN eventI INT, IN publicI INT)
+BEGIN
+  INSERT INTO documents (creator, name, event, public) VALUES (creatorI, nameI, eventI, publicI);
+END |
+DELIMITER ;
+
+/* updateDoc() */
+DELIMITER |
+CREATE PROCEDURE updateDoc(IN idI INT, IN creatorI INT, IN nameI VARCHAR(100), IN eventI INT, IN publicI INT)
+BEGIN
+  UPDATE documents
+    SET creator = creatorI, name = nameI, event = eventI, public = publicI
+    WHERE id = idI;
 END |
 DELIMITER ;
 
@@ -382,10 +488,95 @@ BEGIN
 END |
 DELIMITER ;
 
+/* createGroup */
+DELIMITER |
+CREATE  PROCEDURE createGroup(IN nameI VARCHAR (100), IN imageI VARCHAR(300), IN descriptionI VARCHAR(2000), IN categoryIdI INT)
+BEGIN
+  INSERT INTO groups (name, image, description, categoryid)
+    VALUES (name, imageI, descriptionI, categoryIdI);
+END |
+DELIMITER ;
 
-/* search( string )*/
-SELECT nome, cognome FROM element WHERE ( CONCAT_WS(' ', nome, cognome) LIKE '%{$textParam}%' OR CONCAT_WS(' ', cognome, nome) LIKE '%{$textParam}%') LIMIT 10;
+/* updateGroup() */
+DELIMITER |
+CREATE PROCEDURE updateGroup(IN idI INT, IN nameI VARCHAR(100), IN imageI VARCHAR(300), IN descriptionI VARCHAR(2000))
+BEGIN
+  UPDATE groups
+    SET name = nameI, image = imageI, description = descriptionI
+    WHERE id = idI;
+END |
+DELIMITER ;
 
-/******************** GRANT PERMISSIONS **********************/
-CREATE USER 'user'@'localhost' IDENTIFIED BY 'user-password';
-CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin-password-3h5CHx34t2D';
+/* getGroupInfo() */
+DELIMITER |
+CREATE PROCEDURE getGroupInfo(IN idI INT)
+BEGIN
+  SELECT * FROM groups WHERE id = idI;
+END |
+DELIMITER ;
+
+/* getPlace */
+DELIMITER |
+CREATE PROCEDURE getPlace(IN idI INT)
+BEGIN
+  SELECT * FROM places WHERE id = idI;
+END |
+DELIMITER ;
+
+/* AddMember to a Group */
+DELIMITER |
+CREATE  PROCEDURE addMember(IN idUserI INT, IN idGroupI INT)
+BEGIN
+  IF((SELECT count(*) FROM members WHERE idgroup = idGroupI) = 0)
+  THEN
+    INSERT INTO members (iduser, idgroup, role) VALUES (idUserI, idGroupI, 'admin');
+  ELSE
+    INSERT INTO members (iduser, idgroup) VALUES (idUserI, idGroupI);
+  END IF ;
+END |
+DELIMITER ;
+
+/* addPartecipant to an Event */
+DELIMITER |
+CREATE PROCEDURE addPartecipant(IN eventId INT, IN userId INT)
+BEGIN
+  INSERT INTO partecipations (event_id, user_id) VALUES (eventId, userId);
+END |
+DELIMITER ;
+
+/* updatePartecipation */
+DELIMITER |
+CREATE PROCEDURE updatePartecipation(IN idI INT, IN eventId INT, IN userId INT, IN statusI VARCHAR(20))
+BEGIN
+  UPDATE parteciparions
+    SET event_id = eventId, user_id = userId, status = statusI
+    WHERE id = idI;
+END |
+DELIMITER ;
+
+/* addNote */
+DELIMITER |
+CREATE PROCEDURE addNote(IN typeI VARCHAR(7), IN contentI TEXT, IN descriptionI VARCHAR(200))
+BEGIN
+  INSERT INTO notes (type, content, description) VALUES (typeI, contentI, descriptionI);
+END |
+DELIMITER ;
+
+/* getNote */
+DELIMITER |
+CREATE PROCEDURE getNote(IN idI INT)
+BEGIN
+  SELECT * FROM notes WHERE id = idI;
+END |
+DELIMITER ;
+
+/* updateNote */
+DELIMITER |
+CREATE PROCEDURE updateNote(IN idI INT, IN typeI VARCHAR(7), IN contentI TEXT, IN description VARCHAR(200))
+BEGIN
+  UPDATE notes
+    SET type = typeI, content = contentI, description = descriptionI
+    WHERE id = idI;
+END |
+DELIMITER ;
+
