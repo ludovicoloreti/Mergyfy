@@ -11,49 +11,49 @@
 
     <div class="col-md-6" style="padding-top:15px; height:100%; overflow: scroll;">
       <div style="">
-        <form>
+        <form name="myForm" id="myForm">
           <fieldset class="form-group col-md-12">
             <label >Titolo evento</label>
-            <input type="text" class="form-control" id="" placeholder="Inserisci titolo">
+            <input type="text" class="form-control" ng-model="vm.eventTitle" id="" placeholder="Inserisci titolo" required>
           </fieldset>
 
           <fieldset class="form-group col-md-12">
             <label for="event-description">Descrizione</label>
-            <textarea class="form-control" id="event-description" placeholder="Inserisci testo" rows="4"></textarea>
+            <textarea class="form-control" id="event-description" ng-model="vm.description" placeholder="Inserisci testo" rows="4" required></textarea>
           </fieldset>
 
           <fieldset class="clearfix col-md-12" style="padding:0px;">
             <legend style="padding-left:15px;">Place</legend>
             <fieldset class="form-group col-md-12">
               <label >Nome posto</label>
-              <input type="text" class="form-control" id="" placeholder="Nome">
+              <input type="text" class="form-control" id="" ng-model="vm.place" placeholder="Nome" required>
             </fieldset>
 
             <fieldset class="form-group col-md-12">
               <label >Indirizzo</label>
-              <input ng-model="vm.address" class="form-control"  placeholder="Indirizzo" >
+              <input ng-model="vm.address" class="form-control" placeholder="Indirizzo" required>
             </fieldset>
 
             <fieldset class="form-group col-md-6">
               <label >Città</label>
-              <input ng-model="vm.city" type="text" class="form-control col-md-6" id="" placeholder="Città">
+              <input ng-model="vm.city" type="text" class="form-control col-md-6" id="" placeholder="Città" required>
             </fieldset>
 
             <fieldset class="form-group col-md-6">
               <label >Cap</label>
-              <input type="text" class="form-control" id="" placeholder="Cap">
+              <input type="text" class="form-control" ng-model="vm.zip" id="" placeholder="Cap" required>
             </fieldset>
 
             <fieldset class="form-group col-md-12">
               <label >Paese</label>
-              <input type="text" class="form-control" id="" placeholder="Nation">
+              <input type="text" class="form-control" ng-model="vm.country" id="" placeholder="Nation" required>
             </fieldset>
           </fieldset>
 
 
           <fieldset class="form-group col-md-12">
             <label>Categoria</label>
-            <select class="c-select">
+            <select class="c-select" ng-model="vm.category" required>
               <option value="1">Sport</option>
               <option value="2">Meeting</option>
               <option value="3">Workshop</option>
@@ -66,7 +66,7 @@
 
           <div class="col-md-12 clearfix">
             <button class="btn btn-primary" ng-click="toggleCustom()">Invita</button>
-            <button type="submit" ng-click="" class="btn btn-primary">Crea evento</button>
+            <button type="button" ng-disabled="myForm.$invalid" ng-click="createEvent(vm)" class="btn btn-primary">Crea evento</button>
           </div>
 
         </form>
