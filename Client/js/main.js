@@ -41,7 +41,9 @@ app.run(function($rootScope, NgMap) {
 
 app.controller('GroupsCtrl', function (/* $scope, $location, $http */) {
   console.log("Blog Controller reporting for duty.");
+  $scope.lol = "asdasdasdasd";
 });
+
 
 app.controller('GroupCtrl', function ($scope) {
   $scope.edit = false;
@@ -102,7 +104,7 @@ app.controller('EventCtrl', function($scope, $http){
           dataObj.lat = data.results[0].geometry.location.lat;
           dataObj.lng = data.results[0].geometry.location.lng;
           // faccio la post
-          var createEventLinkToPost = "file.php";
+          var createEventLinkToPost = "http://localhost:8888/Mergify/Server/handler.php";
           $http.post(createEventLinkToPost, dataObj).success(function(data, status, headers, config) {
             console.info(data);
             $scope.data = data;
