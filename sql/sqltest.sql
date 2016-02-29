@@ -28,12 +28,12 @@ insert into places(lat, lng, name, address, city, nation)  values(44.48407585304
 insert into places(lat, lng, name, address, city, nation)  values(44.48407583333333, 11.238670341111111, "Torre di Pisa", "Piazza dei miracoli", "Pisa", "Italy");
 insert into places(lat, lng, name, address, city, nation)  values(24.48407585304587, 41.238670349122094, "Palazzo re Enzo", "Piazza del Nettuno 1", "Bologna", "Italy");
 
-insert into events(name, place, creation, start, stop, creator, description) values("Saluto alla Madonna", 1, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Bellissmo Evento");
-insert into events(name, place, creation, start, stop, creator, description) values("Salto dalla torre", 2, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Bello da morire");
-insert into events(name, place, creation, start, stop, creator, description) values("Rob0t Festival", 3, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Pompo nelle casse");
-insert into events(name, place, creation, start, stop, creator, description) values("Evento Lontano Lonatano", 3, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Non so");
-insert into events(name, place, creation, start, stop, creator, description) values("Evento Vicino Vicino", 1, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Speriamo vada");
-insert into events(name, place, creation, start, stop, creator, description) values("Tutti al mare", 2, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Fa un po' freddo");
+insert into events(name, place, creationdate, startdate, stopdate, creator, description) values("Saluto alla Madonna", 1, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Bellissmo Evento");
+insert into events(name, place, creationdate, startdate, stopdate, creator, description) values("Salto dalla torre", 2, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Bello da morire");
+insert into events(name, place, creationdate, startdate, stopdate, creator, description) values("Rob0t Festival", 3, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Pompo nelle casse");
+insert into events(name, place, creationdate, startdate, stopdate, creator, description) values("Evento Lontano Lonatano", 3, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Non so");
+insert into events(name, place, creationdate, startdate, stopdate, creator, description) values("Evento Vicino Vicino", 1, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Speriamo vada");
+insert into events(name, place, creationdate, startdate, stopdate, creator, description) values("Tutti al mare", 2, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 1, "Fa un po' freddo");
 
 /* Test insertUser() */
 call insertUser("Riccardo", "Sibani", "1994-09-24", 2, "....", "hashfunction(password+salt)", "riccardo@mail.com", @id);

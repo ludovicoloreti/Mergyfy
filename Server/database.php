@@ -3,6 +3,13 @@
 require_once "config/database.config.php";
 
 class Database extends PDO{
+
+    private $host ="mysql:host=localhost;dbname=merge";
+    private $user = "root";
+    private $pass = "root";
+    private $dbHandle = null;
+    private $results = null;
+
     private $conn = null;
     private $stmt = null;
     //Make connection
@@ -14,7 +21,7 @@ class Database extends PDO{
 
     private function getConnection(){
 
-        $this->conn = new PDO(DB_HOST, DB_USER, DB_PASSWORD);
+        $this->conn = new PDO($this->host, $this->user, $this->pass);
 
         try{
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -25,6 +32,27 @@ class Database extends PDO{
         return $this->conn;
     }
 
+
+    public function stndQuery($query, $parameters){
+        $this->stmt = $this->conn->prepare($query);
+
+        foreach($parameters as $key=>&$value){
+            $this->stmt->bindParam($key+1, $value);
+        }
+
+        if($this->stmt){
+            try {
+                $this->stmt->execute();
+            }catch(error $e){
+
+                echo $e;
+            }
+            return true;
+        } else{
+            return $this->conn->getErrors();
+        }
+    }
+
     /*
      *
      */
@@ -32,20 +60,27 @@ class Database extends PDO{
         $sql = "call " . $functionName."( ";
         for( $i = 0; $i < count($parameters); $i++ ) {
             if($i < count($parameters)-1){
-                $sql .= "?";
-            }else {
                 $sql .= "?,";
+            }else {
+                $sql .= "?";
             }
         }
         $sql .= " )";
+
         $this->stmt = $this->conn->prepare( $sql );
 
-        for( $i = 0; $i < count($parameters); $i++ ) {
-            $this->stmt->bindParam($i, $parameters[$i]);
+
+        foreach ($parameters as $key => &$value) {  //pass $value as a reference to the array item
+            $this->stmt->bindParam($key+1, $value);  // bind the variable to the statement
         }
 
         if($this->stmt){
-            $this->stmt->execute();
+            try{
+                $this->stmt->execute();
+            } catch(Error $e){
+                echo $e;
+            }
+
             return true;
         } else {
             return $this->conn->getErrors();
@@ -53,7 +88,7 @@ class Database extends PDO{
     }
 
     public function getResult() {
-        $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
 
     }
 

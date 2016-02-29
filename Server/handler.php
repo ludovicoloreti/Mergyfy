@@ -18,15 +18,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);
 }
 
-$dataJson = file_get_contents("php://input");
-$action = $_REQUEST['action'];
-$model = $_REQUEST['model'];
+include_once "database.php";
+include_once "Functions/jsonUtilities.php";
+foreach (glob("Objects/*.php") as $filename)
+{
+    include_once $filename;
+}
 
-if ((isset($dataJson)) || (!empty($dataJson)) || (!is_null($dataJson))) {
+if(isset($test) && $test){
+    //prepare the parameters in advance
+    echo "---- DEV MODE ----<br><br><br><br>";
+    $action = $action;
+    $model = $model;
+    $data = $data;
+} else{
+    $dataJson = file_get_contents("php://input");
+    $action = $_REQUEST['action'];
+    $model = $_REQUEST['model'];
+}
+
+
+if ((isset($data)) || (!empty($data)) || (!is_null($data))) {
 	// POST
-	$data = json_decode($dataJson);
-	$mdl = new $model();
-	$mdl->$action($data);
+    $post = new Server();
+    $post->execute($model, $action, $data);
 } else {
 	// GET
 	$mdl = new $model();
