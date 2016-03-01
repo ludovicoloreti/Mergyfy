@@ -1,0 +1,71 @@
+List of funcitons
+
+    - login( user_mail, user_password ) > User or -1
+
+/* SEARCH */
+    - (search) userNearEvents( user_id, distance ) > List of events
+    - (search) suggestedEvents( lat, lng ) > List of events
+    - (search) suggestedPlaces( lat, lng ) > List of places
+    - (search) searchUser( text ) > List of users (id, name, lastname)
+    - (search) searchGroup( text ) > List of Groups
+    - (search) searchEvent( text ) > List of Events
+
+/* SELECT */
+    - getUser( user_id ) > User or -1
+    - getEvents() > List of all events
+    - getEvent( event_id ) > Event or -1
+    - getEventPartecipants( event_id ) > List of Partecipants
+    - getNextEvents( userid )
+
+    - getUserDocs( user_id ) > List of docs or -1
+    - getUserDoc() >
+    - getDocContent( doc_id ) > List of notes and nodes
+    * getNote(note_id)
+
+    - getGroupMembers( group_id ) > List of Members
+    * getGroupInfo( group_id ) > Group
+
+    * getCategories()
+    * getCategory(cat_id)
+    * getPlace(place_id)
+
+
+/* INSERT */
+    - createGroup( name, imagelink, description, idAdmin )
+    - createUser ( name, lastname, born, type, profilepic, lat, lng, password, mail )
+    * createDocument( userid, name, eventid, public )
+    * addMember( iduser, idgroup )
+    * addPartecipant( eventid, userid )
+    * addEvent( name, placeid, start, stop, creatorid, typeid, description, categoryid )
+    * addPlace( lat, lng, name, address, cap, city, nation ) > id
+    * addEventAndPlace( name, start, stop, creatorid, typeid, description, categoryid, lat,lng,name,address,cap, city, nation );
+    * addCategory( id, name, description, colour )
+    * addNote( id, type, content, description )
+    * createNode( noteID, docID, header, subheader )
+    * addGroupToEvent( groupID, eventID )
+
+/* UPDATE */
+    - updatePosition( user_id, lat, lng )
+    * updateUser( userid, name, lastname, born, type, profilepic, lat, lng, password, mail )
+    * updateGroup( groupid, name, imagelink, description, idAdmin )
+    * updateEvent( eventid, name, placeid, start, stop, creatorid, typeid, description, categoryid )
+    * updateCategory( categoryid, name, description, colour )
+    * updatePartecipation( eventid, userid, status )
+    * updateDoc( id, name, public )
+    * updateNote( id, type, content, description )
+
+/* DELETE */
+    - deleteUser( userID ) ( setta il delated a true )
+    - deleteNode( NoteID, DocumentID ) (se non ci sono più nodi viene cancellato definitivamente anche dalla tabella nodi)
+    - deleteEvent( eventID )
+    - deleteGroup( userID, groupID )
+    - deleteDocument( userID, docID )
+    - deleteMember( memberID, groupID, userID)
+
+
+
+
+dove si accetta gruppo?
+dove si accetta invito ad evento?
+
+timeout(3000 ms, pesca note e mettile in cima);
