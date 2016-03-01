@@ -23,12 +23,9 @@
 
     4 - Cascade doesn't activate triggers.
 
-<<<<<<< HEAD
     5 - Enter the DB: /Applications/MAMP/Library/bin/mysql --user= <user> --password= <user-password>;
-=======
     5 - Enter the DB: /Applications/MAMP/Library/bin/mysql --user=user --password=user-password;
     /Applications/MAMP/Library/bin/mysql --user=root --password=root;
->>>>>>> c2344aa5bf96e3fb908cb2bcde1c435816397416
 */
 
 /* Database cretion */
@@ -603,7 +600,6 @@ BEGIN
     WHERE id = idI;
 END |
 DELIMITER ;
-<<<<<<< HEAD
 
 /******** searchUser *********/
 DELIMITER |
@@ -651,6 +647,3 @@ CREATE PROCEDURE addGroupToEvent(IN groupID INT, IN eventID INT)
 
   END |
 DELIMITER ;
-
-=======
->>>>>>> c2344aa5bf96e3fb908cb2bcde1c435816397416
