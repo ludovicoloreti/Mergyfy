@@ -22,13 +22,13 @@
         <div class="pill-content" ng-show="eventsNavbar">
           <div class="pill-pane active" id="near">
 
-            <div class="media clearfix doc-thumb-container">
+            <div class="media clearfix doc-thumb-container" ng-repeat="eventoVicino in eventiVicini">
               <div class="pull-left media-top">
                 <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
               </div>
-              <div class="">
-                <h4 class="">Evento Vicino</h4>
-                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+              <div class="" ng-click="gotoEvent()">
+                <h4 class="">eventoVicino.name</h4>
+                <p class="small">eventoVicino.description</p>
               </div>
             </div>
 
@@ -39,63 +39,13 @@
         <div class="pill-content" ng-hide="eventsNavbar" style="overflow: scroll; height: 90%;">
           <div class="pill-pane active" id="joined">
 
-            <div class="media clearfix doc-thumb-container">
-              <div class="pull-left media-top">
-                  <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-              </div>
-              <div class="">
-                <h4 class="">Evento Partecipo</h4>
-                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-              </div>
-            </div>
-
-            <div class="media clearfix doc-thumb-container">
+            <div class="media clearfix doc-thumb-container" ng-repeat="eventoPartecipo in eventiPartecipo">
               <div class="pull-left media-top">
                 <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
               </div>
-              <div class="">
-                <h4 class="">Evento Partecipo</h4>
-                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-              </div>
-            </div>
-
-            <div class="media clearfix doc-thumb-container">
-              <div class="pull-left media-top">
-                <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-              </div>
-              <div class="">
-                <h4 class="">Evento Partecipo</h4>
-                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-              </div>
-            </div>
-
-            <div class="media clearfix doc-thumb-container">
-              <div class="pull-left media-top">
-                <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-              </div>
-              <div class="">
-                <h4 class="">Evento Partecipo</h4>
-                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-              </div>
-            </div>
-
-            <div class="media clearfix doc-thumb-container">
-              <div class="pull-left media-top">
-                <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-              </div>
-              <div class="">
-                <h4 class="">Evento Partecipo</h4>
-                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-              </div>
-            </div>
-
-            <div class="media clearfix doc-thumb-container">
-              <div class="pull-left media-top">
-                <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-              </div>
-              <div class="">
-                <h4 class="">Evento Partecipo</h4>
-                <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+              <div class="" ng-click="gotoEvent()">
+                <h4 class="">eventoPartecipo.name</h4>
+                <p class="small">eventoPartecipo.description</p>
               </div>
             </div>
 
@@ -119,27 +69,24 @@
         <!--<div id="map-canvas" class="col-md-12"></div>-->
         <div map-lazy-load="https://maps.google.com/maps/api/js">
           <ng-map default-style="true" center="44.494907, 11.326638" zoom="13">
-            <marker position="44.501482, 11.330802" title="Hello World!"></marker>
-            <marker position="44.494907, 11.326638" title="Hello World!"></marker>
+            <marker position="44.501482, 11.330802" title="Hello World!" on-click="gotoEvent()"></marker>
+            <marker position="44.494907, 11.326638" title="Hello World!" on-click="gotoEvent()"></marker>
             <!--<marker position="44.4972646,11.3471621" title="Hello World!"></marker>-->
             <marker id="foo" position="44.4972646,11.3471621"
                     on-click="map.showInfoWindow(event, 'bar')">
             </marker>
-            <info-window id="bar" max-width="300">
+             <info-window id="bar" max-width="300">
               <div ng-non-bindable>
                 <div class="col-md-12">
-                  <h2>Titolo Evento</h2>
+                  <h2>{{evento.name}}</h2>
                   <p><strong>Category: </strong>
-                    <span class="label label-primary tags">sport</span>
-                    <span class="label label-success tags">meeting</span>
-                    <span class="label label-warning tags">workshop</span>
+                    <span class="label label-primary tags">{{evento.category}}</span>
                   </p>
-                  <p><i>Creator: Mario Rossi 24/03/2016</i></p>
+                  <p><i>Creator: {{evento.creator}}, {{evento.creationdate}}</i></p>
                   <h3>Description</h3>
-                  <p>[[ Description This is a great place to introduce your company or project and describe what you do. This about page
-                    features general company information, employee bios, and other helpful elements. ]]</p>
-                  <span><b>Start:</b> 00/00/2016</span>
-                  <span><b>Stop:</b> 00/00/2016</span>
+                  <p>{{evento.description}}</p>
+                  <span><b>Start:</b> {{evento.startdate}}</span>
+                  <span><b>Stop:</b> {{evento.stopdate}}</span>
                 </div>
                 <div class="col-md-12">
                   <h3>Partecipanti</h3>
@@ -159,11 +106,12 @@
 
                 <div class="row-fluid">
                   <div class="col-md-12">
-                    <div class="col-md-5 pull-right">
-                      <button class="btn">View event <span class="glyphicon glyphicon-share"></span></button>
+                    <div class="col-md-12">
+                      <br>
+                      <button ng-click="gotoEvent()" class="btn">View event <span class="glyphicon glyphicon-share"></span></button>
                     </div>
 
-                  </div><!--/col-->
+                  </div>
                 </div>
 
               </div>

@@ -27,7 +27,7 @@ foreach (glob("Objects/*.php") as $filename)
 
 if(isset($test) && $test){
     //prepare the parameters in advance
-    echo "---- DEV MODE ----<br><br><br><br>";
+    // echo "---- DEV MODE ----<br><br><br><br>";
     $action = $action;
     $model = $model;
     $data = $data;

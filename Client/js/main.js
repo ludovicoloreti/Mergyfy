@@ -77,28 +77,25 @@ app.controller('EventCtrl', function($scope, $http,$window){
 
   /* invita gruppi */
   var linkPerLaGet = "http://localhost:8888/Mergify/Server/handler.php?userId="+window.localStorage['id'];
-  // DECOMMENTARE
-  // $http.get(linkPerLaGet).success(function(r) {
-  //   $scope.gruppi = r;
-  // }).error(function(err) {
-  //   console.log(err);
-  // })
-
-  $scope.gruppi = [
-    {
-      nome: "boh",
-      id: 1
-    },
-    {
-      nome: "boh2asdas",
-      id: 2
-    },
-    {
-      nome: "bohsadaif",
-      id: 3
-    }
-  ];
-
+  $http.get(linkPerLaGet).success(function(r) {
+    $scope.gruppi = r;
+  }).error(function(err) {
+    console.log(err);
+    $scope.gruppi = [
+      {
+        nome: "Errore",
+        id: 1
+      },
+      {
+        nome: "Nella",
+        id: 2
+      },
+      {
+        nome: "Get",
+        id: 3
+      }
+    ];
+  })
 
 
 
@@ -139,18 +136,13 @@ app.controller('EventCtrl', function($scope, $http,$window){
           // GEOCODING end
           dataObj.lat = data.results[0].geometry.location.lat;
           dataObj.lng = data.results[0].geometry.location.lng;
-          var objToPost = {
-            model: "event",
-            action: "addEvvent",
-            param: dataObj
-          }
           // faccio la post
-          var createEventLinkToPost = "http://localhost:8888/Mergify/Server/handler.php";
-          $http.post(createEventLinkToPost, objToPost).success(function(data, status, headers, config) {
-            console.info(data);
+          var createEventLinkToPost = "http://localhost:8888/Mergify/Server/handler.php?action=addEvent&model=event";
+          $http.post(createEventLinkToPost, dataObj).success(function(data, status, headers, config) {
+            console.info(JSON.stringify(data));
             $scope.data = data;
           }).error(function(data, status, headers, config) {
-            console.log(data, status, headers, config);
+            console.log(data, config);
             alert("Errore nell'invio della POST: " + JSON.stringify({data: data}));
           });
         }).error(function (data) {
@@ -179,12 +171,32 @@ app.controller('DocCtrl', function($scope){
   $scope.text= "";
 });
 
-app.controller('EventsCtrl', function ($scope, $compile, $window, NgMap) {
+app.controller('EventsCtrl', function ($scope, $compile, $window,$http, NgMap) {
   $scope.eventsNavbar = true;
   $scope.changeEvents = function( bool ) {
     $scope.eventsNavbar = bool;
   };
 
+// $http.get(urlToNearEvents).success(function(r) {
+//   console.log(r);
+//   $scope.nearEvents
+// }).error(function(err) {
+//   console.log(err);
+// })
+
+  $scope.gotoEvent = function() {
+    window.location.href="#/event";
+  }
+
+
+
+
+
+
+
+
+
+  // vffanculo
 
   NgMap.getMap().then(function(map) {
     console.log(map.getCenter());
