@@ -34,6 +34,7 @@ app.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 app.run(function($rootScope, NgMap) {
+  window.localStorage['id'] = 3;
   NgMap.getMap().then(function(map) {
     $rootScope.map = map;
   });
@@ -60,10 +61,10 @@ app.controller('AddGroupCtrl', function (/* $scope, $location, $http */) {
 
 // nuovo controller
 app.controller('HomeCtrl', function ($scope) {
-  $scope.clock = Date.now();
+  $scope.clock = new Date();
 });
 
-app.controller('EventCtrl', function($scope, $http){
+app.controller('EventCtrl', function($scope, $http,$window){
   console.log("ciao");
   $scope.custom = true;
   $scope.toggleCustom = function() {
@@ -72,6 +73,34 @@ app.controller('EventCtrl', function($scope, $http){
 
   // https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyCmhQc5fBRF5OUDFAawn9L0ZBolUlSw_8k
   // bisogna usare questo circa
+
+
+  /* invita gruppi */
+  var linkPerLaGet = "http://localhost:8888/Mergify/Server/handler.php?userId="+window.localStorage['id'];
+  // DECOMMENTARE
+  // $http.get(linkPerLaGet).success(function(r) {
+  //   $scope.gruppi = r;
+  // }).error(function(err) {
+  //   console.log(err);
+  // })
+
+  $scope.gruppi = [
+    {
+      nome: "boh",
+      id: 1
+    },
+    {
+      nome: "boh2asdas",
+      id: 2
+    },
+    {
+      nome: "bohsadaif",
+      id: 3
+    }
+  ];
+
+
+
 
 
 
@@ -85,7 +114,15 @@ app.controller('EventCtrl', function($scope, $http){
   //   console.log(data);
   // })
   // fine verifiche da cancellareeeeeeee
-
+  // $scope.vm = {};
+  // var adesso = new Date();
+  // year = adesso.getFullYear();
+  // month = adesso.getMonth();
+  // monthh = month+1;
+  // day = adesso.getDate();
+  // console.log(year, month, monthh, day);
+  // $scope.vm.dataStart = new Date(year, month, day);
+  // $scope.vm.dataEnd = new Date(year, monthh, day);
   $scope.createEvent = function(dataObj) {
     console.log("createEvent")
     if (!angular.isUndefined(dataObj)) {
@@ -93,7 +130,7 @@ app.controller('EventCtrl', function($scope, $http){
       angular.forEach(dataObj, function(v, k) {
         count++;
       });
-      if (count===8) {
+      if ((count===10)||(count===11)||(count===13)) {
         console.log(JSON.stringify(dataObj))
         // GEOCODING start
         var urlToGmaps = "http://maps.google.com/maps/api/geocode/json?address="+dataObj.address+"+"+dataObj.city+"&sensor=false";
@@ -123,10 +160,10 @@ app.controller('EventCtrl', function($scope, $http){
 
       }
       else {
-        console.err("Errore conteggio dati","Non hai compilato tutti i campi!")
+        console.log("Errore conteggio dati","Non hai compilato tutti i campi!")
       }
     } else {
-      console.err("Errore nell'invio del form","Il form risulta essere vuoto.")
+      console.log("Errore nell'invio del form","Il form risulta essere vuoto.")
     }
   }
 
@@ -213,4 +250,17 @@ app.controller('PageCtrl', function (/* $scope, $location, $http */) {
   $('.tooltip-social').tooltip({
     selector: "a[data-toggle=tooltip]"
   })
+});
+
+
+app.directive('stringToTimestamp', function() {
+  return {
+    require: 'ngModel',
+    link: function(scope, ele, attr, ngModel) {
+      // view to model
+      ngModel.$parsers.push(function(value) {
+        return Date.parse(value);
+      });
+    }
+  }
 });
