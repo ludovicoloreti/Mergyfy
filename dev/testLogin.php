@@ -10,11 +10,10 @@ $data = "{
 		\"mail\": \"mail@mail.com\",
 		\"password\": \"HASHEDPASS\",
 		\"lat\": \"44.12345\",
-        \"lng\": \"11.98765\"
+		\"lng\": \"11.98765\"
 	}
 }";
 
 $usr = new User();
 
 $usr->login($data);
-

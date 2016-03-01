@@ -1,47 +1,49 @@
 /**
- * AngularJS Tutorial 1
- * @author Nick Kaye <nick.c.kaye@gmail.com>
- */
+* AngularJS Tutorial 1
+* @author Nick Kaye <nick.c.kaye@gmail.com>
+*/
 
 /**
- * Main AngularJS Web Application
- */
+* Main AngularJS Web Application
+*/
 var app = angular.module('tutorialWebApp', [
   'ngRoute', 'ngMap'
 ]);
 
 /**
- * Configure the Routes
- */
+* Configure the Routes
+*/
 app.config(['$routeProvider', function ($routeProvider) {
   $routeProvider
   // Home
-    .when("/", {templateUrl: "partials/home.html", controller: "HomeCtrl"})
-    // Pages
-    .when("/events", {templateUrl: "partials/events.html",controller: "EventsCtrl"})
-    .when("/doc", {templateUrl: "partials/document.html", controller: "DocCtrl"})
-    .when("/profile", {templateUrl: "partials/profile.html", controller: "PageCtrl"})
-    .when("/groups", {templateUrl: "partials/groups.html", controller: "GroupsCtrl"})
-    .when("/addevent", {templateUrl: "partials/addevent.html", controller: "EventCtrl"})
-    .when("/event", {templateUrl: "partials/event.html", controller: "EventCtrl"})
-    .when("/group", {templateUrl: "partials/group.html", controller: "GroupCtrl"})
-    .when("/addgroup", {templateUrl: "partials/addgroup.html", controller: "AddGroupCtrl"})
-    // Blog
-    .when("/blog", {templateUrl: "partials/blog.html", controller: "BlogCtrl"})
-    .when("/blog/post", {templateUrl: "partials/blog_item.html", controller: "BlogCtrl"})
-    // else 404
-    .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
+  .when("/", {templateUrl: "partials/home.html", controller: "HomeCtrl"})
+  // Pages
+  .when("/events", {templateUrl: "partials/events.html",controller: "EventsCtrl"})
+  .when("/doc", {templateUrl: "partials/document.html", controller: "DocCtrl"})
+  .when("/profile", {templateUrl: "partials/profile.html", controller: "PageCtrl"})
+  .when("/groups", {templateUrl: "partials/groups.html", controller: "GroupsCtrl"})
+  .when("/addevent", {templateUrl: "partials/addevent.html", controller: "EventCtrl"})
+  .when("/event", {templateUrl: "partials/event.html", controller: "EventCtrl"})
+  .when("/group", {templateUrl: "partials/group.html", controller: "GroupCtrl"})
+  .when("/addgroup", {templateUrl: "partials/addgroup.html", controller: "AddGroupCtrl"})
+  // Blog
+  .when("/blog", {templateUrl: "partials/blog.html", controller: "BlogCtrl"})
+  .when("/blog/post", {templateUrl: "partials/blog_item.html", controller: "BlogCtrl"})
+  // else 404
+  .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
 }]);
 
 app.run(function($rootScope, NgMap) {
+  window.localStorage['id'] = 3;
   NgMap.getMap().then(function(map) {
     $rootScope.map = map;
   });
 });
 
-app.controller('GroupsCtrl', function (/* $scope, $location, $http */) {
-  console.log("Blog Controller reporting for duty.");
+app.controller('GroupsCtrl', function ($scope, $location, $http) {
+  $scope.lol = "lololol";
 });
+
 
 app.controller('GroupCtrl', function ($scope) {
   $scope.edit = false;
@@ -59,10 +61,10 @@ app.controller('AddGroupCtrl', function (/* $scope, $location, $http */) {
 
 // nuovo controller
 app.controller('HomeCtrl', function ($scope) {
-    $scope.clock = Date.now();
+  $scope.clock = new Date();
 });
 
-app.controller('EventCtrl', function($scope){
+app.controller('EventCtrl', function($scope, $http,$window){
   console.log("ciao");
   $scope.custom = true;
   $scope.toggleCustom = function() {
@@ -71,6 +73,99 @@ app.controller('EventCtrl', function($scope){
 
   // https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyCmhQc5fBRF5OUDFAawn9L0ZBolUlSw_8k
   // bisogna usare questo circa
+
+
+  /* invita gruppi */
+  var linkPerLaGet = "http://localhost:8888/Mergify/Server/handler.php?userId="+window.localStorage['id'];
+  // DECOMMENTARE
+  // $http.get(linkPerLaGet).success(function(r) {
+  //   $scope.gruppi = r;
+  // }).error(function(err) {
+  //   console.log(err);
+  // })
+
+  $scope.gruppi = [
+    {
+      nome: "boh",
+      id: 1
+    },
+    {
+      nome: "boh2asdas",
+      id: 2
+    },
+    {
+      nome: "bohsadaif",
+      id: 3
+    }
+  ];
+
+
+
+
+
+
+  /*
+  POST createEvent
+  */
+
+  // per verifiche by ludo -> da cancellare!!!
+  // var createEventLinkToPost = "file.json";
+  // $http.get(createEventLinkToPost).success(function(data) {
+  //   console.log(data);
+  // })
+  // fine verifiche da cancellareeeeeeee
+  // $scope.vm = {};
+  // var adesso = new Date();
+  // year = adesso.getFullYear();
+  // month = adesso.getMonth();
+  // monthh = month+1;
+  // day = adesso.getDate();
+  // console.log(year, month, monthh, day);
+  // $scope.vm.dataStart = new Date(year, month, day);
+  // $scope.vm.dataEnd = new Date(year, monthh, day);
+  $scope.createEvent = function(dataObj) {
+    console.log("createEvent")
+    if (!angular.isUndefined(dataObj)) {
+      count = 0;
+      angular.forEach(dataObj, function(v, k) {
+        count++;
+      });
+      if ((count===10)||(count===11)||(count===13)) {
+        console.log(JSON.stringify(dataObj))
+        // GEOCODING start
+        var urlToGmaps = "http://maps.google.com/maps/api/geocode/json?address="+dataObj.address+"+"+dataObj.city+"&sensor=false";
+        $http.get(urlToGmaps).success(function (data) {
+          console.log(data.results[0].geometry.location);
+          // GEOCODING end
+          dataObj.lat = data.results[0].geometry.location.lat;
+          dataObj.lng = data.results[0].geometry.location.lng;
+          var objToPost = {
+            model: "event",
+            action: "addEvvent",
+            param: dataObj
+          }
+          // faccio la post
+          var createEventLinkToPost = "http://localhost:8888/Mergify/Server/handler.php";
+          $http.post(createEventLinkToPost, objToPost).success(function(data, status, headers, config) {
+            console.info(data);
+            $scope.data = data;
+          }).error(function(data, status, headers, config) {
+            console.log(data, status, headers, config);
+            alert("Errore nell'invio della POST: " + JSON.stringify({data: data}));
+          });
+        }).error(function (data) {
+          alert("Errore nell'invio della POST: " + JSON.stringify({data: data}));
+        });
+
+
+      }
+      else {
+        console.log("Errore conteggio dati","Non hai compilato tutti i campi!")
+      }
+    } else {
+      console.log("Errore nell'invio del form","Il form risulta essere vuoto.")
+    }
+  }
 
 });
 
@@ -90,6 +185,7 @@ app.controller('EventsCtrl', function ($scope, $compile, $window, NgMap) {
     $scope.eventsNavbar = bool;
   };
 
+
   NgMap.getMap().then(function(map) {
     console.log(map.getCenter());
     console.log('markers', map.markers);
@@ -101,16 +197,16 @@ app.controller('EventsCtrl', function ($scope, $compile, $window, NgMap) {
   var map;
   $window.init = function() {
     var latitude = 44.488851,
-      longitude = 11.297554,
-      center = new google.maps.LatLng(latitude,longitude),
-      mapOptions = {
-        center: center,
-        zoom: 14,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        scrollwheel: false
-      };
+    longitude = 11.297554,
+    center = new google.maps.LatLng(latitude,longitude),
+    mapOptions = {
+      center: center,
+      zoom: 14,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      scrollwheel: false
+    };
 
-    map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+    var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
     setMarkers(center, map);
   }
@@ -127,7 +223,7 @@ app.controller('EventsCtrl', function ($scope, $compile, $window, NgMap) {
   }
 
   function resize() {
-    var center = map.getCenter();
+    var center = this.map.getCenter();
     google.maps.event.trigger(map, "resize");
     map.setCenter(center);
   }
@@ -140,8 +236,8 @@ app.controller('EventsCtrl', function ($scope, $compile, $window, NgMap) {
 // fine nuovo controller
 
 /**
- * Controls all other Pages
- */
+* Controls all other Pages
+*/
 app.controller('PageCtrl', function (/* $scope, $location, $http */) {
   console.log("Page Controller reporting for duty.");
 
@@ -154,4 +250,17 @@ app.controller('PageCtrl', function (/* $scope, $location, $http */) {
   $('.tooltip-social').tooltip({
     selector: "a[data-toggle=tooltip]"
   })
+});
+
+
+app.directive('stringToTimestamp', function() {
+  return {
+    require: 'ngModel',
+    link: function(scope, ele, attr, ngModel) {
+      // view to model
+      ngModel.$parsers.push(function(value) {
+        return Date.parse(value);
+      });
+    }
+  }
 });

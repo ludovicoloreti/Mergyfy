@@ -24,6 +24,11 @@
     4 - Cascade doesn't activate triggers.
 
     5 - Enter the DB: /Applications/MAMP/Library/bin/mysql --user= <user> --password= <user-password>;
+<<<<<<< HEAD
+=======
+    5 - Enter the DB: /Applications/MAMP/Library/bin/mysql --user=user --password=user-password;
+    /Applications/MAMP/Library/bin/mysql --user=root --password=root;
+>>>>>>> origin/ludovico
 */
 
 /* Database cretion */
@@ -645,4 +650,7 @@ CREATE PROCEDURE addGroupToEvent(IN groupID INT, IN eventID INT)
 
   END |
 DELIMITER ;
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/ludovico
