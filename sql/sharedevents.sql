@@ -244,6 +244,22 @@ DELIMITER ;
 
 
 /******************** STORED PROCEDURES **********************/
+
+/* login( usermail, userpassword, lat, lng )
+    Authenticate the user and set his location.
+*/
+DELIMITER |
+CREATE PROCEDURE login( IN usermail VARCHAR(150), IN userpassword VARCHAR(300), IN lat DECIMAL(11,8), IN lng DECIMAL(11,8))
+BEGIN
+  DECLARE uid INT default -1;
+  SELECT id INTO uid FROM users WHERE (mail = usermail) AND (password = userpassword) LIMIT 1;
+  IF (uid <> -1) THEN
+    call updatePosition(uid, lat, lng);
+    call getUser(uid);
+  END IF;
+END |
+DELIMITER ;
+
 /* insertUser()
     Insert a User TODO
 */
@@ -271,27 +287,68 @@ BEGIN
 END |
 DELIMITER ;
 
-/* userNearEvents()
+/* userNearEvents( userid, latitude, longitude, dist )
     Select a number of places filtered by a given distance (in km)
 */
 DELIMITER |
-CREATE PROCEDURE userNearEvents(IN userid int, IN dist int)
+CREATE PROCEDURE userNearEvents(IN userid INT, IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8), IN dist INT )
 BEGIN
   DECLARE userLng DOUBLE;
   DECLARE userLat DOUBLE;
-  -- Get actual user's lat and lng given the userID
-  SELECT actual_lng, actual_lat INTO userLng, userLat FROM users WHERE (id = userid) LIMIT 1;
-  -- Find Events
-  SELECT ev.id as eventId, ev.name as eventName, ev.creationdate as dateCreation, ev.startdate as dateStart, ev.stopdate as dateStop, ev.description as eventDesc,
-         u.id as creatorId, u.name as creatorName, u.lastname as creatorLastname,
-         pl.id as placeId, pl.name as placeName, pl.address as placeAddress, pl.lat as placeLat, pl.lng as placeLng,
-         ( 3959 * acos( cos( radians(userLat) ) * cos( radians( pl.lat ) ) * cos( radians( pl.lng ) - radians(userLng) ) + sin( radians(userLat) ) * sin( radians( pl.lat ) ) ) ) AS distance
-  FROM events as ev, places as pl, users as u
-  WHERE (ev.place = pl.id) AND (ev.creator = u.id)
-  HAVING (distance < dist)
-  ORDER BY distance;
+  SET userLng = longitude;
+  SET userLat = latitude;
+  IF ((userLat = 0) OR (userLng = 0)) THEN
+    -- Get actual user's lat and lng given the userID
+    SELECT actual_lng, actual_lat INTO userLng, userLat FROM users WHERE (id = userid) LIMIT 1;
+  ELSE
+    -- Find Events
+    SELECT ev.id as eventId, ev.name as eventName, ev.creationdate as dateCreation, ev.startdate as dateStart, ev.stopdate as dateStop, ev.description as eventDesc,
+           u.id as creatorId, u.name as creatorName, u.lastname as creatorLastname,
+           pl.id as placeId, pl.name as placeName, pl.address as placeAddress, pl.lat as placeLat, pl.lng as placeLng,
+           ( 3959 * acos( cos( radians(userLat) ) * cos( radians( pl.lat ) ) * cos( radians( pl.lng ) - radians(userLng) ) + sin( radians(userLat) ) * sin( radians( pl.lat ) ) ) ) AS distance
+    FROM events as ev, places as pl, users as u
+    WHERE (ev.place = pl.id) AND (ev.creator = u.id)
+    HAVING (distance < dist)
+    ORDER BY distance;
+  END IF;
 
 END |
+DELIMITER ;
+
+/* getUserEvents( userid, which )
+    Select events in which the user has been invited to. We can decide wheter
+    to get all the set of events or only the next/past ones.
+*/
+DELIMITER |
+CREATE PROCEDURE getUserEvents( IN userid INT, IN which ENUM('next','past','all') )
+BEGIN
+  CASE which
+    WHEN 'next' THEN
+      SELECT * FROM partecipations AS part, events AS ev, place AS pl
+        WHERE ( (part.event_id = ev.id) AND (part.user_id = userid) AND (ev.place = pl.id) AND (ev.startdate > current_timestamp()) );
+    WHEN 'past' THEN
+      SELECT * FROM partecipations AS part, events AS ev, place AS pl
+        WHERE ( (part.event_id = ev.id) AND (part.user_id = userid) AND (ev.place = pl.id) AND (ev.stopdate < current_timestamp()) );
+    ELSE
+      SELECT * FROM partecipations AS part, events AS ev, place AS pl
+        WHERE ( (part.event_id = ev.id) AND (part.user_id = userid) AND (ev.place = pl.id) );
+  END CASE;
+END;
+DELIMITER ;
+
+/* searchEvents( userid, text )
+    Search for all public events or private ,if the user has been invited to.
+*/
+DELIMITER |
+CREATE PROCEDURE searchEvents(IN userid INT, IN chars VARCHAR(200))
+  BEGIN
+    -- search (1) public events (2) partecipation
+    (SELECT ev.id, ev.name FROM events AS ev, places AS pl
+      WHERE ( (ev.place = pl.id) AND (ev.type="public") AND (ev.name LIKE CONCAT('%', chars , '%')) ) LIMIT 6)
+    UNION
+    (SELECT ev.id, ev.name FROM events AS ev, places AS pl, partecipations AS part
+      WHERE ( (ev.place = pl.id) AND (part.event_id = ev.id) AND (part.user_id = userid) AND (ev.name LIKE CONCAT('%', chars , '%')) ) LIMIT 6);
+  END |
 DELIMITER ;
 
 /* suggestedEvents() */
@@ -320,18 +377,7 @@ BEGIN
 END |
 DELIMITER ;
 
-/* login() */
-DELIMITER |
-CREATE PROCEDURE login( IN usermail VARCHAR(150), IN userpassword VARCHAR(300), IN lat DECIMAL(11,8), IN lng DECIMAL(11,8))
-BEGIN
-  DECLARE uid INT default -1;
-  SELECT id INTO uid FROM users WHERE (mail = usermail) AND (password = userpassword) LIMIT 1;
-  IF (uid <> -1) THEN
-    call updatePosition(uid, lat, lng);
-    call getUser(uid);
-  END IF;
-END |
-DELIMITER ;
+
 
 /* getUser( id ) */
 DELIMITER |
@@ -650,7 +696,3 @@ CREATE PROCEDURE addGroupToEvent(IN groupID INT, IN eventID INT)
 
   END |
 DELIMITER ;
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/ludovico

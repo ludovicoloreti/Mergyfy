@@ -1,66 +1,71 @@
+model.action(jsonData);
+
 List of funcitons
 
-    - login( user_mail, user_password ) > User or -1
+    o- login( user_mail, user_password, lat, lng ) > User or -1
 
 /* SEARCH */
-    - (search) userNearEvents( user_id, distance ) > List of events
-    - (search) suggestedEvents( lat, lng ) > List of events
-    - (search) suggestedPlaces( lat, lng ) > List of places
-    - (search) searchUser( text ) > List of users (id, name, lastname)
-    - (search) searchGroup( text ) > List of Groups
-    - (search) searchEvent( text ) > List of Events
+    o- (search)event.userNearEvents( userid, latitude, longitude, dist )
+    o- event.getUserEvents( userid, which )
+    o- (search) event.searchEvents( userid, chars )
+
+    - (search) event.suggestedEvents( lat, lng ) > List of events
+    - (search) place.suggestedPlaces( lat, lng ) > List of places
+    - (search) user.searchUser( text ) > List of users (id, name, lastname)
+    - (search) group.searchGroup( text ) > List of Groups
+
 
 /* SELECT */
-    - getUser( user_id ) > User or -1
-    - getEvents() > List of all events
-    - getEvent( event_id ) > Event or -1
-    - getEventPartecipants( event_id ) > List of Partecipants
-    - getNextEvents( userid )
+    - user.getUser( user_id ) > User or -1
+    - event.getEvents() > List of all events
+    - event.getEvent( event_id ) > Event or -1
+    - event.getEventPartecipants( event_id ) > List of Partecipants
 
-    - getUserDocs( user_id ) > List of docs or -1
-    - getUserDoc() >
-    - getDocContent( doc_id ) > List of notes and nodes
-    * getNote(note_id)
 
-    - getGroupMembers( group_id ) > List of Members
-    * getGroupInfo( group_id ) > Group
+    - user.getUserDocs( user_id ) > List of docs or -1
+    - user.getUserDoc() >
+    - document.getDocContent( doc_id ) > List of notes and nodes
+    * note.getNote(note_id)
 
-    * getCategories()
-    * getCategory(cat_id)
-    * getPlace(place_id)
+    - group.getGroupMembers( group_id ) > List of Members
+    * group.getGroupInfo( group_id ) > Group
+
+    * category.getCategories()
+    * category.getCategory(cat_id)
+    * place.getPlace(place_id)
 
 
 /* INSERT */
-    - createGroup( name, imagelink, description, idAdmin )
-    - createUser ( name, lastname, born, type, profilepic, lat, lng, password, mail )
-    * createDocument( userid, name, eventid, public )
-    * addMember( iduser, idgroup )
-    * addPartecipant( eventid, userid )
-    * addEvent( name, placeid, start, stop, creatorid, typeid, description, categoryid )
-    * addPlace( lat, lng, name, address, cap, city, nation ) > id
-    * addEventAndPlace( name, start, stop, creatorid, typeid, description, categoryid, lat,lng,name,address,cap, city, nation );
-    * addCategory( id, name, description, colour )
-    * addNote( id, type, content, description )
-    * createNode( noteID, docID, header, subheader )
-    * addGroupToEvent( groupID, eventID )
+    - group.createGroup( name, imagelink, description, idAdmin )
+    - user.createUser ( name, lastname, born, type, profilepic, lat, lng, password, mail )
+    * document.createDocument( userid, name, eventid, public )
+    * member.addMember( iduser, idgroup )
+    * partecipation.addPartecipant( eventid, userid )
+    * event.addEvent( name, placeid, start, stop, creatorid, typeid, description, categoryid )
+    * place.addPlace( lat, lng, name, address, cap, city, nation ) > id
+    * event.addEventAndPlace( name, start, stop, creatorid, typeid, description, categoryid, lat,lng,name,address,cap, city, nation );
+    * category.addCategory( id, name, description, colour )
+    * note.addNote( id, type, content, description )
+    * node.createNode( noteID, docID, header, subheader )
+    * group.addGroupToEvent( groupID, eventID )
 
 /* UPDATE */
-    - updatePosition( user_id, lat, lng )
-    * updateUser( userid, name, lastname, born, type, profilepic, lat, lng, password, mail )
-    * updateGroup( groupid, name, imagelink, description, idAdmin )
-    * updateEvent( eventid, name, placeid, start, stop, creatorid, typeid, description, categoryid )
-    * updateCategory( categoryid, name, description, colour )
-    * updatePartecipation( eventid, userid, status )
-    * updateDoc( id, name, public )
-    * updateNote( id, type, content, description )
+    - position.updatePosition( user_id, lat, lng )
+    * user.updateUser( userid, name, lastname, born, type, profilepic, lat, lng, password, mail )
+    * group.updateGroup( groupid, name, imagelink, description, idAdmin )
+    * event.updateEvent( eventid, name, placeid, start, stop, creatorid, typeid, description, categoryid )
+    * category.updateCategory( categoryid, name, description, colour )
+    * partecipation.updatePartecipation( eventid, userid, status )
+    * document.updateDoc( id, name, public )
+    * note.updateNote( id, type, content, description )
 
 /* DELETE */
-    - deleteUser( userID ) ( setta il delated a true )
-    - deleteNode( NoteID, DocumentID ) (se non ci sono più nodi viene cancellato definitivamente anche dalla tabella nodi)
-    - deleteEvent( eventID )
-    - deleteGroup( userID, groupID )
-    - deleteDocument( userID, docID )
-    - deleteMember( memberID, groupID, userID)
+    - user.deleteUser( userID ) ( setta il delated a true )
+    - note.deleteNode( NoteID, DocumentID ) (se non ci sono più nodi viene cancellato definitivamente anche dalla tabella nodi)
+    - event.deleteEvent( eventID )
+    - group.deleteGroup( userID, groupID )
+    - document.deleteDocument( userID, docID )
+    - member.deleteMember( memberID, groupID, userID)
 
 
 
@@ -69,3 +74,5 @@ dove si accetta gruppo?
 dove si accetta invito ad evento?
 
 timeout(3000 ms, pesca note e mettile in cima);
+
+aggiungere trigger per il doppio check della mail
