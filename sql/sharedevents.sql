@@ -24,6 +24,7 @@
     4 - Cascade doesn't activate triggers.
 
     5 - Enter the DB: /Applications/MAMP/Library/bin/mysql --user=user --password=user-password;
+    /Applications/MAMP/Library/bin/mysql --user=root --password=root;
 */
 
 /* Database cretion */
@@ -579,4 +580,3 @@ BEGIN
     WHERE id = idI;
 END |
 DELIMITER ;
-

@@ -39,9 +39,9 @@ app.run(function($rootScope, NgMap) {
   });
 });
 
-app.controller('GroupsCtrl', function (/* $scope, $location, $http */) {
+app.controller('GroupsCtrl', function ($scope, $location, $http) {
   console.log("Blog Controller reporting for duty.");
-  $scope.lol = "asdasdasdasd";
+  $scope.lol = "lololol";
 });
 
 
@@ -103,9 +103,14 @@ app.controller('EventCtrl', function($scope, $http){
           // GEOCODING end
           dataObj.lat = data.results[0].geometry.location.lat;
           dataObj.lng = data.results[0].geometry.location.lng;
+          var objToPost = {
+            model: "event",
+            action: "addEvvent",
+            param: dataObj
+          }
           // faccio la post
           var createEventLinkToPost = "http://localhost:8888/Mergify/Server/handler.php";
-          $http.post(createEventLinkToPost, dataObj).success(function(data, status, headers, config) {
+          $http.post(createEventLinkToPost, objToPost).success(function(data, status, headers, config) {
             console.info(data);
             $scope.data = data;
           }).error(function(data, status, headers, config) {
