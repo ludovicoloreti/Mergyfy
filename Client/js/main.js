@@ -40,7 +40,6 @@ app.run(function($rootScope, NgMap) {
 });
 
 app.controller('GroupsCtrl', function ($scope, $location, $http) {
-  console.log("Blog Controller reporting for duty.");
   $scope.lol = "lololol";
 });
 

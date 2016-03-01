@@ -23,8 +23,12 @@
 
     4 - Cascade doesn't activate triggers.
 
+<<<<<<< HEAD
+    5 - Enter the DB: /Applications/MAMP/Library/bin/mysql --user= <user> --password= <user-password>;
+=======
     5 - Enter the DB: /Applications/MAMP/Library/bin/mysql --user=user --password=user-password;
     /Applications/MAMP/Library/bin/mysql --user=root --password=root;
+>>>>>>> c2344aa5bf96e3fb908cb2bcde1c435816397416
 */
 
 /* Database cretion */
@@ -34,7 +38,7 @@ USE merge;
 /******************** TABLES ***********************/
 /* USERS */
 CREATE TABLE IF NOT EXISTS users (
-  id int(11) auto_increment primary key,
+  id int(11) auto_increment,
   name varchar(100) not null,
   lastname varchar(100) not null,
   born date,
@@ -45,16 +49,49 @@ CREATE TABLE IF NOT EXISTS users (
   actual_lng decimal(11,8), /* it must be defined */
   password varchar(300) not null,
   mail varchar(150) not null,
-  delated  ENUM('0','1') default '0'
+  delated  ENUM('0','1') default '0',
+  PRIMARY KEY (id)
 ) engine=INNODB;
 
 /* GROUPS */
 CREATE TABLE IF NOT EXISTS groups(
-  id int(11) auto_increment primary key,
+  id int(11) auto_increment,
   name varchar(100) not null,
   creationdate timestamp not null default current_timestamp(),
   image varchar(300),
-  description varchar(2000) not null default "No description."
+  description varchar(2000) not null default "No description.",
+  PRIMARY KEY (id)
+) engine=INNODB;
+
+/* PLACES */
+CREATE TABLE IF NOT EXISTS places (
+  id int(11) auto_increment,
+  lat decimal(11,8),
+  lng decimal(11,8),
+  name varchar(100) not null,
+  address varchar(200) not null,
+  cap varchar(10),
+  city varchar(50) not null,
+  nation varchar(50) not null default "Italy",
+  PRIMARY KEY (id)
+) engine=INNODB;
+
+/* CATEGORIES */
+CREATE TABLE IF NOT EXISTS categories (
+  id int(11) auto_increment,
+  name varchar(100) not null,
+  description varchar(2000),
+  colour varchar(6),
+  PRIMARY KEY (id)
+) engine=INNODB;
+
+/* NOTES */
+CREATE TABLE IF NOT EXISTS notes (
+  id int(11) auto_increment,
+  type ENUM('code','text', 'image', 'link') default 'text',
+  content text,
+  description varchar(200),
+  PRIMARY KEY(id)
 ) engine=INNODB;
 
 /* MEMBERS */
@@ -63,86 +100,71 @@ CREATE TABLE IF NOT EXISTS members(
   idgroup int(11) not null,
   accepted boolean default 0,
   role enum('admin','normal') default 'normal',
-  joindate timestamp not null,
-  primary key(iduser, idgroup),
-  foreign key(iduser) references users(id) on delete no action ,
-  foreign key(idgroup) references groups(id) on delete no action
+  joindate timestamp not null default CURRENT_TIMESTAMP(),
+  PRIMARY KEY (iduser, idgroup),
+  FOREIGN KEY (iduser) references users(id) on delete no action,
+  FOREIGN KEY (idgroup) references groups(id) on delete no action
 ) engine=INNODB;
 
 /* EVENTS */
 CREATE TABLE IF NOT EXISTS events (
-  id int(11) auto_increment  primary key,
+  id int(11) auto_increment,
   name varchar(100) not null,
-  place int references place(id) on delete set null on update cascade,
+  place int,
   creationdate timestamp default current_timestamp,
   startdate timestamp,
   stopdate timestamp,
-  creator int references user(id)on delete set null on update cascade,
+  creator int,
   type ENUM('public','private') default 'public',
   description varchar(2000),
-  categoryid int references categories(id) on delete set null
-) engine=INNODB;
-
-/* CATEGORIES */
-CREATE TABLE IF NOT EXISTS categories (
-  id int(11) auto_increment  primary key,
-  name varchar(100) not null,
-  description varchar(2000),
-  colour varchar(6)
+  categoryid int,
+  PRIMARY KEY (id),
+  FOREIGN KEY (place) REFERENCES places(id) on delete set null on update cascade,
+  FOREIGN KEY (creator) REFERENCES users(id) on delete set null on update cascade,
+  FOREIGN KEY (categoryid) REFERENCES categories(id) on delete set null
 ) engine=INNODB;
 
 /* DOCUMENTS */
 CREATE TABLE IF NOT EXISTS documents (
-  id int(11) auto_increment primary key,
-  creator int not null references user(id),
+  id int(11) auto_increment,
+  creator int not null,
   name varchar(100) default "unknown document",
-  event int references event(id),
+  event int not null,
   creationdate timestamp default current_timestamp,
-  public ENUM('0','1') default '0'
+  public ENUM('0','1') default '0',
+  PRIMARY KEY (id),
+  FOREIGN KEY (creator) REFERENCES users(id),
+  FOREIGN KEY (event) REFERENCES events(id)
+
 ) engine=INNODB;
 
 /* NODES */
 CREATE TABLE IF NOT EXISTS nodes (
-  id int(11) auto_increment primary key,
-  document int(11) references documents(id),
-  note int(11) references notes(id),
+  id int(11) auto_increment,
+  document int(11),
+  note int(11),
   creationdate timestamp default current_timestamp,
   header varchar(200) default "Title",
-  subheader varchar(200) default "Subtitle"
-) engine=INNODB;
-
-/* NOTES */
-CREATE TABLE IF NOT EXISTS notes (
-  id int(11) auto_increment primary key,
-  type ENUM('code','text', 'image', 'link') default 'text',
-  content text,
-  description varchar(200)
-) engine=INNODB;
-
-/* PLACES */
-CREATE TABLE IF NOT EXISTS places (
-  id int(11) auto_increment primary key,
-  lat decimal(11,8),
-  lng decimal(11,8),
-  name varchar(100) not null,
-  address varchar(200) not null,
-  cap varchar(10),
-  city varchar(50) not null,
-  nation varchar(50) not null default "Italy"
+  subheader varchar(200) default "Subtitle",
+  PRIMARY KEY (id),
+  FOREIGN KEY (document) REFERENCES documents(id),
+  FOREIGN KEY (note) REFERENCES notes(id)
 ) engine=INNODB;
 
 /* PARTECIPATIONS */
 CREATE TABLE IF NOT EXISTS partecipations (
-  id int auto_increment primary key,
-  event_id int not null references event(id),
-  user_id int not null references user(id),
-  status ENUM('accepted','declined','waiting') default 'waiting'
+  event_id int(11) not null,
+  user_id int(11) not null,
+  status ENUM('accepted','declined','waiting') default 'waiting',
+  PRIMARY KEY (event_id, user_id),
+  FOREIGN KEY(event_id) REFERENCES events(id),
+  FOREIGN KEY(user_id) REFERENCES users(id)
 ) engine=INNODB;
 
 /******************** VIEWS *************************/
 
 CREATE VIEW usersInfo(userid, name, lastname, born, subscriptiondate, type, profilepicture, mail) AS
-  SELECT id, name, lastname, born, subscriptiondate, type, profilepicture, mail FROM users;
+  SELECT id, name, lastname, born, subscriptiondate, type, profilepicture, mail FROM users WHERE delated="0";
 
 /* TODO */
 
@@ -199,6 +221,7 @@ BEGIN
 	IF ( OLD.role = "admin" )
   THEN
       UPDATE members SET role = "admin"
+      -- it should call update admin
       WHERE (idgroup = OLD.idgroup) AND (iduser = (SELECT iduser FROM members WHERE idgroup = OLD.idgroup HAVING min(joindate)));
 	END IF;
 END //
@@ -491,10 +514,10 @@ DELIMITER ;
 
 /* createGroup */
 DELIMITER |
-CREATE  PROCEDURE createGroup(IN nameI VARCHAR (100), IN imageI VARCHAR(300), IN descriptionI VARCHAR(2000), IN categoryIdI INT)
+CREATE  PROCEDURE createGroup(IN nameI VARCHAR (100), IN imageI VARCHAR(300), IN descriptionI VARCHAR(2000), IN adminId INT)
 BEGIN
-  INSERT INTO groups (name, image, description, categoryid)
-    VALUES (name, imageI, descriptionI, categoryIdI);
+  INSERT INTO groups (name, image, description) VALUES (name, imageI, descriptionI);
+  call addMember( adminId, last_insert_id() );
 END |
 DELIMITER ;
 
@@ -530,7 +553,7 @@ CREATE  PROCEDURE addMember(IN idUserI INT, IN idGroupI INT)
 BEGIN
   IF((SELECT count(*) FROM members WHERE idgroup = idGroupI) = 0)
   THEN
-    INSERT INTO members (iduser, idgroup, role) VALUES (idUserI, idGroupI, 'admin');
+    INSERT INTO members (iduser, idgroup, accepted, role) VALUES (idUserI, idGroupI, 1 ,'admin');
   ELSE
     INSERT INTO members (iduser, idgroup) VALUES (idUserI, idGroupI);
   END IF ;
@@ -580,3 +603,54 @@ BEGIN
     WHERE id = idI;
 END |
 DELIMITER ;
+<<<<<<< HEAD
+
+/******** searchUser *********/
+DELIMITER |
+CREATE PROCEDURE searchUser(IN text VARCHAR(200))
+BEGIN
+ SELECT userid, name, lastname FROM usersInfo WHERE ( CONCAT_WS(' ', name, lastname) LIKE CONCAT('%', text , '%') OR CONCAT_WS(' ', lastname, name) LIKE CONCAT('%', text , '%') ) LIMIT 10;
+END |
+DELIMITER ;
+
+/******** searchGroup *********/
+DELIMITER |
+CREATE PROCEDURE searchGroup(IN text VARCHAR(200))
+  BEGIN
+    SELECT id, name FROM groups WHERE ( name LIKE CONCAT('%', text , '%') ) LIMIT 10;
+  END |
+DELIMITER ;
+
+/******** deleteUser *********/
+DELIMITER |
+CREATE PROCEDURE deleteUser(IN userid INT)
+  BEGIN
+    UPDATE users SET delated="1" WHERE id=userid;
+  END |
+DELIMITER ;
+
+/******** addGroupToEvent ****/
+DELIMITER |
+CREATE PROCEDURE addGroupToEvent(IN groupID INT, IN eventID INT)
+  BEGIN
+    BEGIN
+      DECLARE cursor_ID INT;
+      DECLARE done INT DEFAULT FALSE;
+      DECLARE cursor_i CURSOR FOR SELECT iduser FROM members WHERE idgroup= groupID AND accepted=1 ;
+      DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+      OPEN cursor_i;
+      read_loop: LOOP
+        FETCH cursor_i INTO cursor_ID;
+        IF done THEN
+          LEAVE read_loop;
+        END IF;
+        INSERT INTO partecipations(event_id, user_id) VALUES(eventID, cursor_ID);
+      END LOOP;
+      CLOSE cursor_i;
+    END;
+
+  END |
+DELIMITER ;
+
+=======
+>>>>>>> c2344aa5bf96e3fb908cb2bcde1c435816397416
