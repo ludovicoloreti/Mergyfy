@@ -34,18 +34,19 @@ app.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 app.run(function($rootScope, NgMap) {
-  window.localStorage['id'] = 3;
+  window.localStorage['id'] = 1;
+  $rootScope.url = "http://localhost:8888/Mergify/Server/handler.php";
   NgMap.getMap().then(function(map) {
     $rootScope.map = map;
   });
 });
 
-app.controller('GroupsCtrl', function ($scope, $location, $http) {
+app.controller('GroupsCtrl', function ($scope, $location, $http, $rootScope) {
   $scope.lol = "lololol";
 });
 
 
-app.controller('GroupCtrl', function ($scope) {
+app.controller('GroupCtrl', function ($scope, $rootScope) {
   $scope.edit = false;
   $scope.editGroup = function() {
     $scope.edit = true;
@@ -56,7 +57,7 @@ app.controller('GroupCtrl', function ($scope) {
   };
 });
 
-app.controller('AddGroupCtrl', function (/* $scope, $location, $http */) {
+app.controller('AddGroupCtrl', function ($scope, $location, $http, $rootScope) {
 });
 
 // nuovo controller
@@ -64,7 +65,7 @@ app.controller('HomeCtrl', function ($scope) {
   $scope.clock = new Date();
 });
 
-app.controller('EventCtrl', function($scope, $http,$window){
+app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
   console.log("ciao");
   $scope.custom = true;
   $scope.toggleCustom = function() {
@@ -76,7 +77,7 @@ app.controller('EventCtrl', function($scope, $http,$window){
 
 
   /* invita gruppi */
-  var linkPerLaGet = "http://localhost:8888/Mergify/Server/handler.php?userId="+window.localStorage['id'];
+  var linkPerLaGet = $rootScope.url+"?user_id="+window.localStorage['id'];
   $http.get(linkPerLaGet).success(function(r) {
     $scope.gruppi = r;
   }).error(function(err) {
@@ -161,7 +162,7 @@ app.controller('EventCtrl', function($scope, $http,$window){
 
 });
 
-app.controller('DocCtrl', function($scope){
+app.controller('DocCtrl', function($scope, $rootScope){
   $scope.toggle = false;
   $scope.toggleView = function() {
     $scope.toggle = ($scope.toggle) ? false : true;
@@ -171,18 +172,31 @@ app.controller('DocCtrl', function($scope){
   $scope.text= "";
 });
 
-app.controller('EventsCtrl', function ($scope, $compile, $window,$http, NgMap) {
+app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$http, NgMap) {
   $scope.eventsNavbar = true;
   $scope.changeEvents = function( bool ) {
     $scope.eventsNavbar = bool;
   };
 
-// $http.get(urlToNearEvents).success(function(r) {
-//   console.log(r);
-//   $scope.nearEvents
-// }).error(function(err) {
-//   console.log(err);
-// })
+
+  var urlToNearEventsZero = $rootScope.url+"?action=userNearEvents&model=event";
+  obj = {};
+  obj.user_id = parseInt(window.localStorage['id']);
+  obj.distance = parseInt("100");
+  console.log(obj);
+  $http.post(urlToNearEventsZero, obj).success(function(result) {
+    console.log(result);
+    $scope.eventiVicini = result;
+  }).error(function(error) {
+    console.log(error);
+  })
+  // var urlToNearEvents = $rootScope.url+"?action=userNearEvents&model=event&user_id="+window.localStorage['id']+"&distance=100";
+  // $http.get(urlToNearEvents).success(function(r) {
+  //   console.log(r);
+  //   $scope.nearEvents = r;
+  // }).error(function(err) {
+  //   console.log(err);
+  // })
 
   $scope.gotoEvent = function() {
     window.location.href="#/event";

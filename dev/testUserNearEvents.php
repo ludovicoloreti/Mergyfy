@@ -1,17 +1,11 @@
 <?php
-include_once "../Server/Objects/event.php";
 include_once "../Server/database.php";
-include_once "../Server/Functions/jsonUtilities.php";
+include_once "../Server/server.php";
 
-$data = "{
-    \"model\": \"event\",
-    \"action\": \"userNearEvents\",
-    \"param\": {
-        \"id\": \"1\",
-        \"distance\": 50
-    }
-}";
+$test = true;
+$model = 'event';
+$action = "userNearEvents";
+$arr = array('user_id' => 1, 'distance' => 100);
+$data = json_encode($arr);
 
-$event = new Event();
-$event->userNearEvents($data);
-
+include_once "../Server/handler.php";
