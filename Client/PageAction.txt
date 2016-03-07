@@ -1,0 +1,46 @@
+----- LOGIN -----
+login( user_mail, user_password, lat, lng )
+
+----- REGISTER -----
+addUser() //da verificare
+
+---- HOME ----
+??
+
+---- EVENTI ----
+userNearEvents(userid, latitude, longitude, dist)
+getUserEvents(userid, which) which= ['next', 'past', 'all']
+searchEvents(userid, chars)
+
+---- EVENTO ----
+getEvent( event_id )
+getEventPartecipants( event_id )
+getEventDocs() ??
+
+modifica evento ??
+
+---- ADDEVENT ----
+evento
+posto
+invitati
+
+
+---- DOCUMENTI ----
+lista documenti
+singolo documento
+
+---- DOCUMENTO ----
+sinoglo docuemnto
+lista note di quell'evento
+
+---- GRUPPI ----
+lista gruppi dell'utente
+cerca gruppi
+
+getUserGroups( userid )
+searchGroups( userid, chars )
+updateGroup(...)
+
+---- PROFILO ----
+info profilo
+update profilo
