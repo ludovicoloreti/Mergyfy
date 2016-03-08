@@ -76,3 +76,5 @@ dove si accetta invito ad evento?
 timeout(3000 ms, pesca note e mettile in cima);
 
 aggiungere trigger per il doppio check della mail
+
+accettare invito a gruppo e ad evento. 

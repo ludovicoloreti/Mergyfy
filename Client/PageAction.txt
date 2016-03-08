@@ -40,7 +40,12 @@ cerca gruppi
 getUserGroups( userid )
 searchGroups( userid, chars )
 updateGroup(...)
+getGroupDoc( userid, groupid ) idem sotto con doc 
+getGroupEvents( userid, groupid ) sono gli eventi pubblici e privati ai quali i membri del gruppo partecipano e sono invitato
+getGroupMembers( groupid )
 
 ---- PROFILO ----
-info profilo
-update profilo
+getUserInfo
+updateUser
+getNumDoc
+getNumGroup

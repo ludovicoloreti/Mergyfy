@@ -324,16 +324,16 @@ CREATE PROCEDURE getUserEvents( IN userid INT, IN which ENUM('next','past','all'
 BEGIN
   CASE which
     WHEN 'next' THEN
-      SELECT * FROM partecipations AS part, events AS ev, place AS pl
+      SELECT * FROM partecipations AS part, events AS ev, places AS pl
         WHERE ( (part.event_id = ev.id) AND (part.user_id = userid) AND (ev.place = pl.id) AND (ev.startdate > current_timestamp()) );
     WHEN 'past' THEN
-      SELECT * FROM partecipations AS part, events AS ev, place AS pl
+      SELECT * FROM partecipations AS part, events AS ev, places AS pl
         WHERE ( (part.event_id = ev.id) AND (part.user_id = userid) AND (ev.place = pl.id) AND (ev.stopdate < current_timestamp()) );
     ELSE
-      SELECT * FROM partecipations AS part, events AS ev, place AS pl
+      SELECT * FROM partecipations AS part, events AS ev, places AS pl
         WHERE ( (part.event_id = ev.id) AND (part.user_id = userid) AND (ev.place = pl.id) );
   END CASE;
-END;
+END |
 DELIMITER ;
 
 /* searchEvents( userid, text )
