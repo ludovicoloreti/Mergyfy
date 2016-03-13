@@ -67,7 +67,6 @@ class Database extends PDO{
 
         $this->stmt = $this->conn->prepare( $sql );
 
-
         foreach ($parameters as $key => &$value) {  //pass $value as a reference to the array item
             $this->stmt->bindParam($key+1, $value);  // bind the variable to the statement
         }

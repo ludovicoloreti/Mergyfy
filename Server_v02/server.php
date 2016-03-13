@@ -10,6 +10,7 @@ class Server {
 
     private $action = null;
     private $badRequest = false;
+    private $sendingArray = array();
     /**
      *
      *  execute
@@ -35,12 +36,12 @@ class Server {
         }
 
         //Check param
-        $operation->data = array_values((array) $operation->data); //convert data from object to array
         $analyse = $this->analyse($this->action, $operation->data);
 
         if($analyse && !$this->badRequest){
             $db = new Database();
-            $db->callProcedure($this->action, $operation->data);
+            $sending = array_values((array) $operation->data);
+            $db->callProcedure($this->action, $this->sendingArray);
             return $db->getResult();
         }
 
@@ -54,30 +55,46 @@ class Server {
         $result = $db->getResult();
 
         //check if the number of element is equal to the required elements
-        if(count($result) == count($data)){
-
+        if(count($result) == count((array)$data)){
             //check the input type
             $i = 0;
             while($i<count($result) && !$this->badRequest){
-                switch($result[$i]['DATA_TYPE']){
-                    case 'decimal':
-                        (is_numeric($data[$i]) && is_float($data[$i]))? null : $this->badRequest=true;
-                        break;
-                    case 'int':
-                        (is_numeric($data[$i]) && is_int($data[$i])) ? null : $this->badRequest=true;
-                        break;
-                    case 'text':
-                        (is_string($data[$i]) && $result[$i]['CHARACTER_MAXIMUM_LENGTH']>=strlen($data[$i]))? null : $this->badRequest = true;
-                        break;
-                    case 'timestamp':
-                        (((string) (int) $data[$i] === $data[$i]) && ($data[$i] <= PHP_INT_MAX) && ($data[$i] >= ~PHP_INT_MAX))? null : $this->badRequest=true;
-                        break;
-                    case 'varchar':
-                        (is_string($data[$i]) && $result[$i]['CHARACTER_MAXIMUM_LENGTH']>=strlen($data[$i]))? null : $this->badRequest = true;
-                        break;
-                    default:
-                        $this->badRequest = true;
+
+                $req_type = $result[$i]['PARAMETER_NAME'];
+                if(isset($data->$req_type) && !is_null($data->$req_type)){
+                    //The data exist and has the right name
+                    //check the input type
+                    switch($result[$i]['DATA_TYPE']){
+                        case 'decimal':
+                            (is_numeric($data->$req_type) && is_float($data->$req_type))? null : $this->badRequest=true;
+                            break;
+                        case 'int':
+                            (is_numeric($data->$req_type) && is_int($data->$req_type)) ? null : $this->badRequest=true;
+                            break;
+                        case 'text':
+                            (is_string($data->$req_type) && $result[$i]['CHARACTER_MAXIMUM_LENGTH']>=strlen($data->$req_type))? null : $this->badRequest = true;
+                            break;
+                        case 'timestamp':
+                            (((string) (int) $data->$req_type === $data->$req_type) && ($data->$req_type <= PHP_INT_MAX) && ($data->$req_type >= ~PHP_INT_MAX))? null : $this->badRequest=true;
+                            break;
+                        case 'varchar':
+                            (is_string($data->$req_type) && $result[$i]['CHARACTER_MAXIMUM_LENGTH']>=strlen($data->$req_type))? null : $this->badRequest = true;
+                            break;
+                        default:
+                            $this->badRequest = true;
+                    }
+                    if(!$this->badRequest){
+                        array_push($this->sendingArray, $data->$req_type);
+                    }
+                } else {
+                    $badName = array_values((array) $data);
+                    $badName = $badName[$i];
+                    echo '[{"error" : "Bad Name <strong>'. $badName . '</strong>  "}]';
+                    $this->badRequest = true;
+                    return false;
                 }
+
+
                 $i++;
             }
 

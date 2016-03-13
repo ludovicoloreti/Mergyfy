@@ -49,7 +49,6 @@ if((isset($operations) || (!empty($operations)) || (!is_null($operations)))){
         );
         array_push($results, $result);
     }
-    echo "<h2>";
+    
     echo (json_encode($results));
-    echo "</h2>";
 }
