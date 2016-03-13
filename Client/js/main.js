@@ -58,11 +58,14 @@ app.controller('HomeCtrl', function ($scope) {
 
 app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Evento){
   console.log(Evento.id);
-  var url = $rootScope.url+"?action=getEvent&model=event";
   obj = {};
-  obj.event_id = parseInt(Evento.id);
-  console.log(obj, url)
-  $http.post(url, obj).success(function(res) {
+  data = {};
+  obj.action = "getEvent";
+  data.eventid = parseInt(Evento.id);
+  data.userid = parseInt(window.localStorage['id']);
+  obj.data = data;
+  console.log(JSON.stringify(obj));
+  $http.post($rootScope.url, [obj]).success(function(res) {
     console.log(res);
     for (i = 0; i<res.length; i++)
     $scope.evento = res[i];
@@ -201,46 +204,51 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
     $scope.eventsNavbar = bool;
   };
 
-  var urlToEventsPartecipo = $rootScope.url;
-  objj = [];
-  objj.action = "getUserEvents";
-  objj.userid = parseInt(window.localStorage['id']);
-  objj.which = "all";
-  console.log(objj, urlToEventsPartecipo)
-  $http.post(urlToEventsPartecipo, objj).success(function(res) {
-    console.log(res);
-    $scope.eventiPartecipo = res;
-  }).error(function(er,asd,as,dd) {
-    console.log(er, asd, as, dd, "non va.");
-  });
-
-
-  $
-  var urlToNearEventsZero = $rootScope.url;
   obj = {};
-  obj.userid = parseInt(window.localStorage['id']);
+  data = {};
+  data.userid = parseInt(window.localStorage['id']);
   obj.action = "userNearEvents";
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position){
       $scope.$apply(function(){
-        obj.latitude = parseFloat(position.coords.latitude);
-        obj.longitude = parseFloat(position.coords.longitude);
-        $scope.latitudine = obj.latitude;
-        $scope.longitudine = obj.longitude;
-        obj.dist = parseInt("100");
-        console.log("Posizione presa! ",obj, urlToNearEventsZero);
-        $http.post(urlToNearEventsZero, obj).success(function(result) {
-          console.log(result);
-          $scope.eventiVicini = result;
+        data.latitude = parseFloat(position.coords.latitude);
+        data.longitude = parseFloat(position.coords.longitude);
+        $scope.latitudine = data.latitude;
+        $scope.longitudine = data.longitude;
+        data.dist = parseInt("100");
+        obj.data = data;
+        console.log("Posizione presa! ",obj);
+        $http.post($rootScope.url, [obj]).success(function(result) {
+          console.log(result[0].data);
+          $scope.eventiVicini = result[0].data;
+          // vai con l'altra
+          objj = {};
+          data = {};
+          objj.action = "getUserEvents";
+          data.userid = parseInt(window.localStorage['id']);
+          data.which = "all";
+          objj.data = data;
+          console.log(objj);
+          $http.post($rootScope.url, [objj]).success(function(res) {
+            console.log(res[0].data);
+            $scope.eventiPartecipo = res[0].data;
+          }).error(function(er) {
+            console.log(er, "Errore in getUserEvents");
+          });
+
+          // stop
+
         }).error(function(error) {
-          console.log(error);
+          console.log(error,"Errore userNearEvents");
         })
       });
     });
   } else {
-    obj.latitude = parseInt("0");
-    obj.longitude = parseInt("0");
-    obj.dist = parseInt("100");
+    console.log("else")
+    data.latitude = parseInt("0");
+    data.longitude = parseInt("0");
+    data.dist = parseInt("100");
+    obj.data = data;
     console.log("Nessuna posizione presa ",obj);
     $http.post(urlToNearEventsZero, obj).success(function(result) {
       console.log(result);
@@ -272,7 +280,8 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
   });
 
   function resize() {
-    // var center = this.map.getCenter();
+    console.log("aaaanved")
+    var center = this.map.getCenter();
     google.maps.event.trigger(map, "resize");
     navigator.geolocation.getCurrentPosition(function(position){
       $scope.$apply(function(){
@@ -281,6 +290,7 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
       });
     });
     map.setCenter(latt,lonn);
+
   }
 
   // google.maps.event.addDomListener(window, 'load', initialize);

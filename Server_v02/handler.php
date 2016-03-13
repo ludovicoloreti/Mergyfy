@@ -37,6 +37,7 @@ if(isset($test) && $test){
 }
 
 if((isset($operations) || (!empty($operations)) || (!is_null($operations)))){
+
     $operations = json_decode($operations);
     $results = array();
     //Analyze every query from frontend
