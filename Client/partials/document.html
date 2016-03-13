@@ -1,155 +1,159 @@
 <div style="overflow:scroll; height:100%">
-<div class="container homepage">
-  <div class="row-fluid homepage-content">
-    <div class="col-md-3 aside">
-      <div>
-        <h1>NODI</h1>
-      </div>
-      <div class="docs-cont">
-        <!--REPLACE WITH ng-repeat-->
-
-        <div class="media clearfix doc-thumb-container">
-          <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-          </div>
-          <div class="">
-            <h4 class="">Note title</h4>
-            <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-          </div>
+  <div class="container homepage">
+    <div class="row-fluid homepage-content">
+      <div class="col-md-3 aside">
+        <div>
+          <h1>NODI</h1>
         </div>
+        <div class="docs-cont">
+          <!--REPLACE WITH ng-repeat-->
 
-        <div class="media clearfix doc-thumb-container">
-          <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-          </div>
-          <div class="">
-            <h4 class="">Note title</h4>
-            <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-          </div>
-        </div>
-
-        <div class="media clearfix doc-thumb-container">
-          <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-          </div>
-          <div class="">
-            <h4 class="">Note title</h4>
-            <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-          </div>
-        </div>
-
-        <div class="media clearfix doc-thumb-container">
-          <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-          </div>
-          <div class="">
-            <h4 class="">Note title</h4>
-            <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-          </div>
-        </div>
-
-        <div class="media clearfix doc-thumb-container">
-          <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-          </div>
-          <div class="">
-            <h4 class="">Note title</h4>
-            <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-          </div>
-        </div>
-
-        <div class="media clearfix doc-thumb-container">
-          <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-          </div>
-          <div class="">
-            <h4 class="">Note title</h4>
-            <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-          </div>
-        </div>
-
-        <div class="media clearfix doc-thumb-container">
-          <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-          </div>
-          <div class="">
-            <h4 class="">Note title</h4>
-            <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-          </div>
-        </div>
-
-        <div class="media clearfix doc-thumb-container">
-          <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-          </div>
-          <div class="">
-            <h4 class="">Note title</h4>
-            <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-          </div>
-        </div>
-
-        <!--STOP REPLACE-->
-      </div>
-
-
-    </div>
-    <div class="col-md-9 main-content center-block" style="background-color: rgba(152, 152, 152, 0.87);;">
-      <div class="document-container">
-        <div class="document">
-          <h1>Nome documento</h1>
-          <p><i>Mario Rossi</i></p>
-          <div class="text-cont"></div>
-          <div class="new-node">
-            <h4>{{title}}</h4>
-            <p>{{text}}</p>
-          </div>
-
-        </div>
-      </div>
-
-
-      <div class="insert-node" ng-class="{'insert-node-collapsed': !toggle, 'insert-node-complete': toggle }">
-        <form>
-          <div class="row">
-            <fieldset class="form-group col-md-5">
-              <label>Titolo nodo (opzionale)</label>
-              <input type="text" class="form-control" id="note-title" ng-model="title"/>
-
-            </fieldset>
-            <div class="col-md-7">
-              <span class="glyphicon  pull-right" ng-class="{'glyphicon-chevron-down': toggle, 'glyphicon-chevron-up': !toggle}" ng-click="toggleView()"></span>
+          <div class="media clearfix doc-thumb-container">
+            <div class="pull-left media-top">
+              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+            </div>
+            <div class="">
+              <h4 class="">Note title</h4>
+              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
             </div>
           </div>
-          <div class="row">
-            <fieldset class="form-group col-md-7">
-              <label for="exampleTextarea">Inserisci qui la tua nota</label>
-              <textarea class="form-control" id="exampleTextarea" rows="4" ng-model="text"></textarea>
-            </fieldset>
-            <fieldset class="form-group col-md-5">
-              <label for="exampleInputFile">Carica immagine</label>
-              <input type="file" class="form-control-file  block well well-sm"  id="exampleInputFile">
-              <small class="text-muted">
-                <select class="c-select">
-                  <option selected disabled>Tipo nodo</option>
-                  <option value="1">Testo</option>
-                  <option value="2">Immagine</option>
-                  <option value="3">Codice</option>
-                  <option value="3">link</option>
 
-                </select>
-            </fieldset>
-            <button type="submit" class="btn btn-primary">Aggiungi nodo</button>
-            <button type="submit" class="btn btn-primary">Fine</button>
+          <div class="media clearfix doc-thumb-container">
+            <div class="pull-left media-top">
+              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+            </div>
+            <div class="">
+              <h4 class="">Note title</h4>
+              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+            </div>
           </div>
 
+          <div class="media clearfix doc-thumb-container">
+            <div class="pull-left media-top">
+              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+            </div>
+            <div class="">
+              <h4 class="">Note title</h4>
+              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+            </div>
+          </div>
+
+          <div class="media clearfix doc-thumb-container">
+            <div class="pull-left media-top">
+              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+            </div>
+            <div class="">
+              <h4 class="">Note title</h4>
+              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+            </div>
+          </div>
+
+          <div class="media clearfix doc-thumb-container">
+            <div class="pull-left media-top">
+              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+            </div>
+            <div class="">
+              <h4 class="">Note title</h4>
+              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+            </div>
+          </div>
+
+          <div class="media clearfix doc-thumb-container">
+            <div class="pull-left media-top">
+              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+            </div>
+            <div class="">
+              <h4 class="">Note title</h4>
+              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+            </div>
+          </div>
+
+          <div class="media clearfix doc-thumb-container">
+            <div class="pull-left media-top">
+              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+            </div>
+            <div class="">
+              <h4 class="">Note title</h4>
+              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+            </div>
+          </div>
+
+          <div class="media clearfix doc-thumb-container">
+            <div class="pull-left media-top">
+              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+            </div>
+            <div class="">
+              <h4 class="">Note title</h4>
+              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+            </div>
+          </div>
+
+          <!--STOP REPLACE-->
+        </div>
 
 
+      </div>
+      <div class="col-md-9 main-content center-block" style="background-color: rgba(152, 152, 152, 0.87);;">
+        <div class="document-container">
+          <div class="document">
+            <h1>Nome documento</h1>
+            <p><i>Mario Rossi</i></p>
+            <div class="text-cont"></div>
+            <div class="new-node">
+              <h4>{{title}}</h4>
+              <p>{{text}}</p>
+            </div>
+
+          </div>
+        </div>
 
 
-        </form>
+        <div class="insert-node"><!--  ng-class="{'insert-node-collapsed': !toggle, 'insert-node-complete': toggle } -->
+          <form>
+            <div class="row">
+              <fieldset class="form-group col-md-6">
+                <label>Titolo nodo</label>
+                <input type="text" class="form-control" id="note-title" ng-model="data.title"/>
 
+              </fieldset>
+              <fieldset class="form-group col-md-6">
+                <label for="exampleTextarea">Inserisci qui la tua Descrizione</label>
+                <textarea class="form-control" id="exampleTextarea" rows="4" ng-model="data.description"></textarea>
+              </fieldset>
+              <!-- <div class="col-md-7">
+              <span class="glyphicon  pull-right" ng-class="{'glyphicon-chevron-down': toggle, 'glyphicon-chevron-up': !toggle}" ng-click="toggleView()"></span>
+            </div> -->
+          </div>
+          <div class="row">
+            <fieldset class="form-group col-md-6" align="center">
+              <label for="aaaaa">Seleziona tipo NODO </label>
+              <select id="aaaaa" class="c-select" ng-model="data.type">
+                <option value="text">Testo</option>
+                <option value="image">Immagine</option>
+                <option value="link">Link</option>
+              </select>
+            </fieldset>
+            <span ng-switch on="data.type">
+              <fieldset ng-switch-when="image" class="form-group col-md-6">
+                <label for="exampleInputFile">Carica immagine</label>
+                <input type="file" base-sixty-four-input class="form-control-file block well well-sm" id="exampleInputFile" ng-model="data.content">
+              </fieldset>
+              <fieldset ng-switch-when="text" class="form-group col-md-6">
+                <label for="exampleTextarea">Inserisci qui la tua nota</label>
+                <textarea class="form-control" id="exampleTextarea" rows="4" ng-model="data.content"></textarea>
+              </fieldset>
+              <fieldset ng-switch-when="link" class="form-group col-md-6">
+                <label for="asd">Inserisci qui la tua nota</label>
+                <input type="link" class="form-control" id="asd" ng-model="data.content"></textarea>
+              </fieldset>
+            </div>
+            <div class="row">
+              <button type="submit" class="btn btn-primary" ng-click="addNodo(data)">Aggiungi nodo</button>
+              <button type="submit" class="btn btn-primary">Fine</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
-</div>
+</div>bower install angular-base64-upload

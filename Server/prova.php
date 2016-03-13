@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json');
 $a = $_SERVER[REQUEST_URI];
 $as = explode("&",$a);
 $ass = explode("?", $as[0]);
