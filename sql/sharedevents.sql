@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS documents (
   name varchar(100) default "unknown document",
   event int not null,
   creationdate timestamp default current_timestamp,
-  public ENUM('0','1') default '0',
+  public ENUM('0','1') default '1',
   PRIMARY KEY (id),
   FOREIGN KEY (creator) REFERENCES users(id),
   FOREIGN KEY (event) REFERENCES events(id)
@@ -144,8 +144,7 @@ CREATE TABLE IF NOT EXISTS nodes (
   document int(11),
   note int(11),
   creationdate timestamp default current_timestamp,
-  header varchar(200) default "Title",
-  subheader varchar(200) default "Subtitle",
+  title varchar(200) default "Title",
   PRIMARY KEY (id),
   FOREIGN KEY (document) REFERENCES documents(id) ,
   FOREIGN KEY (note) REFERENCES notes(id)
@@ -560,6 +559,48 @@ DELIMITER |
 CREATE PROCEDURE getDocContent(IN docid INT)
 BEGIN
   SELECT * FROM notes,nodes WHERE (nodes.note = notes.id) AND (nodes.document = docid);
+END |
+DELIMITER ;
+
+/**/
+
+/*  createNote(  ) */
+DELIMITER |
+CREATE PROCEDURE createNote(IN type ENUM('code','text', 'image', 'link'), IN content TEXT, IN description VARCHAR(200), OUT lastid INT)
+BEGIN
+  SET lastid = 0;
+  INSERT INTO notes(type, content, description) VALUES (type, content, description);
+  SELECT last_insert_id() INTO lastid;
+END |
+DELIMITER ;
+
+/* createNode() */
+DELIMITER |
+CREATE PROCEDURE createNode(IN document INT, IN note INT, IN title VARCHAR(200))
+BEGIN
+  INSERT INTO nodes(document, note, title) VALUES (document, note, title);
+END |
+DELIMITER ;
+
+/* addNoteToDoc() */
+DELIMITER |
+CREATE PROCEDURE addNoteToDoc(IN type ENUM('code','text', 'image', 'link'), IN content TEXT, IN description VARCHAR(200), IN document INT, IN title VARCHAR(200))
+BEGIN
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+      SELECT "Errore generico" as "";
+      ROLLBACK;
+    END;
+
+  START TRANSACTION;
+  call createNote(type, content, description, @lastid);
+  IF (@lastid <> 0) THEN
+    call createNode(document, @lastid, title);
+    COMMIT;
+  ELSE
+    SIGNAL sqlstate '45000' set message_text = "Insert Error";
+    ROLLBACK;
+  END IF;
 END |
 DELIMITER ;
 
