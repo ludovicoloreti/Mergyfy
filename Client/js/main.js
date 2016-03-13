@@ -1,5 +1,5 @@
 var app = angular.module('tutorialWebApp', [
-  'ngRoute', 'ngMap'
+  'ngRoute', 'ngMap', 'naif.base64'
 ]);
 /**
 * Configure the Routes
@@ -65,7 +65,7 @@ app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Even
   $http.post(url, obj).success(function(res) {
     console.log(res);
     for (i = 0; i<res.length; i++)
-      $scope.evento = res[i];
+    $scope.evento = res[i];
   }).error(function(error) {
     console.log(error, "non vaaaa");
   })
@@ -168,7 +168,7 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
 
 });
 
-app.controller('DocCtrl', function($scope, $rootScope){
+app.controller('DocCtrl', function($scope, $rootScope, $http){
   $scope.toggle = false;
   $scope.toggleView = function() {
     $scope.toggle = ($scope.toggle) ? false : true;
@@ -176,6 +176,24 @@ app.controller('DocCtrl', function($scope, $rootScope){
 
   $scope.title= "";
   $scope.text= "";
+
+  var obj = {};
+  var data = {};
+  console.log(obj)
+  $scope.addNodo = function(data){
+    console.log(data)
+    var url = $rootScope.url+"?action=createNote&model=lol";
+    obj.type = data.type;
+    obj.title = data.title;
+    obj.content = data.content;
+    obj.description = data.description;
+    obj.docid = "1";
+    $http.post(url, obj).success(function(r) {
+      console.log(r);
+    }).error(function(er) {
+      console.log(er);
+    })
+  };
 });
 app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$http, NgMap) {
   $scope.eventsNavbar = true;
@@ -241,12 +259,12 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
 
   // vffanculo
   NgMap.getMap().then(function(map) {
-     $scope.map = map;
-     $scope.detail = function(event, eventoVic) {
-           $scope.eventoVic = eventoVic;
-           console.log(event)
-           $scope.map.showInfoWindow('infoW', this);
-       };
+    $scope.map = map;
+    $scope.detail = function(event, eventoVic) {
+      $scope.eventoVic = eventoVic;
+      console.log(event)
+      $scope.map.showInfoWindow('infoW', this);
+    };
     console.log('markers', map.markers);
     //console.log('shapes', map.shapes);
   });
