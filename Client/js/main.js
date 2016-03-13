@@ -184,6 +184,19 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
     $scope.eventsNavbar = bool;
   };
 
+  var urlToEventsPartecipo = $rootScope.url+"?action=getUserEvents&model=event";
+  objj = [];
+  objj.userid = parseInt(window.localStorage['id']);
+  objj.which = "all";
+  console.log(objj, urlToEventsPartecipo)
+  $http.post(urlToEventsPartecipo, objj).success(function(res) {
+    console.log(res);
+    $scope.eventiPartecipo = res;
+  }).error(function(er,asd,as,dd) {
+    console.log(er, asd, as, dd, "non va.");
+  });
+
+
 
   var urlToNearEventsZero = $rootScope.url+"?action=userNearEvents&model=event";
   obj = {};
@@ -194,7 +207,7 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
         obj.latitude = parseFloat(position.coords.latitude);
         obj.longitude = parseFloat(position.coords.longitude);
         obj.dist = parseInt("100");
-        console.log("true",obj);
+        console.log("Posizione presa! ",obj);
         $http.post(urlToNearEventsZero, obj).success(function(result) {
           console.log(result);
           $scope.eventiVicini = result;
@@ -207,7 +220,7 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
     obj.latitude = parseInt("0");
     obj.longitude = parseInt("0");
     obj.dist = parseInt("100");
-    console.log("false",obj);
+    console.log("Nessuna posizione presa ",obj);
     $http.post(urlToNearEventsZero, obj).success(function(result) {
       console.log(result);
       $scope.eventiVicini = result;
@@ -220,21 +233,7 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
   }
 
 
-  var urlToEventsPartecipo = $rootScope.url+"?action=getUserEvents&model=event";
-  objj = {};
-  objj.user_id = parseInt(window.localStorage['id']);
-  objj.which = "all";
-  console.log(objj, urlToEventsPartecipo)
-  $http.post(urlToNearEventsZero, objj).success(function(res) {
-    console.log(res);
-    $scope.eventiPartecipo = res;
-  }).error(function(error) {
-    console.log(error, "non va.");
-  })
 
-  $scope.gotoEvent = function(idEvent) {
-    window.location.href="#/event/"+parseInt(idEvent);
-  }
 
 
 
@@ -242,7 +241,7 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
   // vffanculo
   NgMap.getMap().then(function(map) {
     console.log('markers', map.markers);
-    console.log('shapes', map.shapes);
+    //console.log('shapes', map.shapes);
   });
 
 
@@ -278,7 +277,13 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
   function resize() {
     var center = this.map.getCenter();
     google.maps.event.trigger(map, "resize");
-    map.setCenter(center);
+    navigator.geolocation.getCurrentPosition(function(position){
+      $scope.$apply(function(){
+        latt = parseFloat(position.coords.latitude);
+        lonn = parseFloat(position.coords.longitude);
+      });
+    });
+    map.setCenter(latt,lonn);
   }
 
   // google.maps.event.addDomListener(window, 'load', initialize);
