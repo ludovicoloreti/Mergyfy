@@ -22,13 +22,13 @@
         <div class="pill-content" ng-show="eventsNavbar">
           <div class="pill-pane active" id="near">
 
-            <div class="media clearfix doc-thumb-container" ng-repeat="evento in eventiVicini">
+            <div class="media clearfix doc-thumb-container" ng-repeat="eventoV in eventiVicini">
               <div class="pull-left media-top">
                 <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
               </div>
-              <div class="" ng-click="gotoEvent()">
-                <h4 class="">{{evento.eventName}}</h4>
-                <p class="small">{{evento.eventDesc}}</p>
+              <div class="" ng-click="gotoEvent(eventoV.eventId)">
+                <h4 class="">{{eventoV.eventName}}</h4>
+                <p class="small">{{eventoV.eventDesc}}</p>
               </div>
             </div>
 
@@ -39,13 +39,13 @@
         <div class="pill-content" ng-hide="eventsNavbar" style="overflow: scroll; height: 90%;">
           <div class="pill-pane active" id="joined">
 
-            <div class="media clearfix doc-thumb-container" ng-repeat="evento in eventiPartecipo">
+            <div class="media clearfix doc-thumb-container" ng-repeat="eventoP in eventiPartecipo">
               <div class="pull-left media-top">
                 <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
               </div>
-              <div class="" ng-click="gotoEvent()">
-                <h4 class="">evento.name</h4>
-                <p class="small">evento.description</p>
+              <div class="" ng-click="gotoEvent(eventoP.eventId)">
+                <h4 class="">eventoP.name</h4>
+                <p class="small">eventoP.description</p>
               </div>
             </div>
 

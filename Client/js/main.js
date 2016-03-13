@@ -23,7 +23,7 @@ app.config(['$routeProvider', function ($routeProvider) {
   .when("/profile", {templateUrl: "partials/profile.html", controller: "PageCtrl"})
   .when("/groups", {templateUrl: "partials/groups.html", controller: "GroupsCtrl"})
   .when("/addevent", {templateUrl: "partials/addevent.html", controller: "EventCtrl"})
-  .when("/event", {templateUrl: "partials/event.html", controller: "EventCtrl"})
+  .when("/event/:id",{templateUrl:"partials/event.html",controller:"GetEventCtrl",resolve:{Evento:function($routeParams){return $routeParams;}}})
   .when("/group", {templateUrl: "partials/group.html", controller: "GroupCtrl"})
   .when("/addgroup", {templateUrl: "partials/addgroup.html", controller: "AddGroupCtrl"})
   // Blog
@@ -65,7 +65,23 @@ app.controller('HomeCtrl', function ($scope) {
   $scope.clock = new Date();
 });
 
+app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Evento){
+  console.log(Evento.id);
+  var url = $rootScope.url+"?action=getEvent&model=event";
+  obj = {};
+  obj.event_id = parseInt(Evento.id);
+  console.log(obj, url)
+  $http.post(url, obj).success(function(res) {
+
+    console.log(res);
+    for (i = 0; i<res.length; i++)
+      $scope.evento = res[i];
+  }).error(function(error) {
+    console.log(error, "non vaaaa");
+  })
+})
 app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
+
   console.log("ciao");
   $scope.custom = true;
   $scope.toggleCustom = function() {
@@ -182,30 +198,53 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
   var urlToNearEventsZero = $rootScope.url+"?action=userNearEvents&model=event";
   obj = {};
   obj.user_id = parseInt(window.localStorage['id']);
-  obj.distance = parseInt("100");
-  console.log(obj);
-  $http.post(urlToNearEventsZero, obj).success(function(result) {
-    console.log(result);
-    $scope.eventiVicini = result;
-  }).error(function(error) {
-    console.log(error);
-  })
-  // var urlToNearEvents = $rootScope.url+"?action=userNearEvents&model=event&user_id="+window.localStorage['id']+"&distance=100";
-  // $http.get(urlToNearEvents).success(function(r) {
-  //   console.log(r);
-  //   $scope.nearEvents = r;
-  // }).error(function(err) {
-  //   console.log(err);
-  // })
-
-  $scope.gotoEvent = function() {
-    window.location.href="#/event";
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position){
+      $scope.$apply(function(){
+        obj.latitude = parseFloat(position.coords.latitude);
+        obj.longitude = parseFloat(position.coords.longitude);
+        obj.dist = parseInt("100");
+        console.log("true",obj);
+        $http.post(urlToNearEventsZero, obj).success(function(result) {
+          console.log(result);
+          $scope.eventiVicini = result;
+        }).error(function(error) {
+          console.log(error);
+        })
+      });
+    });
+  } else {
+    obj.latitude = parseInt("0");
+    obj.longitude = parseInt("0");
+    obj.dist = parseInt("100");
+    console.log("false",obj);
+    $http.post(urlToNearEventsZero, obj).success(function(result) {
+      console.log(result);
+      $scope.eventiVicini = result;
+    }).error(function(error) {
+      console.log(error);
+    })
+  }
+  $scope.gotoEvent = function(idEvent) {
+    window.location.href="#/event/"+parseInt(idEvent);
   }
 
 
+  var urlToEventsPartecipo = $rootScope.url+"?action=getUserEvents&model=event";
+  objj = {};
+  objj.user_id = parseInt(window.localStorage['id']);
+  objj.which = "all";
+  console.log(objj, urlToEventsPartecipo)
+  $http.post(urlToNearEventsZero, objj).success(function(res) {
+    console.log(res);
+    $scope.eventiPartecipo = res;
+  }).error(function(error) {
+    console.log(error, "non va.");
+  })
 
-
-
+  $scope.gotoEvent = function(idEvent) {
+    window.location.href="#/event/"+parseInt(idEvent);
+  }
 
 
 

@@ -41,8 +41,10 @@ if(isset($test) && $test){
 
 if ((isset($data)) || (!empty($data)) || (!is_null($data))) {
   // POST
+  // var_dump($data);
   $post = new Server();
   $post->execute($model, $action, $data);
+
 } else {
   // GET
   $mdl = new $model();

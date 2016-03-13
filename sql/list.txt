@@ -5,8 +5,8 @@ List of funcitons
     o- login( user_mail, user_password, lat, lng ) > User or -1
 
 /* SEARCH */
-    o- (search)event.userNearEvents( userid, latitude, longitude, dist )
-    o- event.getUserEvents( userid, which )
+    o- (search)event.userNearEvents( userid, latitude, longitude, dist )    ----fatto
+    o- event.getUserEvents( userid, which )                                 ----fatto
     o- (search) event.searchEvents( userid, chars )
 
     - (search) event.suggestedEvents( lat, lng ) > List of events
