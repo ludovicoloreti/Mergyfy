@@ -49,6 +49,6 @@ if((isset($operations) || (!empty($operations)) || (!is_null($operations)))){
         );
         array_push($results, $result);
     }
-    
-    echo (json_encode($results));
+
+    echo json_encode($results);
 }

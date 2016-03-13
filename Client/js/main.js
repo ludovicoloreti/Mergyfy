@@ -26,7 +26,7 @@ app.config(['$routeProvider', function ($routeProvider) {
 
 app.run(function($rootScope, NgMap) {
   window.localStorage['id'] = 1;
-  $rootScope.url = "http://localhost:8888/Mergify/Server/handler.php";
+  $rootScope.url = "http://localhost:8888/Mergify/Server_v02/handler.php";
   NgMap.getMap().then(function(map) {
     $rootScope.map = map;
   });
@@ -201,8 +201,9 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
     $scope.eventsNavbar = bool;
   };
 
-  var urlToEventsPartecipo = $rootScope.url+"?action=getUserEvents&model=event";
+  var urlToEventsPartecipo = $rootScope.url;
   objj = [];
+  objj.action = "getUserEvents";
   objj.userid = parseInt(window.localStorage['id']);
   objj.which = "all";
   console.log(objj, urlToEventsPartecipo)
@@ -215,9 +216,10 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
 
 
   $
-  var urlToNearEventsZero = $rootScope.url+"?action=userNearEvents&model=event";
+  var urlToNearEventsZero = $rootScope.url;
   obj = {};
-  obj.user_id = parseInt(window.localStorage['id']);
+  obj.userid = parseInt(window.localStorage['id']);
+  obj.action = "userNearEvents";
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position){
       $scope.$apply(function(){
@@ -226,9 +228,9 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
         $scope.latitudine = obj.latitude;
         $scope.longitudine = obj.longitude;
         obj.dist = parseInt("100");
-        console.log("Posizione presa! ",obj);
+        console.log("Posizione presa! ",obj, urlToNearEventsZero);
         $http.post(urlToNearEventsZero, obj).success(function(result) {
-          console.log(result, "non stampa nulla");
+          console.log(result);
           $scope.eventiVicini = result;
         }).error(function(error) {
           console.log(error);
@@ -270,7 +272,7 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
   });
 
   function resize() {
-    var center = this.map.getCenter();
+    // var center = this.map.getCenter();
     google.maps.event.trigger(map, "resize");
     navigator.geolocation.getCurrentPosition(function(position){
       $scope.$apply(function(){
