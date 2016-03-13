@@ -62,7 +62,7 @@ List of funcitons
 /* DELETE */
     - user.deleteUser( userID ) ( setta il delated a true )
     - note.deleteNode( NoteID, DocumentID ) (se non ci sono più nodi viene cancellato definitivamente anche dalla tabella nodi)
-    - event.deleteEvent( eventID )
+    - event.deleteEvent( userID, eventID )
     - group.deleteGroup( userID, groupID )
     - document.deleteDocument( userID, docID )
     - member.deleteMember( memberID, groupID, userID)
@@ -76,3 +76,8 @@ dove si accetta invito ad evento?
 timeout(3000 ms, pesca note e mettile in cima);
 
 aggiungere trigger per il doppio check della mail
+
+accettare invito a gruppo e ad evento.
+tab richieste gruppi
+tab richieste eventi
+add document button (today)
