@@ -57,6 +57,8 @@ class Database extends PDO{
      *
      */
     public function callProcedure( $functionName, $parameters ){
+      // var_dump($functionName);
+      // var_dump($parameters);
         $sql = "call " . $functionName."( ";
         for( $i = 0; $i < count($parameters); $i++ ) {
             if($i < count($parameters)-1){
