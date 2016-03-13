@@ -102,8 +102,8 @@ CREATE TABLE IF NOT EXISTS members(
   role enum('admin','normal') default 'normal',
   joindate timestamp not null default CURRENT_TIMESTAMP(),
   PRIMARY KEY (iduser, idgroup),
-  FOREIGN KEY (iduser) references users(id) on delete no action,
-  FOREIGN KEY (idgroup) references groups(id) on delete no action
+  FOREIGN KEY (iduser) references users(id),
+  FOREIGN KEY (idgroup) references groups(id)
 ) engine=INNODB;
 
 /* EVENTS */
@@ -119,9 +119,9 @@ CREATE TABLE IF NOT EXISTS events (
   description varchar(2000),
   categoryid int,
   PRIMARY KEY (id),
-  FOREIGN KEY (place) REFERENCES places(id) on delete set null on update cascade,
-  FOREIGN KEY (creator) REFERENCES users(id) on delete set null on update cascade,
-  FOREIGN KEY (categoryid) REFERENCES categories(id) on delete set null
+  FOREIGN KEY (place) REFERENCES places(id),
+  FOREIGN KEY (creator) REFERENCES users(id),
+  FOREIGN KEY (categoryid) REFERENCES categories(id)
 ) engine=INNODB;
 
 /* DOCUMENTS */
