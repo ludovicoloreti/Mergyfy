@@ -38,123 +38,123 @@ USE merge;
 /******************** TABLES ***********************/
 /* USERS */
 CREATE TABLE IF NOT EXISTS users (
-  id int(11) auto_increment,
-  name varchar(100) not null,
-  lastname varchar(100) not null,
-  born date,
-  subscriptiondate timestamp not null,
-  type enum('basic','premium','admin') default 'basic',
-  profilepicture varchar(300),
-  actual_lat decimal(11,8), /* it must be defined */
-  actual_lng decimal(11,8), /* it must be defined */
-  password varchar(300) not null,
-  mail varchar(150) not null,
-  delated  ENUM('0','1') default '0',
+  id INT(11) AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  lastname VARCHAR(100) NOT NULL,
+  born DATE,
+  subscriptiondate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  type ENUM('basic','premium','admin') DEFAULT 'basic',
+  image_profile VARCHAR(300),
+  latitude DECIMAL(11,8), /* it must be defined */
+  longitude DECIMAL(11,8), /* it must be defined */
+  password VARCHAR(300) NOT NULL,
+  mail VARCHAR(150) NOT NULL,
+  delated  ENUM('0','1') DEFAULT '0',
   PRIMARY KEY (id)
 ) engine=INNODB;
 
 /* GROUPS */
 CREATE TABLE IF NOT EXISTS groups(
-  id int(11) auto_increment,
-  name varchar(100) not null,
-  creationdate timestamp not null default current_timestamp(),
-  image varchar(300),
-  description varchar(2000) not null default "No description.",
+  id INT(11) AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  creationdate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  image VARCHAR(300),
+  description VARCHAR(2000) NOT NULL DEFAULT "No description.",
   PRIMARY KEY (id)
 ) engine=INNODB;
 
 /* PLACES */
 CREATE TABLE IF NOT EXISTS places (
-  id int(11) auto_increment,
-  lat decimal(11,8),
-  lng decimal(11,8),
-  name varchar(100) not null,
-  address varchar(200) not null,
-  cap varchar(10),
-  city varchar(50) not null,
-  nation varchar(50) not null default "Italy",
+  id INT(11) AUTO_INCREMENT,
+  latitude DECIMAL(11,8),
+  longitude DECIMAL(11,8),
+  name VARCHAR(100) NOT NULL,
+  address VARCHAR(200) NOT NULL,
+  cap VARCHAR(10),
+  city VARCHAR(50) NOT NULL,
+  nation VARCHAR(50) NOT NULL DEFAULT "Italy",
   PRIMARY KEY (id)
 ) engine=INNODB;
 
 /* CATEGORIES */
 CREATE TABLE IF NOT EXISTS categories (
-  id int(11) auto_increment,
-  name varchar(100) not null,
-  description varchar(2000),
-  colour varchar(6),
+  id INT(11) AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  description VARCHAR(2000),
+  colour VARCHAR(6),
   PRIMARY KEY (id)
 ) engine=INNODB;
 
 /* NOTES */
 CREATE TABLE IF NOT EXISTS notes (
-  id int(11) auto_increment,
-  type ENUM('code','text', 'image', 'link') default 'text',
-  content text,
-  description varchar(200),
+  id INT(11) AUTO_INCREMENT,
+  type ENUM('code','text', 'image', 'link') DEFAULT 'text',
+  content TEXT,
+  description VARCHAR(200),
   PRIMARY KEY(id)
 ) engine=INNODB;
 
 /* MEMBERS */
 CREATE TABLE IF NOT EXISTS members(
-  iduser int(11) not null,
-  idgroup int(11) not null,
-  accepted boolean default 0,
-  role enum('admin','normal') default 'normal',
-  joindate timestamp not null default CURRENT_TIMESTAMP(),
-  PRIMARY KEY (iduser, idgroup),
-  FOREIGN KEY (iduser) references users(id),
-  FOREIGN KEY (idgroup) references groups(id)
+  user_id INT(11) NOT NULL,
+  group_id INT(11) NOT NULL,
+  accepted BOOLEAN DEFAULT 0,
+  role ENUM('admin','normal') DEFAULT 'normal',
+  joindate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, group_id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (group_id) REFERENCES groups(id)
 ) engine=INNODB;
 
 /* EVENTS */
 CREATE TABLE IF NOT EXISTS events (
-  id int(11) auto_increment,
-  name varchar(100) not null,
-  place int,
-  creationdate timestamp default current_timestamp,
-  startdate timestamp,
-  stopdate timestamp,
-  creator int,
-  type ENUM('public','private') default 'public',
-  description varchar(2000),
-  categoryid int,
+  id INT(11) AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  place_id INT,
+  creationdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  startdate TIMESTAMP,
+  stopdate TIMESTAMP,
+  creator_id INT,
+  type ENUM('public','private') DEFAULT 'public',
+  description VARCHAR(2000),
+  category_id INT,
   PRIMARY KEY (id),
-  FOREIGN KEY (place) REFERENCES places(id),
-  FOREIGN KEY (creator) REFERENCES users(id),
-  FOREIGN KEY (categoryid) REFERENCES categories(id)
+  FOREIGN KEY (place_id) REFERENCES places(id),
+  FOREIGN KEY (creator_id) REFERENCES users(id),
+  FOREIGN KEY (category_id) REFERENCES categories(id)
 ) engine=INNODB;
 
 /* DOCUMENTS */
 CREATE TABLE IF NOT EXISTS documents (
-  id int(11) auto_increment,
-  creator int not null,
-  name varchar(100) default "unknown document",
-  event int not null,
-  creationdate timestamp default current_timestamp,
-  public ENUM('0','1') default '1',
+  id INT(11) AUTO_INCREMENT,
+  creator_id INT NOT NULL,
+  name VARCHAR(100) DEFAULT "unknown document",
+  event_id INT NOT NULL,
+  creationdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  public ENUM('0','1') DEFAULT '1',
   PRIMARY KEY (id),
-  FOREIGN KEY (creator) REFERENCES users(id),
-  FOREIGN KEY (event) REFERENCES events(id)
+  FOREIGN KEY (creator_id) REFERENCES users(id),
+  FOREIGN KEY (event_id) REFERENCES events(id)
 
 ) engine=INNODB;
 
 /* NODES */
 CREATE TABLE IF NOT EXISTS nodes (
-  id int(11) auto_increment,
-  document int(11),
-  note int(11),
-  creationdate timestamp default current_timestamp,
-  title varchar(200) default "Title",
+  id INT(11) AUTO_INCREMENT,
+  document_id INT(11),
+  note_id INT(11),
+  creationdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  title VARCHAR(200) DEFAULT "Title",
   PRIMARY KEY (id),
-  FOREIGN KEY (document) REFERENCES documents(id) ,
-  FOREIGN KEY (note) REFERENCES notes(id)
+  FOREIGN KEY (document_id) REFERENCES documents(id),
+  FOREIGN KEY (note_id) REFERENCES notes(id)
 ) engine=INNODB;
 
 /* PARTECIPATIONS */
 CREATE TABLE IF NOT EXISTS partecipations (
-  event_id int(11) not null,
-  user_id int(11) not null,
-  status ENUM('accepted','declined','waiting') default 'waiting',
+  event_id INT(11) NOT NULL,
+  user_id INT(11) NOT NULL,
+  status ENUM('accepted','declined','waiting') DEFAULT 'waiting',
   PRIMARY KEY (event_id, user_id),
   FOREIGN KEY(event_id) REFERENCES events(id),
   FOREIGN KEY(user_id) REFERENCES users(id)
@@ -162,54 +162,62 @@ CREATE TABLE IF NOT EXISTS partecipations (
 
 /******************** VIEWS *************************/
 
-CREATE VIEW usersInfo(userid, name, lastname, born, subscriptiondate, type, profilepicture, mail) AS
-  SELECT id, name, lastname, born, subscriptiondate, type, profilepicture, mail FROM users WHERE delated="0";
+CREATE VIEW usersInfo(id, name, lastname, born, subscriptiondate, type, image_profile, mail) AS
+  SELECT id, name, lastname, born, subscriptiondate, type, image_profile, mail FROM users WHERE delated="0";
 
 /* TODO */
 
 /******************** TRIGGERS **********************/
 
-/* 1 - check_age
+/* 1 - check_user
   Checks the user date of birth
+  Checks the mail format
+  Checks if the mail is duplicated
 */
 DELIMITER //
-create trigger check_age
+create trigger check_user
 BEFORE INSERT ON merge.users
 FOR EACH ROW
 BEGIN
   -- CURRENT_TIMESTAMP() - UNIX_TIMESTAMP(NEW.born) > 1009846861  -- 14yo in timestamp
 	IF (NEW.born IS NULL) OR ( (YEAR(CURRENT_TIMESTAMP()) - YEAR(NEW.born) - (DATE_FORMAT(CURRENT_TIMESTAMP(), '%m%d') < DATE_FORMAT(NEW.born, '%m%d'))) < 14 )
   THEN
-      SIGNAL sqlstate '45000' set message_text = "Age must be more than 14 yo";
+    SIGNAL sqlstate '45000' SET message_text = "Age must be more than 14 yo";
 	END IF;
-	IF (NEW.mail NOT REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$' )
+
+	IF ( (NEW.mail NOT REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$' ) OR (NEW.mail = ANY (SELECT usr.mail FROM users AS usr WHERE usr.delated = "0")) )
   THEN
-      SIGNAL sqlstate '45000' set message_text = "Invalid email address";
+    SIGNAL sqlstate '45000' SET message_text = "Invalid email address";
 	END IF;
 END //
 DELIMITER ;
 
 /* 2 - check_event_creation
-  Checks the if the creation date is correct
+  - Checks the if the creation date is correct
   (it can be omitted since we use a stored procedure and set creation with current_timestamp)
-*/
-/* MERGED TRIGGER
-  3 - check_mail
-  Checks if the email provided by the user is correct.
+
+  - Checks if the email provided by the user is correct.
+
+  - Check if the startdate comes before the stopdate
 */
 DELIMITER //
-create trigger check_event_creation
+create trigger check_event
 BEFORE INSERT ON merge.events
 FOR EACH ROW
 BEGIN
 	IF ( (NEW.creationdate IS NULL) OR (NEW.creationdate > CURRENT_TIMESTAMP()) )
   THEN
-      SIGNAL sqlstate '45000' set message_text = "Invalid creation date";
+      SIGNAL sqlstate '45000' SET message_text = "Invalid creation date";
 	END IF;
+
+  IF ( NEW.startdate > NEW.stopdate )
+  THEN
+    SIGNAL sqlstate '45000' SET message_text = "Date interval is not correct";
+  END IF;
 END //
 DELIMITER ;
 
-/* 4 - check_admin
+/* 3 - check_admin
   When an admin leaves a group, it replace the admin with the first member who has joined the group.
 */
 DELIMITER //
@@ -221,12 +229,12 @@ BEGIN
   THEN
       UPDATE members SET role = "admin"
       -- it should call update admin
-      WHERE (idgroup = OLD.idgroup) AND (iduser = (SELECT iduser FROM members WHERE idgroup = OLD.idgroup HAVING min(joindate)));
+      WHERE (group_id = OLD.group_id) AND (user_id = (SELECT user_id FROM members WHERE group_id = OLD.group_id HAVING min(joindate)));
 	END IF;
 END //
 DELIMITER ;
 
-/* 5 - check_note
+/* 4 - check_note
   Checks if an image note or a link note has the description associated
 */
 DELIMITER //
@@ -234,24 +242,9 @@ create trigger ceck_note
 BEFORE INSERT ON merge.notes
 FOR EACH ROW
 BEGIN
-	IF ( ( NEW.type = "image" OR NEW.type = "link") AND (NEW.description IS NULL) )
+	IF ( (NEW.type = "image" OR NEW.type = "link") AND (NEW.description IS NULL) )
   THEN
-    SIGNAL sqlstate '45000' set message_text = "You must provide a description";
-  END IF;
-END //
-DELIMITER ;
-
-/* 6 - check_date_period
-  Checks if an image note or a link note has the description associated
-*/
-DELIMITER //
-create trigger ceck_date
-BEFORE INSERT ON merge.
-FOR EACH ROW
-BEGIN
-	IF ( ( NEW.type = "image" OR NEW.type = "link") AND (NEW.description IS NULL) )
-  THEN
-    SIGNAL sqlstate '45000' set message_text = "You must provide a description";
+    SIGNAL sqlstate '45000' SET message_text = "You must provide a description";
   END IF;
 END //
 DELIMITER ;
@@ -259,45 +252,63 @@ DELIMITER ;
 
 /******************** STORED PROCEDURES **********************/
 
-/* login( usermail, userpassword, lat, lng )
+/* login( mail, password, latitude, longitude )
     Authenticate the user and set his location.
 */
 DELIMITER |
-CREATE PROCEDURE login( IN usermail VARCHAR(150), IN userpassword VARCHAR(300), IN lat DECIMAL(11,8), IN lng DECIMAL(11,8))
+CREATE PROCEDURE login( IN mail VARCHAR(150), IN password VARCHAR(300), IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8))
 BEGIN
-  DECLARE uid INT default -1;
-  SELECT id INTO uid FROM users WHERE (mail = usermail) AND (password = userpassword) LIMIT 1;
-  IF (uid <> -1) THEN
-    call updatePosition(uid, lat, lng);
-    call getUser(uid);
+  DECLARE user_id INT default -1;
+  SELECT usr.id INTO user_id FROM users AS usr WHERE (usr.mail = mail) AND (usr.password = password) LIMIT 1;
+  IF (user_id <> -1) THEN
+    call updatePosition(user_id, latitude, longitude);
+    call getUser(user_id);
   END IF;
 END |
 DELIMITER ;
 
-/* insertUser()
+/* updatePosition( user_id, latitude, longitude ) */
+DELIMITER |
+CREATE PROCEDURE updatePosition(IN user_id INT, IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8))
+BEGIN
+  IF ( (latitude IS NOT NULL) AND (longitude IS NOT NULL) ) THEN
+    UPDATE users AS usr SET usr.latitude = latitude, usr.longitude = longitude WHERE (usr.id = user_id);
+  END IF;
+END |
+DELIMITER ;
+/**
+/* getUser( user_id ) */
+DELIMITER |
+CREATE PROCEDURE getUser(IN user_id INT)
+BEGIN
+  SELECT * FROM usersInfo AS usr WHERE usr.id = user_id;
+END |
+DELIMITER ;
+
+/* insertUser(name, lastname, born, type, image_profile, password, mail)
     Insert a User TODO
 */
 DELIMITER |
-CREATE PROCEDURE insertUser(IN name varchar(100),
- IN lastname varchar(100),
- IN born date, IN type int,
- IN profile varchar(300),
- IN password varchar(300),
- IN mail varchar(150),
- OUT id int)
+CREATE PROCEDURE insertUser(IN name VARCHAR(100),
+ IN lastname VARCHAR(100),
+ IN born DATE,
+ IN type INT,
+ IN image_profile VARCHAR(300),
+ IN password VARCHAR(300),
+ IN mail VARCHAR(150),
+ OUT id INT)
 BEGIN
   IF type = 1 THEN
-    insert into users(name, lastname, born, subscriptiondate, type, profilepicture, password, mail)
-      values(name, lastname, born, CURRENT_TIMESTAMP(), "premium", profile, password, mail);
+    INSERT INTO users(name, lastname, born, type, image_profile, password, mail)
+      VALUES(name, lastname, born, "premium", image_profile, password, mail);
   ELSEIF type = 2 THEN
-    insert into users(name, lastname, born, subscriptiondate, type, profilepicture, password, mail)
-      values(name, lastname, born, CURRENT_TIMESTAMP(), "admin", profile, password, mail);
+    INSERT INTO users(name, lastname, born, type, image_profile, password, mail)
+      VALUES(name, lastname, born, "admin", image_profile, password, mail);
   ELSE
-    insert into users(name, lastname, born, subscriptiondate, profilepicture, password, mail)
-      values(name, lastname, born, CURRENT_TIMESTAMP(), profile, password, mail);
+    INSERT INTO users(name, lastname, born, image_profile, password, mail)
+      VALUES(name, lastname, born, image_profile, password, mail);
   END IF;
-  SELECT LAST_INSERT_ID() INTO id;
-  SELECT LAST_INSERT_ID() AS "last user insert id ";
+  SELECT LAST_INSERT_ID() AS last_id INTO id ;
 END |
 DELIMITER ;
 
@@ -305,67 +316,72 @@ DELIMITER ;
     Select a number of places filtered by a given distance (in km)
 */
 DELIMITER |
-CREATE PROCEDURE userNearEvents(IN userid INT, IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8), IN dist INT )
+CREATE PROCEDURE userNearEvents(IN user_id INT, IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8), IN dist INT )
 BEGIN
   DECLARE userLng DOUBLE;
   DECLARE userLat DOUBLE;
   SET userLng = longitude;
   SET userLat = latitude;
-  IF ((userLat = 0) OR (userLng = 0)) THEN
-    -- Get actual user's lat and lng given the userID
-    SELECT actual_lng, actual_lat INTO userLng, userLat FROM users WHERE (id = userid) LIMIT 1;
+  -- Get old position if not provided a new one
+  IF ( ((userLat IS NULL) AND (userLng IS NULL)) OR ((userLat = 0) AND (userLng = 0)) ) THEN
+    SELECT usr.longitude, usr.latitude INTO userLng, userLat FROM users AS usr WHERE (usr.id = user_id) LIMIT 1;
+  END IF;
+  -- Neither old position nor new position
+  IF ( ((userLat IS NULL) AND (userLng IS NULL)) OR ((userLat = 0) AND (userLng = 0)) ) THEN
+    SIGNAL sqlstate '45000' SET message_text = "No position no party";
   ELSE
     -- Find Events
-    SELECT ev.id as eventId, ev.name as eventName, ev.creationdate as dateCreation, ev.startdate as dateStart, ev.stopdate as dateStop, ev.description as eventDesc,
-           u.id as creatorId, u.name as creatorName, u.lastname as creatorLastname,
-           pl.id as placeId, pl.name as placeName, pl.address as placeAddress, pl.lat as placeLat, pl.lng as placeLng,
-           ( 3959 * acos( cos( radians(userLat) ) * cos( radians( pl.lat ) ) * cos( radians( pl.lng ) - radians(userLng) ) + sin( radians(userLat) ) * sin( radians( pl.lat ) ) ) ) AS distance
-    FROM events as ev, places as pl, users as u
-    WHERE (ev.place = pl.id) AND (ev.creator = u.id)
-    HAVING (distance < dist)
-    ORDER BY distance;
+    SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
+           usr.id AS creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname,
+           plc.id AS place_id, plc.name AS place_name, plc.address AS address, plc.latitude AS latitude, plc.longitude AS longitude,
+           ( 3959 * acos( cos( radians(userLat) ) * cos( radians( plc.latitude ) ) * cos( radians( plc.longitude ) - radians(userLng) ) + sin( radians(userLat) ) * sin( radians( plc.latitude ) ) ) ) AS calculated_distance
+    FROM events AS evnt, places AS plc, users AS usr
+    WHERE (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id)
+    HAVING (calculated_distance < dist)
+    ORDER BY calculated_distance;
   END IF;
-
 END |
 DELIMITER ;
 
-/* getUserEvents( userid, which )
+/* getUserEvents( user_id, which )
     Select events in which the user has been invited to. We can decide wheter
     to get all the set of events or only the next/past ones.
 */
 DELIMITER |
-CREATE PROCEDURE getUserEvents( IN userid INT, IN which ENUM('next','past','all') )
+CREATE PROCEDURE getUserEvents( IN user_id INT, IN which ENUM('next','past','all') )
 BEGIN
   CASE which
     WHEN 'next' THEN
-      SELECT * FROM partecipations AS part, events AS ev, places AS pl
-        WHERE ( (part.event_id = ev.id) AND (part.user_id = userid) AND (ev.place = pl.id) AND (ev.startdate > current_timestamp()) );
+      SELECT * FROM partecipations AS part, events AS evnt, places AS plc
+        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.startdate > current_timestamp()) );
     WHEN 'past' THEN
-      SELECT * FROM partecipations AS part, events AS ev, places AS pl
-        WHERE ( (part.event_id = ev.id) AND (part.user_id = userid) AND (ev.place = pl.id) AND (ev.stopdate < current_timestamp()) );
+      SELECT * FROM partecipations AS part, events AS evnt, places AS plc
+        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.stopdate < current_timestamp()) );
     ELSE
-      SELECT * FROM partecipations AS part, events AS ev, places AS pl
-        WHERE ( (part.event_id = ev.id) AND (part.user_id = userid) AND (ev.place = pl.id) );
+      SELECT * FROM partecipations AS part, events AS evnt, places AS plc
+        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) );
   END CASE;
 END |
 DELIMITER ;
 
 /* searchEvents( userid, text )
-    Search for all public events or private ,if the user has been invited to.
+    Search for all public events or private ,if the user has been invited to (or he's the creator).
 */
 DELIMITER |
-CREATE PROCEDURE searchEvents(IN userid INT, IN chars VARCHAR(200))
+CREATE PROCEDURE searchEvents(IN user_id INT, IN chars VARCHAR(200))
   BEGIN
     -- search (1) public events (2) partecipation
-    (SELECT ev.id, ev.name FROM events AS ev, places AS pl
-      WHERE ( (ev.place = pl.id) AND (ev.type="public") AND (ev.name LIKE CONCAT('%', chars , '%')) ) LIMIT 6)
+    (SELECT evnt.id, evnt.name FROM events AS evnt, places AS plc
+      WHERE ( (evnt.place_id = plc.id) AND (evnt.type="public") AND (evnt.name LIKE CONCAT('%', chars , '%')) ) LIMIT 6)
     UNION
-    (SELECT ev.id, ev.name FROM events AS ev, places AS pl, partecipations AS part
-      WHERE ( (ev.place = pl.id) AND (part.event_id = ev.id) AND (part.user_id = userid) AND (ev.name LIKE CONCAT('%', chars , '%')) ) LIMIT 6);
+    (SELECT evnt.id, evnt.name FROM events AS evnt, places AS plc, partecipations AS part
+      WHERE ( (evnt.place_id = plc.id) AND (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.name LIKE CONCAT('%', chars , '%')) ) LIMIT 6);
   END |
 DELIMITER ;
 
-/* suggestedEvents() */
+/* suggestedEvents()
+  Suggest some public events near the user. TODO
+*/
 DELIMITER |
 CREATE PROCEDURE suggestedEvents(IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8))
 BEGIN
@@ -382,22 +398,12 @@ DELIMITER ;
 
 /* suggestedPlaces() */
 DELIMITER |
-CREATE PROCEDURE suggestedPlaces(IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8))
+CREATE PROCEDURE suggestedPlaces(IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8), IN dist DECIMAL(11,8))
 BEGIN
-  SELECT pl.* , ( 3959 * acos( cos( radians(latitude) ) * cos( radians( pl.lat ) ) * cos( radians( pl.lng ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( pl.lat ) ) ) ) AS distance
-  FROM places as pl
-  HAVING (distance < dist)
-  ORDER BY distance;
-END |
-DELIMITER ;
-
-
-
-/* getUser( id ) */
-DELIMITER |
-CREATE PROCEDURE getUser(IN id INT)
-BEGIN
-  SELECT * FROM usersInfo WHERE userid = id;
+  SELECT plc.* , ( 3959 * acos( cos( radians(latitude) ) * cos( radians( plc.latitude ) ) * cos( radians( plc.longitude ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( plc.latitude ) ) ) ) AS calculated_distance
+  FROM places as plc
+  HAVING ( calculated_distance < dist )
+  ORDER BY calculated_distance;
 END |
 DELIMITER ;
 
@@ -420,16 +426,6 @@ BEGIN
       type = typeI, profilepicture = profileI, actual_lat = lat,
         actual_lng = lng, password = passwordI, mail = mailI, delated = delatedI
          WHERE id = idI;
-END |
-DELIMITER ;
-
-
-
-/* updatePosition( pos ) */
-DELIMITER |
-CREATE PROCEDURE updatePosition(IN uid INT, IN lat DECIMAL(11,8), IN lng DECIMAL(11,8) )
-BEGIN
-  UPDATE users SET actual_lat = lat, actual_lng = lng WHERE (id = uid);
 END |
 DELIMITER ;
 
@@ -576,26 +572,26 @@ DELIMITER ;
 
 /* createNode() */
 DELIMITER |
-CREATE PROCEDURE createNode(IN document INT, IN note INT, IN title VARCHAR(200))
+CREATE PROCEDURE createNode(IN document_id INT, IN note_id INT, IN title VARCHAR(200))
 BEGIN
-  INSERT INTO nodes(document, note, title) VALUES (document, note, title);
+  INSERT INTO nodes(document_id, note_id, title) VALUES (document_id, note_id, title);
 END |
 DELIMITER ;
 
 /* addNoteToDoc() */
 DELIMITER |
-CREATE PROCEDURE addNoteToDoc(IN type ENUM('code','text', 'image', 'link'), IN content TEXT, IN description VARCHAR(200), IN document INT, IN title VARCHAR(200))
+CREATE PROCEDURE addNoteToDoc(IN type ENUM('code','text', 'image', 'link'), IN content TEXT, IN description VARCHAR(200), IN document_id INT, IN title VARCHAR(200))
 BEGIN
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-      SELECT "Errore generico" as "";
+      SELECT "Generic error" as "";
       ROLLBACK;
     END;
 
   START TRANSACTION;
   call createNote(type, content, description, @lastid);
   IF (@lastid <> 0) THEN
-    call createNode(document, @lastid, title);
+    call createNode(document_id, @lastid, title);
     COMMIT;
   ELSE
     SIGNAL sqlstate '45000' set message_text = "Insert Error";
