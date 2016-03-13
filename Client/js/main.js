@@ -66,9 +66,10 @@ app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Even
   obj.data = data;
   console.log(JSON.stringify(obj));
   $http.post($rootScope.url, [obj]).success(function(res) {
-    console.log(res);
-    for (i = 0; i<res.length; i++)
-    $scope.evento = res[i];
+    console.log(res['0'].data);
+    ress = res[0].data;
+    for (i = 0; i<ress.length; i++)
+    $scope.evento = ress[i];
   }).error(function(error) {
     console.log(error, "non vaaaa");
   })
