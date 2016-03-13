@@ -38,11 +38,3 @@ INSERT INTO `partecipations` (`event_id`, `user_id`, `status`) VALUES
 (1, 3, 'waiting'),
 (1, 4, 'waiting'),
 (1, 5, 'waiting');
-
-
-/**** NO ****/
-UPDATE events SET place=4 WHERE id=4;
-UPDATE events SET place=5 WHERE id=5;
-UPDATE events SET place=6 WHERE id=6;
-
-UPDATE places SET name= "casa di jerry cala" WHERE id = 6;

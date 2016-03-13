@@ -63,7 +63,6 @@ app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Even
   obj.event_id = parseInt(Evento.id);
   console.log(obj, url)
   $http.post(url, obj).success(function(res) {
-
     console.log(res);
     for (i = 0; i<res.length; i++)
       $scope.evento = res[i];
