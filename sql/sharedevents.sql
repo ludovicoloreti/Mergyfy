@@ -242,6 +242,21 @@ BEGIN
 END //
 DELIMITER ;
 
+/* 6 - check_date_period
+  Checks if an image note or a link note has the description associated
+*/
+DELIMITER //
+create trigger ceck_date
+BEFORE INSERT ON merge.
+FOR EACH ROW
+BEGIN
+	IF ( ( NEW.type = "image" OR NEW.type = "link") AND (NEW.description IS NULL) )
+  THEN
+    SIGNAL sqlstate '45000' set message_text = "You must provide a description";
+  END IF;
+END //
+DELIMITER ;
+
 
 /******************** STORED PROCEDURES **********************/
 
@@ -429,9 +444,17 @@ DELIMITER ;
 
 /* getEvent( id ) */
 DELIMITER |
-CREATE PROCEDURE getEvent(IN eventid INT)
+CREATE PROCEDURE getEvent(IN userid INT, IN eventid INT)
 BEGIN
-  SELECT * FROM events WHERE (id = eventid);
+  -- Verify user partecipation
+  DECLARE presenza INT default 0;
+  SELECT COUNT(*) INTO presenza FROM partecipations AS p WHERE (p.user_id=userid) AND (p.event_id=eventid);
+
+  IF presenza = 1 THEN
+    SELECT * FROM events AS e, places AS p, usersInfo AS u WHERE (e.creator = u.userid) AND  (e.place = p.id) AND (e.id = eventid);
+  ELSE
+    SIGNAL sqlstate '45000' set message_text = "You are not a partecipant!";
+  END IF;
 END |
 DELIMITER ;
 
