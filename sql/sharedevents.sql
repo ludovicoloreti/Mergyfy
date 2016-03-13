@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS nodes (
   header varchar(200) default "Title",
   subheader varchar(200) default "Subtitle",
   PRIMARY KEY (id),
-  FOREIGN KEY (document) REFERENCES documents(id),
+  FOREIGN KEY (document) REFERENCES documents(id) ,
   FOREIGN KEY (note) REFERENCES notes(id)
 ) engine=INNODB;
 
