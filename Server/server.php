@@ -28,7 +28,9 @@ class Server{
     if($analyse){
       $db = new Database();
       $db->callProcedure($action, $sending);
-      echo json_encode($db->getResult());
+      $temp = $db->getResult();
+    //  var_dump($temp, json_encode($temp));
+      echo json_encode($temp);
     }
   }
 

@@ -211,7 +211,7 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
         obj.dist = parseInt("100");
         console.log("Posizione presa! ",obj);
         $http.post(urlToNearEventsZero, obj).success(function(result) {
-          console.log(result);
+          console.log(result, "non stampa nulla");
           $scope.eventiVicini = result;
         }).error(function(error) {
           console.log(error);
