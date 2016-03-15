@@ -7,6 +7,7 @@ class Database extends PDO{
     private $pass = "root";
     private $dbHandle = null;
     private $results = null;
+    private $errors = null;
 
     private $conn = null;
     private $stmt = null;
@@ -74,8 +75,8 @@ class Database extends PDO{
         if($this->stmt){
             try{
                 $this->stmt->execute();
-            } catch(Error $e){
-                echo $e;
+            } catch(Exception $pdo){
+                $this->errors = $pdo;
             }
 
             return true;
@@ -85,7 +86,7 @@ class Database extends PDO{
     }
 
     public function getResult() {
-        return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+        return is_null($this->errors)? $this->stmt->fetchAll(PDO::FETCH_ASSOC) : $this->errors;
 
     }
 

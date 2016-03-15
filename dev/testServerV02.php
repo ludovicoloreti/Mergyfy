@@ -22,6 +22,13 @@ $input = "[
     \"data\": {
       \"idI\": 1
     }
+  },
+  {
+    \"action\":\"getEvent\",
+    \"data\":{
+        \"eventid\":2,
+        \"userid\":1
+    }
   }
 ]";
 
