@@ -81,3 +81,14 @@ accettare invito a gruppo e ad evento.
 tab richieste gruppi
 tab richieste eventi
 add document button (today)
+
+
+
+
+
+1 - settare le dipendenze delle tabelle e le modifiche a cascata
+2 - pensare alla chiave primaria della categoria
+3 - pensare al valore di default della categoria
+
+4 - Chi crea un evento ci partecipa!
+5 - Controllare chi crea un docuemnto se ha il diritto di crearlo
