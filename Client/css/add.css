@@ -20,15 +20,18 @@
 .aside {
   height: 100%;
   background-color: rgba(212, 212, 214, 0.88);
-
 }
-.docs-cont {
+
+.docs-cont{
   overflow: scroll;
   height: 85%;
   margin:0px;
   padding:0px;
 }
-
+.groups-list {
+  overflow: scroll;
+  height: 80%;
+}
 
 
 .doc-thumb-container {
@@ -120,10 +123,25 @@
   background-color: #ffffff;
   margin: 20px auto 0 auto;
   padding: 20px;
-
   top: 50px;
   left: 50px;
-
   right: 50px;
+}
 
+.loading
+{
+    -webkit-animation-name:             rotate;
+    -webkit-animation-duration:         7s;
+    -webkit-animation-iteration-count:  infinite;
+    -webkit-transition-timing-function: linear;
+    display: block;
+
+}
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(4000deg);
+  }
 }

@@ -3,8 +3,12 @@ INSERT INTO `users` (`id`, `name`, `lastname`, `born`, `subscriptiondate`, `type
 (1, 'Filippo', 'Boiani', '1993-10-28', '2016-02-29 22:26:13', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail1.com', '0'),
 (2, 'Riccardo', 'Sibani', '1994-09-24', '2016-02-29 22:34:38', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail2.com', '0'),
 (3, 'Ludovico', 'Loreti', '1992-11-11', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail3.com', '0'),
-(4, 'Antonio', 'Messina', '1899-01-01', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail4.com', '0'),
-(5, 'Andrea', 'Dipre', '1960-01-01', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail5.com', '0');
+(4, 'Antonio', 'Messina', '1899-05-15', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail4.com', '0'),
+(5, 'Andrea', 'Dipre', '1960-02-09', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail5.com', '0'),
+(6, 'Marco', 'Giuliano', '1978-06-20', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail6.com', '0'),
+(7, 'Andrea', 'Dipre', '1983-12-31', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail7.com', '0'),
+(8, 'Andrea', 'Dipre', '1981-08-05', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail8.com', '0'),
+
 
 INSERT INTO categories (name, description, colour) VALUES
 ("workshop", "Cool thing", "#45A78B"),

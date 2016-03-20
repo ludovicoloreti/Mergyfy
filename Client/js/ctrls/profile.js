@@ -30,14 +30,22 @@ app.controller("ProfileCtrl", function($rootScope, $scope, $http, $window){
     console.log(error, "non vaaaa");
   })
 
+  // switch page on button pression
   $scope.goto = function(page) {
     var link = "#/"+page+"/";
     console.log("clicked. Going to -> "+link)
     window.location.href=link;
   }
 
+  // activate edit view
+  $scope.clicked = false;
+  $scope.edit = function(){
+    $scope.clicked ? $scope.clicked = false : $scope.clicked = true;
+  }
 
+  // update user info
   $scope.update = function(user) {
+    $scope.clicked = false;
     obj = {};
     data = {};
     obj.action = "updateUser";

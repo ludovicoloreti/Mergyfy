@@ -6,10 +6,10 @@
         <div class="panel-body">
           <div class="row">
             <div class="col-xs-12 col-sm-8">
-              <p><strong>Name: </strong> {{user.name}}<input type="text" class="form-control" ng-model="user.name"></p>
-              <p><strong>Lastname: </strong> {{user.lastname}}<input type="text" class="form-control" ng-model="user.lastname"></p>
-              <p><strong>Mail: </strong> {{user.mail}}<input type="email" class="form-control" ng-model="user.mail"> </p>
-              <p><strong>Born: </strong> {{user.born}}<input type="date" class="form-control" ng-model="user.born"> </p>
+              <p><strong>Name: </strong> <span ng-hide="clicked">{{user.name}}</span><input type="text" class="form-control" ng-show="clicked" ng-model="user.name"></p>
+              <p><strong>Lastname: </strong><span ng-hide="clicked"> {{user.lastname}}</span><input type="text" class="form-control" ng-show="clicked"  ng-model="user.lastname"></p>
+              <p><strong>Mail: </strong><span ng-hide="clicked"> {{user.mail}}</span><input type="email" class="form-control"  ng-show="clicked" ng-model="user.mail"> </p>
+              <p><strong>Born: </strong> <span ng-hide="clicked">{{user.born}}</span><input type="date" class="form-control" ng-show="clicked" ng-model="user.born"> </p>
               <p><strong>Subscription date: {{user.subscriptiondate}}</strong></p>
               <p ng-switch on="user.type"><strong>Type: </strong>
                 <span ng-switch-when="basic" class="label label-primary tags">basic</span>
@@ -37,7 +37,9 @@
           </div><!--/row-->
           <div class="row">
             <div class="col-xs-12 col-sm-2 col-md-offset-10">
-              <button class="btn btn-info btn-block" ng-click="update(user)"><span class="fa fa-cogs"></span> Salva </button>
+              <button class="btn btn-info btn-block" ng-show="clicked" ng-click="update(user)"><span class="fa fa-cogs"></span> Salva </button>
+              <button class="btn btn-info btn-block" ng-show="clicked" ng-click="edit()"><span class="fa fa-cogs"></span> Annulla </button>
+              <button class="btn btn-info btn-block" ng-hide="clicked"ng-click="edit()"><span class="fa fa-cogs"></span> Edit </button>
             </div><!--/col-->
           </div>
         </div><!--/panel-body-->

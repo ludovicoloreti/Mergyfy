@@ -1,5 +1,6 @@
 app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$http, NgMap) {
   $scope.eventsNavbar = true;
+  $scope.loadComplete = false;
   $scope.changeEvents = function( bool ) {
     $scope.eventsNavbar = bool;
   };
@@ -19,6 +20,7 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
         obj.data = data;
         console.log("Posizione presa! ",obj);
         $http.post($rootScope.url, [obj]).success(function(result) {
+          $scope.loadComplete = true; 
           console.log(result[0].data);
           $scope.eventiVicini = result[0].data;
           // vai con l'altra

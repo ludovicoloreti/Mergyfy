@@ -201,7 +201,7 @@ BEGIN
 	END IF;
   -- random image if no profile image is provided
   IF (NEW.image_profile IS NULL) THEN
-    SET NEW.image_profile = CONCAT("http://api.randomuser.me/portraits/men/1", CONVERT(FLOOR(RAND() * 10), CHAR(3)) , ".jpg");
+    SET NEW.image_profile = CONCAT("http://api.randomuser.me/portraits/men/", CONVERT(FLOOR(RAND() * 10), CHAR(3)) , ".jpg");
   END IF;
 END //
 DELIMITER ;
@@ -282,7 +282,7 @@ FOR EACH ROW
 BEGIN
   -- random image if no profile image is provided
   IF ((NEW.image IS NULL) OR (NEW.image = "null")) THEN
-    SET NEW.image = "https://unsplash.it/200/200/?random";
+    SET NEW.image = CONCAT("http://lorempixel.com/200/200/sports/", CONVERT(FLOOR(RAND() * 10), CHAR(2)));
   END IF;
 END //
 DELIMITER ;
@@ -662,13 +662,15 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE createDoc(IN creator_id INT, IN name VARCHAR(100), IN event_id INT, IN visibility_type ENUM('0', '1'))
 BEGIN
-  DECLARE alreadyExists VARCHAR(150) DEFAULT NULL;
-  SELECT name INTO alreadyExists FROM documents AS doc WHERE doc.creator_id = creator_id AND doc.event_id = event_id;
-  IF alreadyExists = NULL
+  DECLARE alreadyExists VARCHAR(150) DEFAULT 0;
+  SELECT COUNT(*) INTO alreadyExists FROM documents AS doc WHERE ( (doc.creator_id = creator_id) AND (doc.event_id = event_id) );
+  IF alreadyExists > 0
   THEN
     SIGNAL sqlstate '45000' set message_text = "The documents already exists!";
+    -- SELECT doc.id FROM documents AS doc WHERE ( (doc.creator_id = creator_id) AND (doc.event_id = event_id) );
   ELSE
-    INSERT INTO documents (creator, name, event, public) VALUES (creator_id, name, event_id, visibility_type);
+    INSERT INTO documents (creator_id, name, event_id, public) VALUES (creator_id, name, event_id, visibility_type);
+    SELECT last_insert_id();
   END IF;
 END |
 DELIMITER ;
@@ -704,6 +706,16 @@ BEGIN
   ELSE
     SIGNAL sqlstate '45000' set message_text = "An user can't update other user's document";
   END IF;
+END |
+DELIMITER ;
+
+/* getDoc(doc_id)
+  Get doc info
+*/
+DELIMITER |
+CREATE PROCEDURE getDoc(IN doc_id INT)
+BEGIN
+  SELECT * FROM documents AS doc WHERE (doc.id= doc_id);
 END |
 DELIMITER ;
 
@@ -817,11 +829,24 @@ DELIMITER |
 CREATE PROCEDURE createGroup(IN name VARCHAR (100), IN image VARCHAR(300), IN description VARCHAR(2000), IN admin_id INT)
 BEGIN
   DECLARE lastid INT DEFAULT -1;
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+      SELECT "Generic error" as "";
+      ROLLBACK;
+    END;
   -- transaction
-  INSERT INTO groups (name, image, description) VALUES (name, image, description);
-  SET lastid = last_insert_id();
-  call addMember(admin_id, last_insert_id());
-  SELECT lastid; 
+  START TRANSACTION;
+    INSERT INTO groups (name, image, description) VALUES (name, image, description);
+    SET lastid = last_insert_id();
+    IF (lastid = -1) THEN
+      SIGNAL sqlstate '45000' SET message_text = "Error during group creation, rollback.";
+      ROLLBACK;
+    ELSE
+      call addMember(admin_id, lastid);
+      -- select the last inserted id.
+      SELECT lastid;
+    END IF;
+  COMMIT;
 END |
 DELIMITER ;
 
@@ -841,6 +866,7 @@ END |
 DELIMITER ;
 
 /* removeMember(user_id, group_id)
+  Remove a member (if present) from a group.
 */
 DELIMITER |
 CREATE PROCEDURE removeMember(IN user_id INT, IN group_id INT)
@@ -962,7 +988,7 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE searchUser(IN text VARCHAR(200))
 BEGIN
- SELECT id, name, lastname FROM usersInfo WHERE ( CONCAT_WS(' ', name, lastname) LIKE CONCAT('%', text , '%') OR CONCAT_WS(' ', lastname, name) LIKE CONCAT('%', text , '%') ) LIMIT 10;
+ SELECT id, name, lastname, image_profile FROM usersInfo WHERE ( CONCAT_WS(' ', name, lastname) LIKE CONCAT('%', text , '%') OR CONCAT_WS(' ', lastname, name) LIKE CONCAT('%', text , '%') ) LIMIT 10;
 END |
 DELIMITER ;
 

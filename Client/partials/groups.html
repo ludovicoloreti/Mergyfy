@@ -1,7 +1,7 @@
 <div class="container homepage">
   <div class="row homepage-content" style="padding:0 10px;">
     <div class="col-md-3 aside">
-      <div class="col-md-12 groups-list" >
+      <div class="col-md-12" >
 
         <h1>Groups</h1>
 
@@ -14,12 +14,12 @@
 
         <div class="media clearfix doc-thumb-container" ng-repeat="group in groups">
           <div class="pull-left media-top">
-            <img ng-if="group.group_image == null" class="media-object mg-responsive doc-img" src="css/img/place.png" alt="group.group_id">
-            <img ng-if="group.group_image != null" class="media-object mg-responsive doc-img" ng-src="{{group.group_image}}" alt="group.group_id">
+            <img ng-if="group.group_image == null" class="media-object img-circle img-responsive doc-img" src="css/img/place.png" alt="group.group_id">
+            <img ng-if="group.group_image != null" class="media-object img-circle img-responsive doc-img" ng-src="{{group.group_image}}" alt="group.group_id">
           </div>
           <div class="" ng-click="view(group.group_id)">
             <h4 class="">{{group.group_name}}</h4>
-            <p class="small">{{group.group_description}}</p>
+            <p class="small" style="displayblock;">{{group.group_description | limitTo:150 }}</p>
           </div>
         </div>
 
@@ -185,9 +185,14 @@
                       </span>
                     </div>
                     <div class="search-results">
-                        <h4 ng-repeat="result in results" ng-click="pushToarray(result.id)">
-                        >>>  <b>{{result.name}} {{result.lastname}}</b>
-                        </h4>
+                      <ul class="list-group">
+                        <li class="list-group-item" ng-repeat="result in results" ng-click="pushToarray(result.id)">
+                          <div class="row">
+                              <img class="img-responsive img-circle" style="width:50px;display:inline-block;margin: 0 10px;" ng-src="{{result.image_profile}}">
+                              <h3 style="display: inline-block; margin: 0 10px;">{{result.name}} {{result.lastname}}</h3>
+                          </div>
+                        </li>
+                      </ul>
                     </div>
 
                     <h4>ID delle Persone che hai invitato</h4>

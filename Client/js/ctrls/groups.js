@@ -22,6 +22,7 @@ app.controller('GroupsCtrl', function($scope, $location, $http, $rootScope) {
   }
 
   $scope.$watch('searchtext', function() {
+
     var searchtext = $scope.searchtext;
     if (((searchtext.length % 3) == 0) && (searchtext.length >= 3)) {
       ob = {};
@@ -36,6 +37,7 @@ app.controller('GroupsCtrl', function($scope, $location, $http, $rootScope) {
         console.log(error, "non vaaaa");
       })
     }
+    if(searchtext.length == 0) {$scope.results = [];}
   })
 
   $scope.partecipantList = [];
@@ -61,6 +63,7 @@ app.controller('GroupsCtrl', function($scope, $location, $http, $rootScope) {
         data: data1
       }
     ];
+    console.log(data1);
 
     $http.post($rootScope.url, push).success(function(rez) {
       console.log(rez);
@@ -73,6 +76,8 @@ app.controller('GroupsCtrl', function($scope, $location, $http, $rootScope) {
       console.log(arr);
       $http.post($rootScope.url, arr).then(function(data) {
         console.log(data);
+        window.location.reload();
+
       })
     }).error(function(error) {
       console.log(error, "non vaaaa");
