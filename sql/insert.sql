@@ -1,5 +1,5 @@
 
-INSERT INTO `users` (`id`, `name`, `lastname`, `born`, `subscriptiondate`, `type`, `image_profile`, `latitude`, `longitude`, `password`, `mail`, `delated`) VALUES
+INSERT INTO `users` (`id`, `name`, `lastname`, `born`, `subscriptiondate`, `type`, `image_profile`, `latitude`, `longitude`, `password`, `mail`, `deleted`) VALUES
 (1, 'Filippo', 'Boiani', '1993-10-28', '2016-02-29 22:26:13', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail1.com', '0'),
 (2, 'Riccardo', 'Sibani', '1994-09-24', '2016-02-29 22:34:38', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail2.com', '0'),
 (3, 'Ludovico', 'Loreti', '1992-11-11', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail3.com', '0'),
@@ -50,7 +50,7 @@ INSERT INTO `partecipations` (`event_id`, `user_id`, `status`) VALUES
 INSERT INTO documents(creator_id, name, event_id) VALUES
 (1, 'Primo doc', 1),
 (2, 'Secondo doc', 2),
-(3, 'Terzo doc', 3),
+(3, 'Terzo doc', 3);
 
 
 

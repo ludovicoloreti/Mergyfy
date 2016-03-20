@@ -28,9 +28,9 @@
     5b - Enter the DB: /Applications/MAMP/Library/bin/mysql --user=user --password=user-password;
     /Applications/MAMP/Library/bin/mysql --user=root --password=root;
 
-    TODO: foreign key references
+    TODO: foreign key references -- ok
     TODO: notes: user_id
-    TODO: documents: delete id
+    TODO: documents: delete id -- no because the event can be deleted
     TODO: how to handle partecipation status: "waiting", "accepted"
     TODO: how to handle members accepted: BOOLEAN?
 
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS users (
   longitude DECIMAL(11,8), /* it must be defined */
   password VARCHAR(300) NOT NULL,
   mail VARCHAR(150) NOT NULL,
-  delated  ENUM('0','1') DEFAULT '0',
+  deleted  ENUM('0','1') DEFAULT '0',
   PRIMARY KEY (id)
 ) engine=INNODB;
 
@@ -168,9 +168,14 @@ CREATE TABLE IF NOT EXISTS partecipations (
 /******************** VIEWS *************************/
 
 CREATE VIEW usersInfo(id, name, lastname, born, subscriptiondate, type, image_profile, mail) AS
-  SELECT id, name, lastname, born, subscriptiondate, type, image_profile, mail FROM users WHERE delated="0";
+  SELECT id, name, lastname, born, subscriptiondate, type, image_profile, mail FROM users WHERE deleted="0";
 
-/* TODO */
+CREATE VIEW eventsInfo(event_id, event_name, type, creationdate, startdate, stopdate, event_description, creator_id,
+  creator_name, creator_lastname, place_id, place_name, address, cap, city, nation, latitude, longitude) AS
+  SELECT evnt.id, evnt.name, evnt.type, evnt.creationdate, evnt.startdate, evnt.stopdate, evnt.description,
+         usr.id, usr.name, usr.lastname, plc.id, plc.name, plc.address, plc.cap, plc.city, plc.nation, plc.latitude, plc.longitude
+  FROM events AS evnt, places AS plc, usersInfo AS usr
+  WHERE ( (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) );
 
 /******************** TRIGGERS **********************/
 
@@ -190,10 +195,14 @@ BEGIN
     SIGNAL sqlstate '45000' SET message_text = "Age must be more than 14 yo";
 	END IF;
 
-	IF ( (NEW.mail NOT REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$' ) OR (NEW.mail = ANY (SELECT usr.mail FROM users AS usr WHERE usr.delated = "0")) )
+	IF ( (NEW.mail NOT REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$' ) OR (NEW.mail = ANY (SELECT usr.mail FROM users AS usr WHERE usr.deleted = "0")) )
   THEN
     SIGNAL sqlstate '45000' SET message_text = "Invalid email address";
 	END IF;
+  -- random image if no profile image is provided
+  IF (NEW.image_profile IS NULL) THEN
+    SET NEW.image_profile = CONCAT("http://api.randomuser.me/portraits/men/1", CONVERT(FLOOR(RAND() * 10), CHAR(3)) , ".jpg");
+  END IF;
 END //
 DELIMITER ;
 
@@ -291,7 +300,7 @@ BEGIN
 END |
 DELIMITER ;
 
-/* getUser( user_id ) */
+/* getUser(user_id) */
 DELIMITER |
 CREATE PROCEDURE getUser(IN user_id INT)
 BEGIN
@@ -345,12 +354,8 @@ BEGIN
     SIGNAL sqlstate '45000' SET message_text = "No position, no party";
   ELSE
     -- Find Events
-    SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
-           usr.id AS creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname,
-           plc.id AS place_id, plc.name AS place_name, plc.address AS address, plc.latitude AS latitude, plc.longitude AS longitude,
-           ( 3959 * acos( cos( radians(userLat) ) * cos( radians( plc.latitude ) ) * cos( radians( plc.longitude ) - radians(userLng) ) + sin( radians(userLat) ) * sin( radians( plc.latitude ) ) ) ) AS calculated_distance
-    FROM events AS evnt, places AS plc, users AS usr
-    WHERE (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id)
+    SELECT *, ( 3959 * acos( cos( radians(userLat) ) * cos( radians( evnt.latitude ) ) * cos( radians( evnt.longitude ) - radians(userLng) ) + sin( radians(userLat) ) * sin( radians( evnt.latitude ) ) ) ) AS calculated_distance
+    FROM eventsInfo as evnt
     HAVING (calculated_distance < dist)
     ORDER BY calculated_distance;
   END IF;
@@ -366,49 +371,49 @@ CREATE PROCEDURE getUserEvents( IN user_id INT, IN which ENUM('next','past','all
 BEGIN
   CASE which
     WHEN 'next' THEN
-      SELECT * FROM partecipations AS part, events AS evnt, places AS plc
-        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.startdate > current_timestamp()) );
+      SELECT evnt.*, part.status AS status
+        FROM partecipations AS part, eventsInfo AS evnt
+          WHERE ( (part.event_id = evnt.event_id) AND (part.user_id = user_id) AND (evnt.startdate > current_timestamp()) );
     WHEN 'past' THEN
-      SELECT * FROM partecipations AS part, events AS evnt, places AS plc
-        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.stopdate < current_timestamp()) );
+      SELECT evnt.*, part.status AS status
+        FROM partecipations AS part, eventsInfo AS evnt
+          WHERE ( (part.event_id = evnt.event_id) AND (part.user_id = user_id) AND (evnt.stopdate < current_timestamp()) );
     ELSE
-      SELECT * FROM partecipations AS part, events AS evnt, places AS plc
-        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) );
+      SELECT evnt.*, part.status AS status
+        FROM partecipations AS part, eventsInfo AS evnt
+          WHERE ( (part.event_id = evnt.event_id) AND (part.user_id = user_id) );
   END CASE;
 END |
 DELIMITER ;
 
 /* searchEvents( user_id, chars )
-    Search for all public events or private ,if the user has been invited to (or he's the creator).
+    Search for all public events or private, if the user has been invited to (or he's the creator).
 */
 DELIMITER |
 CREATE PROCEDURE searchEvents(IN user_id INT, IN chars VARCHAR(200))
   BEGIN
     -- search (1) public events (2) partecipation
-    (SELECT evnt.id, evnt.name FROM events AS evnt, places AS plc
-      WHERE ( (evnt.place_id = plc.id) AND (evnt.type="public") AND (evnt.name LIKE CONCAT('%', chars , '%')) ) LIMIT 6)
+    (SELECT evnt.* FROM eventsInfo AS evnt
+      WHERE ( (evnt.type="public") AND (evnt.event_name LIKE CONCAT('%', chars , '%')) ) LIMIT 6)
     UNION
-    (SELECT evnt.id, evnt.name FROM events AS evnt, places AS plc, partecipations AS part
-      WHERE ( (evnt.place_id = plc.id) AND (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.name LIKE CONCAT('%', chars , '%')) ) LIMIT 6);
+    (SELECT evnt.* FROM eventsInfo AS evnt, partecipations AS part
+      WHERE ( (part.event_id = evnt.event_id) AND (part.user_id = user_id) AND (evnt.event_name LIKE CONCAT('%', chars , '%')) ) LIMIT 6);
   END |
 DELIMITER ;
 
 /* suggestedEvents()
-  Suggest some public events near the user. TODO check users' rights on events @pinair
+  Suggest some public events 5km near the user.
 */
-DELIMITER |
-CREATE PROCEDURE suggestedEvents(IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8))
-BEGIN
-  SELECT ev.id as eventId, ev.name as eventName, ev.creation as dateCreation, ev.start as dateStart, ev.stop as dateStop, ev.description as eventDesc,
-         u.id as creatorId, u.name as creatorName, u.lastname as creatorLastname,
-         pl.id as placeId, pl.name as placeName, pl.address as placeAddress, pl.lat as placeLat, pl.lng as placeLng,
-         ( 3959 * acos( cos( radians(latitude) ) * cos( radians( pl.lat ) ) * cos( radians( pl.lng ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( pl.lat ) ) ) ) AS distance
-  FROM events as ev, places as pl, users as u
-  WHERE (ev.place = pl.id)  AND (ev.type='public')
-  HAVING (distance < dist)
-  ORDER BY distance;
-END |
-DELIMITER ;
+-- DELIMITER |
+-- CREATE PROCEDURE suggestedEvents(IN user_id INT, IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8))
+-- BEGIN
+--   SELECT evnt.*, ( 3959 * acos( cos( radians(latitude) ) * cos( radians( evnt.latitude ) ) * cos( radians( evnt.longitude ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( evnt.latitude ) ) ) ) AS distance
+--   FROM eventsInfo AS evnt, partecipations AS part
+--   WHERE (evnt.type= 'public') AND (part.event_id= evnt.event_id) AND (part.user_id= user_id)
+--   HAVING (distance < 5)
+--   ORDER BY distance;
+-- END |
+-- DELIMITER ;
 
 /* suggestedPlaces(latitude, longitude, dist)
   Resturns a set of suggested places based on the user's position.
@@ -460,7 +465,7 @@ CREATE PROCEDURE upgradeUser(IN user_id INT)
   END |
 DELIMITER ;
 
-/* changePassword( user_id, old_password, new_password)
+/* changePassword(user_id, old_password, new_password)
   Change the password for the specified user.
 */
 DELIMITER |
@@ -471,12 +476,12 @@ CREATE PROCEDURE changePassword(IN user_id INT, IN old_password VARCHAR(300), IN
 DELIMITER ;
 
 /* deleteUser(user_id)
-  Fake user delate: set a "delated" variable true
+  Fake user deletion: set a "deleted" variable true
 */
 DELIMITER |
 CREATE PROCEDURE deleteUser(IN user_id INT)
   BEGIN
-    UPDATE users AS usr SET usr.delated="1" WHERE usr.id=user_id;
+    UPDATE users AS usr SET usr.deleted="1" WHERE usr.id=user_id;
   END |
 DELIMITER ;
 
@@ -496,7 +501,7 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE getEvents()
 BEGIN
-  SELECT * FROM events;
+  SELECT * FROM eventsInfo;
 END |
 DELIMITER ;
 
@@ -538,11 +543,11 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE similarPlaces(IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8))
 BEGIN
-  --Get all the places in 50 meters
+  -- Get all the places in 50 meters
   SELECT evnt, ( 3959 * acos( cos( radians(latitude) ) * cos( radians( plc.latitude ) ) * cos( radians( plc.longitude ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( plc.latitude ) ) ) ) AS calculated_distance
-  FROM events AS evnt
+  FROM places AS plc
   HAVING calculated_distance < 50
-  ORDER BY calculated_distance
+  ORDER BY calculated_distance;
 END |
 DELIMITER ;
 
@@ -646,7 +651,7 @@ BEGIN
   SELECT name INTO alreadyExists FROM documents AS doc WHERE doc.creator_id = creator_id AND doc.event_id = event_id;
   IF alreadyExists = NULL
   THEN
-    SIGNAL sqlstate '4500' set message_text = "The documents already exists!";
+    SIGNAL sqlstate '45000' set message_text = "The documents already exists!";
   ELSE
     INSERT INTO documents (creator, name, event, public) VALUES (creator_id, name, event_id, visibility_type);
   END IF;
@@ -754,36 +759,39 @@ BEGIN
 END |
 DELIMITER ;
 
+/* getGroupEvents(group_id)*/
+/* getGroupDocs(group_id)*/
+
 /* getEventPartecipants(event_id)
-  Gets every users that partecipate to an event TODO: all or only "accepted"? @pinair only accepted here, only waiting and declined below
+  Gets every users that partecipate to an event and have accepted the invitation.
 */
 DELIMITER |
 CREATE PROCEDURE getEventPartecipants(IN event_id INT)
 BEGIN
   SELECT * FROM partecipations as part, usersInfo as usr
-  WHERE (part.event_id = event_id) AND (part.user_id = usr.id) AND (part.status = "accepted"); -- all or only "accepted" ?
+  WHERE (part.event_id = event_id) AND (part.user_id = usr.id) AND (part.status = "accepted");
 END |
 DELIMITER ;
 
 /* getEventWaitingPartecipans(event_id)
-  Gets every users that haven't still answered to the invitation @pinair NEW
+  Gets every users that haven't still answered to the invitation
 */
 DELIMITER |
 CREATE PROCEDURE getEventWaitingPartecipants(IN event_id INT)
 BEGIN
   SELECT * FROM partecipations as part, usersInfo as usr
-  WHERE (part.event_id = event_id) AND (part.user_id = usr.id) AND (part.status = "waiting"); -- all or only "accepted" ?
+  WHERE (part.event_id = event_id) AND (part.user_id = usr.id) AND (part.status = "waiting");
 END |
 DELIMITER ;
 
 /* getEventDeclinedPartecipans(event_id)
-  Gets every users that won't enjoy the event @pinair NEW
+  Gets every users that won't enjoy the event
 */
 DELIMITER |
 CREATE PROCEDURE getEventDeclinedPartecipants(IN event_id INT)
 BEGIN
   SELECT * FROM partecipations as part, usersInfo as usr
-  WHERE (part.event_id = event_id) AND (part.user_id = usr.id) AND (part.status = "declined"); -- all or only "accepted" ?
+  WHERE (part.event_id = event_id) AND (part.user_id = usr.id) AND (part.status = "declined");
 END |
 DELIMITER ;
 
@@ -824,47 +832,69 @@ BEGIN
 END |
 DELIMITER ;
 
-/* updateGroup() */
+/* getUserGroups(user_id)
+*/
 DELIMITER |
-CREATE PROCEDURE updateGroup(IN idI INT, IN nameI VARCHAR(100), IN imageI VARCHAR(300), IN descriptionI VARCHAR(2000))
+CREATE PROCEDURE getUserGroups(IN user_id INT)
 BEGIN
-  UPDATE groups
-    SET name = nameI, image = imageI, description = descriptionI
-    WHERE id = idI;
+  SELECT mmbr.group_id AS group_id, mmbr.accepted AS accepted, mmbr.role AS role, mmbr.joindate AS joindate,
+  grp.name AS group_name, grp.creationdate AS creationdate, grp.image AS group_image, grp.description AS group_description
+   FROM members AS mmbr, groups AS grp WHERE ( (mmbr.group_id= grp.id) AND (mmbr.user_id= user_id) );
 END |
 DELIMITER ;
 
-/* getGroupInfo() */
+/* updateGroup(group_id, name, image, description)
+  Update group information given its id TODO: the admin only can change?
+*/
 DELIMITER |
-CREATE PROCEDURE getGroupInfo(IN idI INT)
+CREATE PROCEDURE updateGroup(IN group_id INT, IN name VARCHAR(100), IN image VARCHAR(300), IN description VARCHAR(2000))
 BEGIN
-  SELECT * FROM groups WHERE id = idI;
+  UPDATE groups AS grp SET grp.name = name, grp.image = image, grp.description = description WHERE grp.id = group_id;
 END |
 DELIMITER ;
 
-/* getPlace */
+/* getGroupInfo(group_id)
+  Select group info given its id.
+*/
 DELIMITER |
-CREATE PROCEDURE getPlace(IN idI INT)
+CREATE PROCEDURE getGroupInfo(IN group_id INT)
 BEGIN
-  SELECT * FROM places WHERE id = idI;
+  SELECT * FROM groups AS grp WHERE grp.id = group_id;
 END |
 DELIMITER ;
 
-/* addPartecipant to an Event */
+/* getPlace(place_id)
+  Get a place given its id.
+*/
 DELIMITER |
-CREATE PROCEDURE addPartecipant(IN eventId INT, IN userId INT)
+CREATE PROCEDURE getPlace(IN place_id INT)
 BEGIN
-  INSERT INTO partecipations (event_id, user_id, status) VALUES (eventId, userId, 'waiting');
+  SELECT * FROM places AS plc WHERE plc.id = place_id;
 END |
 DELIMITER ;
 
-/* updatePartecipation */
+/* addPartecipant(event_id, user_id)
+  Adds a partreciaption to an Event
+*/
 DELIMITER |
-CREATE PROCEDURE updatePartecipation(IN idI INT, IN eventId INT, IN userId INT, IN statusI VARCHAR(20))
+CREATE PROCEDURE addPartecipant(IN event_id INT, IN user_id INT)
 BEGIN
-  UPDATE partecipations
-    SET event_id = eventId, user_id = userId, status = statusI
-    WHERE id = idI;
+  DECLARE alreadyPartecipant INT DEFAULT 0;
+  SELECT COUNT(*) INTO alreadyPartecipant FROM partecipations AS part WHERE ((part.event_id= event_id) AND (part.user_id= user_id));
+  IF alreadyPartecipant <> 0 THEN
+  ELSE
+    INSERT INTO partecipations(event_id, user_id, status) VALUES (event_id, user_id, 'waiting');
+  END IF;
+END |
+DELIMITER ;
+
+/* updatePartecipationStatus(event_id, user_id, status)
+
+*/
+DELIMITER |
+CREATE PROCEDURE updatePartecipationStatus(IN event_id INT, IN user_id INT, IN status VARCHAR(20))
+BEGIN
+  UPDATE partecipations AS part SET part.status = status WHERE ( (part.event_id = event_id) AND (part.user_id = user_id) );
 END |
 DELIMITER ;
 
@@ -884,13 +914,13 @@ BEGIN
 END |
 DELIMITER ;
 
-/* updateNote */
+/* updateNote(id, type, content, descripiton)
+  It simply updates a note gived its id.
+*/
 DELIMITER |
-CREATE PROCEDURE updateNote(IN idI INT, IN typeI VARCHAR(7), IN ccall updateNote(1, 'link', 'www.google.it', 'Sito di Google'); ontentI TEXT, IN descriptionI VARCHAR(200))
+CREATE PROCEDURE updateNote(IN id INT, IN type VARCHAR(7), IN content TEXT, IN description VARCHAR(200))
 BEGIN
-  UPDATE notes
-    SET type = typeI, content = contentI, description = descriptionI
-    WHERE id = idI;
+  UPDATE notes as nt SET nt.type = type, nt.content = content, nt.description = description WHERE nt.id = id;
 END |
 DELIMITER ;
 

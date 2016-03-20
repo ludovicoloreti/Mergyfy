@@ -116,6 +116,8 @@ call createGroup('Group1', '/img/', 'Group1 description', 1);  -- ok
 call addMember(2, 1);   -- ok
 /* acceptMembership */
 call acceptMembership(2, 1);  -- ok
+/* getUserGroups */
+call getUserGroups(1); -- ok
 -----------------------
 /* updateGroup */
 call updateGroup(2, 'Group1MODIFIED', 'img/', 'Group1MODIFIED2');   -- ok
@@ -124,16 +126,17 @@ call getGroupInfo(2); -- ok
 /* getPlace */
 call getPlace(1);   -- ok
 /* addPartecipant */
-addPartecipant(1, 2);                                               --------------------------------- NOOOOOOOOOOOOOOOO
-/* updatePartecipation */
-call updatePartecipation(IN idI INT, IN eventId INT, IN userId INT, IN statusI VARCHAR(20))--------------------------------- NOOOOOOOOOOOOOOOON CAPISCO
+addPartecipant(1, 2);
+addPartecipant(5, 2);                                             --------------------------------- NOOOOOOOOOOOOOOOO
+/* updatePartecipationStatus */
+call updatePartecipationStatus()--------------------------------- NOOOOOOOOOOOOOOOON CAPISCO
 /* addNote */ -- NO
 call addNote('link', 'www.google.com', "Google's Website");       -- ok
 /* getNote */ -- ??
 call getNote(1);      -- ok
-/* updateNote */ -- ?? 
-call updateNote(1, 'link', 'www.google.it', 'Sito di Google'); 
-/* searchUser */ 
+/* updateNote */ -- ??
+call updateNote(1, 'link', 'www.google.it', 'Sito di Google');
+/* searchUser */
 call searchUser('ani');     -- ok
 /* searchGroup */
 call searchGroup('1');    -- ok
