@@ -1,10 +1,17 @@
-app.controller('GroupCtrl', function ($scope, $rootScope) {
-  $scope.edit = false;
-  $scope.editGroup = function() {
-    $scope.edit = true;
-  };
+app.controller('GroupCtrl', function ($scope, $http, $location, $rootScope,Gruppo) {
 
-  $scope.saveChanges = function() {
-    $scope.edit = false;
-  };
+  obj = {}; data = {};
+  obj.action = "getUserGroups";
+  data.user_id = parseInt(window.localStorage['id']);
+  obj.data = data;
+  $http.post($rootScope.url, [obj]).success(function(res) {
+    console.log(res);
+    $scope.groups = res[0].data;
+  }).error(function(error) {
+    console.log(error, "non vaaaa");
+  })
+
+
+    if (Gruppo) console.log(Gruppo); else console.log("puppa")
+
 });

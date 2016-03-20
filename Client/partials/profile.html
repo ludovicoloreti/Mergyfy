@@ -1,4 +1,4 @@
-<div class="container" style="margin-top:30px;">
+<div class="container" style="margin-top:30px;overflow:scroll">
   <div class="row">
     <div class="col-md-9" style="">
 
@@ -6,38 +6,39 @@
         <div class="panel-body">
           <div class="row">
             <div class="col-xs-12 col-sm-8">
-              <h2>Mario Rossi<input type="text" class="form-control" aria-label=""></h2>
-              <p><strong>Born: </strong> 00-00-0000<input type="text" class="form-control" aria-label="..."> </p>
-              <p><strong>Subscription date: </strong>00-00-0000</p>
-              <p><strong>Type: </strong>
-                <span class="label label-primary tags">basic</span>
-                <span class="label label-success tags">premium</span>
-                <span class="label label-warning tags">admin</span>
+              <p><strong>Name: </strong> {{user.name}}<input type="text" class="form-control" ng-model="user.name"></p>
+              <p><strong>Lastname: </strong> {{user.lastname}}<input type="text" class="form-control" ng-model="user.lastname"></p>
+              <p><strong>Mail: </strong> {{user.mail}}<input type="email" class="form-control" ng-model="user.mail"> </p>
+              <p><strong>Born: </strong> {{user.born}}<input type="date" class="form-control" ng-model="user.born"> </p>
+              <p><strong>Subscription date: {{user.subscriptiondate}}</strong></p>
+              <p ng-switch on="user.type"><strong>Type: </strong>
+                <span ng-switch-when="basic" class="label label-primary tags">basic</span>
+                <span ng-switch-when="premium" class="label label-success tags">premium</span>
+                <span ng-switch-when="admin" class="label label-warning tags">admin</span>
               </p>
             </div><!--/col-->
             <div class="col-xs-12 col-sm-4 text-center">
-              <img src="http://api.randomuser.me/portraits/men/49.jpg" alt="" class="center-block img-circle img-responsive">
+              <img ng-src="{{user.image_profile}}" alt="" class="center-block img-circle img-responsive">
               <p>Upload different photo</p>
-              <input type="file" class="well well-sm col-sm-12">
+                <input type="file" base-sixty-four-input class="form-control-file block well well-sm col-sm-12" id="exampleInputFile" ng-model="user.image_profile">
             </div><!--/col-->
 
             <div class="col-xs-12 col-sm-4 text-center">
-              <h2><strong> 245 </strong></h2>
+              <h2><strong> {{docs.length}} </strong></h2>
               <p><small>Documents</small></p>
-              <button class="btn btn-success btn-block"><span class="fa fa-file-word-o"></span> View Docs </button>
+              <button class="btn btn-success btn-block" ng-click="goto('doc')"><span class="fa fa-file-word-o"></span> View Docs </button>
             </div><!--/col-->
             <div class="col-xs-12 col-sm-4 text-center">
-              <h2><strong>5</strong></h2>
+              <h2><strong>{{groups.length}}</strong></h2>
               <p><small>Groups</small></p>
-              <button class="btn btn-info btn-block"><span class="fa fa-users"></span> View Groups </button>
+              <button class="btn btn-info btn-block" ng-click="goto('groups')"><span class="fa fa-users"></span> View Groups </button>
             </div><!--/col-->
 
           </div><!--/row-->
           <div class="row">
             <div class="col-xs-12 col-sm-2 col-md-offset-10">
-              <button class="btn btn-info btn-block"><span class="fa fa-cogs"></span> Edit </button>
+              <button class="btn btn-info btn-block" ng-click="update(user)"><span class="fa fa-cogs"></span> Salva </button>
             </div><!--/col-->
-            <a href="http://bootstrap.snipplicious.com/snippet/19/edit-profile-page">Plugin per modificare profilo</a>
           </div>
         </div><!--/panel-body-->
       </div><!--/panel-->

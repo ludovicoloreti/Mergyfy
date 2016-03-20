@@ -1,5 +1,5 @@
 
-INSERT INTO `users` (`id`, `name`, `lastname`, `born`, `subscriptiondate`, `type`, `image_profile`, `latitude`, `longitude`, `password`, `mail`, `delated`) VALUES
+INSERT INTO `users` (`id`, `name`, `lastname`, `born`, `subscriptiondate`, `type`, `image_profile`, `latitude`, `longitude`, `password`, `mail`, `deleted`) VALUES
 (1, 'Filippo', 'Boiani', '1993-10-28', '2016-02-29 22:26:13', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail1.com', '0'),
 (2, 'Riccardo', 'Sibani', '1994-09-24', '2016-02-29 22:34:38', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail2.com', '0'),
 (3, 'Ludovico', 'Loreti', '1992-11-11', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail3.com', '0'),
@@ -41,9 +41,9 @@ INSERT INTO `members` (`user_id`, `group_id`, `accepted`, `role`, `joindate`) VA
 
 INSERT INTO `partecipations` (`event_id`, `user_id`, `status`) VALUES
 (1, 1, 'accepted'),
-(1, 2, 'waiting'),
+(1, 2, 'accepted'),
 (1, 3, 'waiting'),
-(1, 4, 'waiting'),
+(1, 4, 'accepted'),
 (1, 5, 'waiting'),
 (7,3,'accepted');
 

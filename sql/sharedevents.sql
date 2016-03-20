@@ -28,9 +28,9 @@
     5b - Enter the DB: /Applications/MAMP/Library/bin/mysql --user=user --password=user-password;
     /Applications/MAMP/Library/bin/mysql --user=root --password=root;
 
-    TODO: foreign key references
+    TODO: foreign key references -- ok
     TODO: notes: user_id
-    TODO: documents: delete id
+    TODO: documents: delete id -- no because the event can be deleted
     TODO: how to handle partecipation status: "waiting", "accepted"
     TODO: how to handle members accepted: BOOLEAN?
 
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS users (
   longitude DECIMAL(11,8), /* it must be defined */
   password VARCHAR(300) NOT NULL,
   mail VARCHAR(150) NOT NULL,
-  delated  ENUM('0','1') DEFAULT '0',
+  deleted  ENUM('0','1') DEFAULT '0',
   PRIMARY KEY (id)
 ) engine=INNODB;
 
@@ -168,9 +168,14 @@ CREATE TABLE IF NOT EXISTS partecipations (
 /******************** VIEWS *************************/
 
 CREATE VIEW usersInfo(id, name, lastname, born, subscriptiondate, type, image_profile, mail) AS
-  SELECT id, name, lastname, born, subscriptiondate, type, image_profile, mail FROM users WHERE delated="0";
+  SELECT id, name, lastname, born, subscriptiondate, type, image_profile, mail FROM users WHERE deleted="0";
 
-/* TODO */
+CREATE VIEW eventsInfo(event_id, event_name, type, creationdate, startdate, stopdate, event_description, creator_id,
+  creator_name, creator_lastname, place_id, place_name, address, cap, city, nation, latitude, longitude) AS
+  SELECT evnt.id, evnt.name, evnt.type, evnt.creationdate, evnt.startdate, evnt.stopdate, evnt.description,
+         usr.id, usr.name, usr.lastname, plc.id, plc.name, plc.address, plc.cap, plc.city, plc.nation, plc.latitude, plc.longitude
+  FROM events AS evnt, places AS plc, usersInfo AS usr
+  WHERE ( (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) );
 
 /******************** TRIGGERS **********************/
 
@@ -190,7 +195,7 @@ BEGIN
     SIGNAL sqlstate '45000' SET message_text = "Age must be more than 14 yo";
 	END IF;
 
-	IF ( (NEW.mail NOT REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$' ) OR (NEW.mail = ANY (SELECT usr.mail FROM users AS usr WHERE usr.delated = "0")) )
+	IF ( (NEW.mail NOT REGEXP '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$' ) OR (NEW.mail = ANY (SELECT usr.mail FROM users AS usr WHERE usr.deleted = "0")) )
   THEN
     SIGNAL sqlstate '45000' SET message_text = "Invalid email address";
 	END IF;
@@ -359,21 +364,33 @@ DELIMITER ;
 
 /* getUserEvents( user_id, which )
     Select events in which the user has been invited to. We can decide wheter
-    to get all the set of events or only the next/past ones.
+    to get all the set of events or only the next/past ones. TODO: change names.
 */
 DELIMITER |
 CREATE PROCEDURE getUserEvents( IN user_id INT, IN which ENUM('next','past','all') )
 BEGIN
   CASE which
     WHEN 'next' THEN
-      SELECT * FROM partecipations AS part, events AS evnt, places AS plc
-        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.startdate > current_timestamp()) );
+      SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
+             usr.id AS creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname,
+             plc.id AS place_id, plc.name AS place_name, plc.address AS address, plc.latitude AS latitude, plc.longitude AS longitude,
+             part.status AS status
+       FROM partecipations AS part, events AS evnt, places AS plc, users AS usr
+        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) AND (evnt.startdate > current_timestamp()) );
     WHEN 'past' THEN
-      SELECT * FROM partecipations AS part, events AS evnt, places AS plc
-        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.stopdate < current_timestamp()) );
+      SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
+             usr.id AS creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname,
+             plc.id AS place_id, plc.name AS place_name, plc.address AS address, plc.latitude AS latitude, plc.longitude AS longitude,
+             part.status AS status
+      FROM partecipations AS part, events AS evnt, places AS plc, users AS usr
+        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) AND (evnt.stopdate < current_timestamp()) );
     ELSE
-      SELECT * FROM partecipations AS part, events AS evnt, places AS plc
-        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) );
+      SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
+             usr.id AS creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname,
+             plc.id AS place_id, plc.name AS place_name, plc.address AS address, plc.latitude AS latitude, plc.longitude AS longitude,
+             part.status AS status
+      FROM partecipations AS part, events AS evnt, places AS plc, users AS usr
+        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) );
   END CASE;
 END |
 DELIMITER ;
@@ -460,7 +477,7 @@ CREATE PROCEDURE upgradeUser(IN user_id INT)
   END |
 DELIMITER ;
 
-/* changePassword( user_id, old_password, new_password)
+/* changePassword(user_id, old_password, new_password)
   Change the password for the specified user.
 */
 DELIMITER |
@@ -471,12 +488,12 @@ CREATE PROCEDURE changePassword(IN user_id INT, IN old_password VARCHAR(300), IN
 DELIMITER ;
 
 /* deleteUser(user_id)
-  Fake user delate: set a "delated" variable true
+  Fake user deletion: set a "deleted" variable true
 */
 DELIMITER |
 CREATE PROCEDURE deleteUser(IN user_id INT)
   BEGIN
-    UPDATE users AS usr SET usr.delated="1" WHERE usr.id=user_id;
+    UPDATE users AS usr SET usr.deleted="1" WHERE usr.id=user_id;
   END |
 DELIMITER ;
 
@@ -496,7 +513,7 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE getEvents()
 BEGIN
-  SELECT * FROM events;
+  SELECT * FROM eventsInfo;
 END |
 DELIMITER ;
 

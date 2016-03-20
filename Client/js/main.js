@@ -13,9 +13,10 @@ app.config(['$routeProvider', function ($routeProvider) {
   .when("/doc", {templateUrl: "partials/document.html", controller: "DocCtrl"})
   .when("/profile", {templateUrl: "partials/profile.html", controller: "ProfileCtrl"})
   .when("/groups", {templateUrl: "partials/groups.html", controller: "GroupsCtrl"})
+  .when("/group/:id", {templateUrl: "partials/groups.html", controller: "GroupCtrl",resolve:{Gruppo:function($routeParams){return $routeParams;}}})
   .when("/addevent", {templateUrl: "partials/addevent.html", controller: "EventCtrl"})
   .when("/event/:id",{templateUrl:"partials/event.html",controller:"GetEventCtrl",resolve:{Evento:function($routeParams){return $routeParams;}}})
-  .when("/group", {templateUrl: "partials/group.html", controller: "GroupCtrl"})
+  // .when("/group/:id", {templateUrl: "partials/groups.html", controller: "GroupCtrl"})
   .when("/addgroup", {templateUrl: "partials/addgroup.html", controller: "AddGroupCtrl"})
   // Blog
   .when("/blog", {templateUrl: "partials/blog.html", controller: "BlogCtrl"})
