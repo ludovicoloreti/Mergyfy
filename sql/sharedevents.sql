@@ -10,7 +10,7 @@
    7 -  nodes
    8 -  notes
    9 -  places: an event location
-  10 -  partevsdfgsdfgdvsdfdfcipation: user's partecipation to events
+  10 -  partecipation: user's partecipation to events
 
   NOTE:
     1 - In mysql we can only have one table with CURRENT_TIMESTAMP as default (or on update value)
