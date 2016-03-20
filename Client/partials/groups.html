@@ -15,7 +15,7 @@
         <div class="media clearfix doc-thumb-container" ng-repeat="group in groups">
           <div class="pull-left media-top">
             <img ng-if="group.group_image == null" class="media-object mg-responsive doc-img" src="css/img/place.png" alt="group.group_id">
-            <img ng-if="group.group_image != null" class="media-object mg-responsive doc-img" ng-src="group.group_image" alt="group.group_id">
+            <img ng-if="group.group_image != null" class="media-object mg-responsive doc-img" ng-src="{{group.group_image}}" alt="group.group_id">
           </div>
           <div class="" ng-click="view(group.group_id)">
             <h4 class="">{{group.group_name}}</h4>
@@ -35,7 +35,7 @@
 
               <div class="col-xs-4 col-sm-3 text-center">
                 <img ng-if="gruppo.image == null" src="http://api.randomuser.me/portraits/men/49.jpg" alt="" class="center-block img-circle img-responsive">
-                <img ng-if="gruppo.image != null" ng-src="gruppo.image" alt="" class="center-block img-circle img-responsive">
+                <img ng-if="gruppo.image != null" ng-src="{{gruppo.image}}" alt="" class="center-block img-circle img-responsive">
                 <div ng-show="edit">
                   <p>Upload different photo</p>
                   <input type="file" base-sixty-four-input class="form-control-file block well well-sm col-sm-12" id="exampleInputFile" ng-model="gruppo.image">
