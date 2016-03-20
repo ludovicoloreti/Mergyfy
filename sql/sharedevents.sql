@@ -132,13 +132,13 @@ CREATE TABLE IF NOT EXISTS events (
 /* DOCUMENTS */
 CREATE TABLE IF NOT EXISTS documents (
   id INT(11) AUTO_INCREMENT,
-  creator_id INT NOT NULL,
+  creator_id INT,
   name VARCHAR(100) DEFAULT "unknown document",
-  event_id INT NOT NULL,
+  event_id INT,
   creationdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   public ENUM('0','1') DEFAULT '1',
   PRIMARY KEY (id),
-  FOREIGN KEY (creator_id) REFERENCES users(id),
+  FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE SET NULL
 
 ) engine=INNODB;
@@ -404,7 +404,7 @@ BEGIN
          pl.id as placeId, pl.name as placeName, pl.address as placeAddress, pl.lat as placeLat, pl.lng as placeLng,
          ( 3959 * acos( cos( radians(latitude) ) * cos( radians( pl.lat ) ) * cos( radians( pl.lng ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( pl.lat ) ) ) ) AS distance
   FROM events as ev, places as pl, users as u
-  WHERE (ev.place = pl.id)  AND (ev.type='public') 
+  WHERE (ev.place = pl.id)  AND (ev.type='public')
   HAVING (distance < dist)
   ORDER BY distance;
 END |
@@ -542,7 +542,7 @@ BEGIN
   SELECT evnt, ( 3959 * acos( cos( radians(latitude) ) * cos( radians( plc.latitude ) ) * cos( radians( plc.longitude ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( plc.latitude ) ) ) ) AS calculated_distance
   FROM events AS evnt
   HAVING calculated_distance < 50
-  ORDER BY calculated_distance 
+  ORDER BY calculated_distance
 END |
 DELIMITER ;
 
@@ -944,7 +944,3 @@ CREATE PROCEDURE checkRights(IN user_id INT, IN doc_id INT, OUT result INT)
 
   END |
 DELIMITER ;
-
-
-
-
