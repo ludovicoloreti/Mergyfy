@@ -50,7 +50,7 @@ INSERT INTO `partecipations` (`event_id`, `user_id`, `status`) VALUES
 INSERT INTO documents(creator_id, name, event_id) VALUES
 (1, 'Primo doc', 1),
 (2, 'Secondo doc', 2),
-(3, 'Terzo doc', 3),
+(3, 'Terzo doc', 3);
 
 
 
