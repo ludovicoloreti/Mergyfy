@@ -42,7 +42,8 @@ class Server {
       $db = new Database();
       $sending = array_values((array) $operation->data);
       $db->callProcedure($this->action, $this->sendingArray);
-      return $db->getResult();
+      $c= $db->getResult();
+      return $c;
     }
 
   }
@@ -50,6 +51,7 @@ class Server {
   private function analyse($action, $data){
     // Get the params from the db and check the type
     $query = "SELECT * FROM INFORMATION_SCHEMA.PARAMETERS WHERE SPECIFIC_NAME=?";
+
     $db = new Database();
     $db->stndQuery($query, array($action));
     $result = $db->getResult();
@@ -65,6 +67,9 @@ class Server {
           //The data exist and has the right name
           //check the input type
           switch($result[$i]['DATA_TYPE']){
+            case 'date':
+            (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$data->$req_type))? null : $this->badRequest=true;
+            break;
             case 'decimal':
             (is_numeric($data->$req_type) && is_float($data->$req_type))? null : $this->badRequest=true;
             break;

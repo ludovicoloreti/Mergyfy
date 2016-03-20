@@ -5,47 +5,29 @@
 
         <h1>Groups</h1>
 
-        <button class="btn"><span class="glyphicon glyphicon-repeat"></span>More</button>
+        <button class="btn" href="javascript:window.location.reload(true)"><span class="glyphicon glyphicon-repeat"></span></button>
         <button class="btn"><span class="glyphicon glyphicon-plus"></span>Create</button>
 
       </div>
 
       <div class="col-md-12 groups-list" >
 
-        <div class="media clearfix doc-thumb-container">
+        <div class="media clearfix doc-thumb-container" ng-repeat="group in groups">
           <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+            <img ng-if="group.group_image == null" class="media-object mg-responsive doc-img" src="css/img/place.png" alt="group.group_id">
+            <img ng-if="group.group_image != null" class="media-object mg-responsive doc-img" ng-src="group.group_image" alt="group.group_id">
           </div>
           <div class="">
-            <h4 class="">Evento Partecipo</h4>
-            <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+            <h4 class="">{{group.group_name}}</h4>
+            <p class="small">{{group.group_description}}</p>
           </div>
         </div>
 
-        <div class="media clearfix doc-thumb-container">
-          <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-          </div>
-          <div class="">
-            <h4 class="">Evento Partecipo</h4>
-            <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-          </div>
-        </div>
-
-        <div class="media clearfix doc-thumb-container">
-          <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-          </div>
-          <div class="">
-            <h4 class="">Evento Partecipo</h4>
-            <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-          </div>
-        </div>
 
       </div>
     </div>
 
-    <div class="col-md-9 main-content">
+    <div class="col-md-9 main-content" ng-show="cane">
       <div class="container" style="height: 100%; overflow:scroll;">
         <div class="row">
           <div class="col-md-9" style="">
@@ -72,135 +54,136 @@
                 <p><strong>Description: </strong>Testo della descrizione, bla bla Bootstrap provides 260 glyphicons from the Glyphicons Halflings set. Glyphicons can be used in text, buttons, toolbars, navigation, forms, etc. Here are some ...
                   Bootstrap provides 260 glyphicons from the Glyphicons Halflings set. Glyphicons can be used in text, buttons, toolbars, navigation, forms, etc. Here are some ...
                   <textarea class="form-control" ng-show="edit" id="event-description" placeholder="Inserisci testo" rows="4"></textarea> </p>
-                <p><strong>Admin: </strong> Nome admin</p>
+                  <p><strong>Admin: </strong> Nome admin</p>
 
-                <div class="group-members" style="clear:both;">
-                  <h3>Membri <button class="btn" ng-show="edit"><span class="glyphicon glyphicon-plus" ></span></button></h3>
-                  <div class="group-members-list">
-                    <div class="col-sm-2">
-                      <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
-                      <h5 class="small">John Smith</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
-                      <h5 class="small">John Smith</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
-                      <h5 class="small">John Smith</h5>
-                    </div>
+                  <div class="group-members" style="clear:both;">
+                    <h3>Membri <button class="btn" ng-show="edit"><span class="glyphicon glyphicon-plus" ></span></button></h3>
+                    <div class="group-members-list">
+                      <div class="col-sm-2">
+                        <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
+                        <h5 class="small">John Smith</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
+                        <h5 class="small">John Smith</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
+                        <h5 class="small">John Smith</h5>
+                      </div>
 
-                    <div class="col-sm-2">
-                      <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
-                      <h5 class="small">John Smith</h5>
-                    </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
+                        <h5 class="small">John Smith</h5>
+                      </div>
 
-                    <div class="col-sm-2">
-                      <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
-                      <h5 class="small">John Smith</h5>
-                    </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
+                        <h5 class="small">John Smith</h5>
+                      </div>
 
-                    <div class="col-sm-2">
-                      <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
-                      <h5 class="small">John Smith</h5>
-                    </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
+                        <h5 class="small">John Smith</h5>
+                      </div>
 
-                    <div class="col-sm-2">
-                      <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
-                      <h5 class="small">John Smith</h5>
-                    </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
+                        <h5 class="small">John Smith</h5>
+                      </div>
 
-                    <div class="col-sm-2">
-                      <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
-                      <h5 class="small">John Smith</h5>
+                      <div class="col-sm-2">
+                        <img class="img-responsive img-circle" src="http://api.randomuser.me/portraits/men/49.jpg">
+                        <h5 class="small">John Smith</h5>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div class="group-events" style="clear:both;">
-                  <h3>Eventi <button class="btn" ng-show="edit"><span class="glyphicon glyphicon-plus" ></span></button></h3>
-                  <div class="group-events-list">
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/place.png">
-                      <h5 class="small">Nome evento</h5>
+                  <div class="group-events" style="clear:both;">
+                    <h3>Eventi <button class="btn" ng-show="edit"><span class="glyphicon glyphicon-plus" ></span></button></h3>
+                    <div class="group-events-list">
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/place.png">
+                        <h5 class="small">Nome evento</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/place.png">
+                        <h5 class="small">Nome evento</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/place.png">
+                        <h5 class="small">Nome evento</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/place.png">
+                        <h5 class="small">Nome evento</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/place.png">
+                        <h5 class="small">Nome evento</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/place.png">
+                        <h5 class="small">Nome evento</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/place.png">
+                        <h5 class="small">Nome evento</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/place.png">
+                        <h5 class="small">Nome evento</h5>
+                      </div>
+
                     </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/place.png">
-                      <h5 class="small">Nome evento</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/place.png">
-                      <h5 class="small">Nome evento</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/place.png">
-                      <h5 class="small">Nome evento</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/place.png">
-                      <h5 class="small">Nome evento</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/place.png">
-                      <h5 class="small">Nome evento</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/place.png">
-                      <h5 class="small">Nome evento</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/place.png">
-                      <h5 class="small">Nome evento</h5>
+                  </div>
+
+                  <div class="group-documents" style="clear:both;">
+                    <h3>Documenti<button class="btn" ng-show="edit"><span class="glyphicon glyphicon-plus" ></span></button></h3>
+                    <div class="group-documents-list">
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/document.png">
+                        <h5 class="small">Nome doc</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/document.png">
+                        <h5 class="small">Nome doc</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/document.png">
+                        <h5 class="small">Nome doc</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/document.png">
+                        <h5 class="small">Nome doc</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/document.png">
+                        <h5 class="small">Nome doc</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/document.png">
+                        <h5 class="small">Nome doc</h5>
+                      </div>
+                      <div class="col-sm-2">
+                        <img class="img-responsive" src="css/img/document.png">
+                        <h5 class="small">Nome doc</h5>
+                      </div>
+
                     </div>
 
                   </div>
-                </div>
-
-                <div class="group-documents" style="clear:both;">
-                  <h3>Documenti<button class="btn" ng-show="edit"><span class="glyphicon glyphicon-plus" ></span></button></h3>
-                  <div class="group-documents-list">
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/document.png">
-                      <h5 class="small">Nome doc</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/document.png">
-                      <h5 class="small">Nome doc</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/document.png">
-                      <h5 class="small">Nome doc</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/document.png">
-                      <h5 class="small">Nome doc</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/document.png">
-                      <h5 class="small">Nome doc</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/document.png">
-                      <h5 class="small">Nome doc</h5>
-                    </div>
-                    <div class="col-sm-2">
-                      <img class="img-responsive" src="css/img/document.png">
-                      <h5 class="small">Nome doc</h5>
-                    </div>
-
-                  </div>
 
                 </div>
-
               </div>
             </div>
           </div>
         </div>
+
+      </div>
+      <div class="col-md-9 main-content" ng-hide="cane">
+        <img src="gr.jpg" width="100%" height="100%">
       </div>
 
     </div>
-
   </div>
-</div>
-
-

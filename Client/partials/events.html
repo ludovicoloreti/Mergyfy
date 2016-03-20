@@ -26,10 +26,9 @@
               <div class="pull-left media-top">
                 <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
               </div>
-              <div class="" ng-click="gotoEvent(eventoV.eventId)">
-                <h4 class="">{{eventoV.eventName}}</h4>
-                <p class="small">{{eventoV.eventDesc}}<br>
-                  {{eventoV.placeLng}}</p>
+              <div class="" ng-click="gotoEvent(eventoV.event_id)">
+                <h4 class="">{{eventoV.event_name}}</h4>
+                <p class="small">{{eventoV.event_description}}</p>
                 </div>
               </div>
 
@@ -45,8 +44,8 @@
                   <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
                 </div>
                 <div class="" ng-click="gotoEvent(eventoP.event_id)">
-                  <h4 class="">{{eventoP.name}}</h4>
-                  <p class="small">{{eventoP.description}}</p>
+                  <h4 class="">{{eventoP.event_name}}</h4>
+                  <p class="small">{{eventoP.event_description}}</p>
                 </div>
               </div>
 
@@ -72,26 +71,26 @@
               <info-window id="infoW" class="ng-scope" max-width="300">
                 <div ng-non-bindable>
                   <div class="col-md-12">
-                    <h2>{{eventoVic.eventName}}</h2>
+                    <h2>{{eventoVic.event_name}}</h2>
                     <p><strong>Category: </strong>
                       <span class="label label-primary tags">...</span>
                     </p>
-                    <p><i>Creator: {{eventoVic.creatorName}} {{eventoVic.creatorLastname}}, {{eventoVic.dateCreation}}</i></p>
+                    <p><i>Creator: {{eventoVic.creator_name}} {{eventoVic.creator_lastname}}, {{eventoVic.creationdate}}</i></p>
                     <h3>Description</h3>
-                    <p>{{eventoVic.eventDesc}}</p>
-                    <span><b>Start:</b> {{eventoVic.dateStart}}</span>
-                    <span><b>Stop:</b> {{eventoVic.dateStop}}</span>
+                    <p>{{eventoVic.description}}</p>
+                    <span><b>Start:</b> {{eventoVic.startdate}}</span>
+                    <span><b>Stop:</b> {{eventoVic.stopdate}}</span>
                   </div>
                   <div class="row-fluid">
                     <div class="col-md-12">
                       <br>
-                      <button ng-click="gotoEvent(eventoVic.eventId)" class="btn">View event <span class="glyphicon glyphicon-share"></span></button>
+                      <button ng-click="gotoEvent(eventoVic.event_id)" class="btn">View event <span class="glyphicon glyphicon-share"></span></button>
                     </div>
                   </div>
                 </div>
               </info-window>
 
-              <marker ng-repeat="eventoVic in eventiVicini" position="{{eventoVic.placeLat}}, {{eventoVic.placeLng}}" clickable="true" id="{{eventoVic.eventId}}" draggable="false" on-click="detail(event, eventoVic)">
+              <marker ng-repeat="eventoVic in eventiVicini" position="{{eventoVic.latitude}}, {{eventoVic.longitude}}" clickable="true" id="{{eventoVic.event_id}}" draggable="false" on-click="detail(event, eventoVic)">
               </marker>
             </ng-map>
           </div>

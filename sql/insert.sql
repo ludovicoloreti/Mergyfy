@@ -41,9 +41,9 @@ INSERT INTO `members` (`user_id`, `group_id`, `accepted`, `role`, `joindate`) VA
 
 INSERT INTO `partecipations` (`event_id`, `user_id`, `status`) VALUES
 (1, 1, 'accepted'),
-(1, 2, 'waiting'),
+(1, 2, 'accepted'),
 (1, 3, 'waiting'),
-(1, 4, 'waiting'),
+(1, 4, 'accepted'),
 (1, 5, 'waiting'),
 (7,3,'accepted');
 

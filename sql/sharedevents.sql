@@ -364,13 +364,14 @@ DELIMITER ;
 
 /* getUserEvents( user_id, which )
     Select events in which the user has been invited to. We can decide wheter
-    to get all the set of events or only the next/past ones.
+    to get all the set of events or only the next/past ones. TODO: change names.
 */
 DELIMITER |
 CREATE PROCEDURE getUserEvents( IN user_id INT, IN which ENUM('next','past','all') )
 BEGIN
   CASE which
     WHEN 'next' THEN
+<<<<<<< HEAD
       SELECT evnt.*, part.status AS status
         FROM partecipations AS part, eventsInfo AS evnt
           WHERE ( (part.event_id = evnt.event_id) AND (part.user_id = user_id) AND (evnt.startdate > current_timestamp()) );
@@ -382,6 +383,28 @@ BEGIN
       SELECT evnt.*, part.status AS status
         FROM partecipations AS part, eventsInfo AS evnt
           WHERE ( (part.event_id = evnt.event_id) AND (part.user_id = user_id) );
+=======
+      SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
+             usr.id AS creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname,
+             plc.id AS place_id, plc.name AS place_name, plc.address AS address, plc.latitude AS latitude, plc.longitude AS longitude,
+             part.status AS status
+       FROM partecipations AS part, events AS evnt, places AS plc, users AS usr
+        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) AND (evnt.startdate > current_timestamp()) );
+    WHEN 'past' THEN
+      SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
+             usr.id AS creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname,
+             plc.id AS place_id, plc.name AS place_name, plc.address AS address, plc.latitude AS latitude, plc.longitude AS longitude,
+             part.status AS status
+      FROM partecipations AS part, events AS evnt, places AS plc, users AS usr
+        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) AND (evnt.stopdate < current_timestamp()) );
+    ELSE
+      SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
+             usr.id AS creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname,
+             plc.id AS place_id, plc.name AS place_name, plc.address AS address, plc.latitude AS latitude, plc.longitude AS longitude,
+             part.status AS status
+      FROM partecipations AS part, events AS evnt, places AS plc, users AS usr
+        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) );
+>>>>>>> b061433699d8e7381f97ec6907fe2a9822d6da43
   END CASE;
 END |
 DELIMITER ;
