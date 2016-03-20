@@ -107,19 +107,35 @@ call createNode(1,1,'Bel titolo'); -- ok
 call addNoteToDoc('code', 'code content', 'code desc', 1, 'addNoteToDoc'); -- ok
 
 /* getGroupMembers */
+call getGroupMembers(1);  -- ok
 /* getEventPartecipants */
+call getEventPartecipants(1);   -- ok
 /* createGroup */
+call createGroup('Group1', '/img/', 'Group1 description', 1);  -- ok
 /* addMember */
+call addMember(2, 1);   -- ok
 /* acceptMembership */
+call acceptMembership(2, 1);  -- ok
 -----------------------
 /* updateGroup */
+call updateGroup(2, 'Group1MODIFIED', 'img/', 'Group1MODIFIED2');   -- ok
 /* getGroupInfo */
+call getGroupInfo(2); -- ok
 /* getPlace */
+call getPlace(1);   -- ok
 /* addPartecipant */
+addPartecipant(1, 2);                                               --------------------------------- NOOOOOOOOOOOOOOOO
 /* updatePartecipation */
+call updatePartecipation(IN idI INT, IN eventId INT, IN userId INT, IN statusI VARCHAR(20))--------------------------------- NOOOOOOOOOOOOOOOON CAPISCO
 /* addNote */ -- NO
+call addNote('link', 'www.google.com', "Google's Website");       -- ok
 /* getNote */ -- ??
-/* updateNote */ -- ??
-/* searchUser */
+call getNote(1);      -- ok
+/* updateNote */ -- ?? 
+call updateNote(1, 'link', 'www.google.it', 'Sito di Google'); 
+/* searchUser */ 
+call searchUser('ani');     -- ok
 /* searchGroup */
+call searchGroup('1');    -- ok
 /* addGroupToEvent */
+call addGroupToEvent(2, 7);   -- ok

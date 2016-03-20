@@ -107,8 +107,8 @@ CREATE TABLE IF NOT EXISTS members(
   role ENUM('admin','normal') DEFAULT 'normal',
   joindate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id, group_id),
-  FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (group_id) REFERENCES groups(id)
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE
 ) engine=INNODB;
 
 /* EVENTS */
@@ -125,8 +125,8 @@ CREATE TABLE IF NOT EXISTS events (
   category_name VARCHAR(100) default 'not given',
   PRIMARY KEY (id),
   FOREIGN KEY (place_id) REFERENCES places(id),
-  FOREIGN KEY (creator_id) REFERENCES users(id),
-  FOREIGN KEY (category_name) REFERENCES categories(name)
+  FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (category_name) REFERENCES categories(name) ON DELETE SET NULL
 ) engine=INNODB;
 
 /* DOCUMENTS */
@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS documents (
   public ENUM('0','1') DEFAULT '1',
   PRIMARY KEY (id),
   FOREIGN KEY (creator_id) REFERENCES users(id),
-  FOREIGN KEY (event_id) REFERENCES events(id)
+  FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE SET NULL
 
 ) engine=INNODB;
 
@@ -151,8 +151,8 @@ CREATE TABLE IF NOT EXISTS nodes (
   creationdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   title VARCHAR(200) DEFAULT "Title",
   PRIMARY KEY (id),
-  FOREIGN KEY (document_id) REFERENCES documents(id),
-  FOREIGN KEY (note_id) REFERENCES notes(id)
+  FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE,
+  FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE
 ) engine=INNODB;
 
 /* PARTECIPATIONS */
@@ -161,8 +161,8 @@ CREATE TABLE IF NOT EXISTS partecipations (
   user_id INT(11) NOT NULL,
   status ENUM('accepted','declined','waiting') DEFAULT 'waiting',
   PRIMARY KEY (event_id, user_id),
-  FOREIGN KEY(event_id) REFERENCES events(id),
-  FOREIGN KEY(user_id) REFERENCES users(id)
+  FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE,
+  FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 ) engine=INNODB;
 
 /******************** VIEWS *************************/
@@ -229,7 +229,7 @@ END //
 DELIMITER ;
 
 /* 3 - check_admin
-  When an admin leaves a group, it replace the admin with the first member who has joined the group.
+  When an admin leaves a group, it replaces the admin with the first member who has joined the group.
 */
 DELIMITER //
 create trigger change_admin
@@ -247,9 +247,10 @@ DELIMITER ;
 
 /* 4 - check_note
   Checks if an image note or a link note has the description associated
+  (NECESSARLY?)
 */
 DELIMITER //
-create trigger ceck_note
+create trigger check_note
 BEFORE INSERT ON merge.notes
 FOR EACH ROW
 BEGIN
@@ -341,7 +342,7 @@ BEGIN
   END IF;
   -- Neither old position nor new position
   IF ( ((userLat IS NULL) AND (userLng IS NULL)) OR ((userLat = 0) AND (userLng = 0)) ) THEN
-    SIGNAL sqlstate '45000' SET message_text = "No position no party";
+    SIGNAL sqlstate '45000' SET message_text = "No position, no party";
   ELSE
     -- Find Events
     SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
@@ -393,7 +394,7 @@ CREATE PROCEDURE searchEvents(IN user_id INT, IN chars VARCHAR(200))
 DELIMITER ;
 
 /* suggestedEvents()
-  Suggest some public events near the user. TODO check users' right on events
+  Suggest some public events near the user. TODO check users' rights on events @pinair
 */
 DELIMITER |
 CREATE PROCEDURE suggestedEvents(IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8))
@@ -403,7 +404,7 @@ BEGIN
          pl.id as placeId, pl.name as placeName, pl.address as placeAddress, pl.lat as placeLat, pl.lng as placeLng,
          ( 3959 * acos( cos( radians(latitude) ) * cos( radians( pl.lat ) ) * cos( radians( pl.lng ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( pl.lat ) ) ) ) AS distance
   FROM events as ev, places as pl, users as u
-  WHERE (ev.place = pl.id) AND (ev.creator = u.id)
+  WHERE (ev.place = pl.id)  AND (ev.type='public') 
   HAVING (distance < dist)
   ORDER BY distance;
 END |
@@ -480,7 +481,7 @@ CREATE PROCEDURE deleteUser(IN user_id INT)
 DELIMITER ;
 
 /* damnatioMemoriae( user_id )
-  Delate the user from the table.  TODO: handle the deletion of an user and his dependencies
+  Delate the user from the table.  TODO: handle the deletion of an user and his dependencies @pinair
 */
 DELIMITER |
 CREATE PROCEDURE damnatioMemoriae(IN user_id INT)
@@ -490,7 +491,7 @@ CREATE PROCEDURE damnatioMemoriae(IN user_id INT)
 DELIMITER ;
 
 /* getEvents()
-  Gets all events TODO: is it useful?
+  Gets all events TODO: is it useful? No. @pinair
 */
 DELIMITER |
 CREATE PROCEDURE getEvents()
@@ -500,7 +501,7 @@ END |
 DELIMITER ;
 
 /* getEvent( user_id, event_id )
-  Return Event, Creator and Place info TODO: what about categories?
+  Return Event, Creator and Place info TODO: what about categories? @pinair
 */
 DELIMITER |
 CREATE PROCEDURE getEvent(IN user_id INT, IN event_id INT)
@@ -513,7 +514,7 @@ BEGIN
     SELECT evnt.id AS event_id, evnt.type AS event_type, evnt.name AS event_name, evnt.description AS event_description, evnt.creationdate, evnt.startdate, evnt.stopdate,
     evnt.category_name, evnt.place_id, plc.name AS place_name, plc.latitude, plc.longitude, plc.address, plc.city, plc.cap, plc.nation,
     evnt.creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname, usr.image_profile AS creator_image_profile
-    FROM events AS evnt, places AS plc, usersInfo AS usr WHERE (evnt.creator_id = usr.id) AND  (evnt.place_id = plc.id) AND (evnt.id = event_id);
+    FROM events AS evnt, places AS plc, usersInfo AS usr, categories AS cat WHERE (evnt.creator_id = usr.id) AND  (evnt.place_id = plc.id) AND (evnt.id = event_id) AND (evnt.category_name = cat.name);
   ELSE
     SIGNAL sqlstate '45000' set message_text = "You are not a partecipant!";
     -- cat.name AS category_name, cat.description AS category_description, cat.colour AS category_colour,
@@ -522,7 +523,7 @@ END |
 DELIMITER ;
 
 /* addPlace()
-  TODO: check the duplication?
+  TODO: check the duplication? No. Add Store Procedure similarPlaces below @pinair
 */
 DELIMITER |
 CREATE PROCEDURE addPlace(IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8), IN name VARCHAR(100), IN address VARCHAR(200), IN cap VARCHAR(10), IN city VARCHAR(50), IN nation VARCHAR(50))
@@ -531,9 +532,23 @@ BEGIN
 END |
 DELIMITER ;
 
+/* similarPlaces()
+  Return the places nearby the new place coordinates (maybe the place to add is inside the db yet?) @pinair [ADDED]
+*/
+DELIMITER |
+CREATE PROCEDURE similarPlaces(IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8))
+BEGIN
+  --Get all the places in 50 meters
+  SELECT evnt, ( 3959 * acos( cos( radians(latitude) ) * cos( radians( plc.latitude ) ) * cos( radians( plc.longitude ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( plc.latitude ) ) ) ) AS calculated_distance
+  FROM events AS evnt
+  HAVING calculated_distance < 50
+  ORDER BY calculated_distance 
+END |
+DELIMITER ;
+
 /* addEvent(name, description, place_id, startdate, stopdate, creator_id, event_type)
   Check if the user has the permission to create a private event: If there aren't problems it creates the event
-  TODO: Use a trigger to control the insertion
+  TODO: Use a trigger to control the insertion @pinair isn't already done here?
 */
 DELIMITER |
 CREATE PROCEDURE addEvent(IN name VARCHAR(100), IN description VARCHAR(2000), IN place_id INT, IN startdate TIMESTAMP, IN stopdate TIMESTAMP, IN creator_id INT, IN event_type VARCHAR(20), category_name VARCHAR(20))
@@ -553,7 +568,7 @@ END |
 DELIMITER ;
 
 /* updateEvent()
-  Update event infos TODO: how to implement place, event partecipants and docs?
+  Update event infos TODO: how to implement place, event partecipants and docs? @pinair what's the question?
 */
 DELIMITER |
 CREATE PROCEDURE updateEvent(IN idI INT, IN nameI VARCHAR(100), IN placeI INT, IN startdateI TIMESTAMP, IN stopdateI TIMESTAMP, IN creatorI INT, IN typeI VARCHAR(10), IN descriptionI VARCHAR(2000), IN categoryI INT)
@@ -585,7 +600,7 @@ END |
 DELIMITER ;
 
 /* updateCategory
-  Update a category given the old name TODO think about the primary key...
+  Update a category given the old name TODO think about the primary key... @pinair done
 */
 DELIMITER |
 CREATE PROCEDURE updateCategory(IN oldname VARCHAR(100), IN name VARCHAR(100), IN description VARCHAR(2000), IN colour VARCHAR(6))
@@ -612,7 +627,7 @@ END |
 DELIMITER ;
 
 /* getUserDoc(doc_id)
-  Get document content. TODO: we need to check rights?
+  Get document content. TODO: do we need to check rights? no, why we should? @pinair
 */
 DELIMITER |
 CREATE PROCEDURE getUserDoc(IN doc_id INT)
@@ -622,13 +637,19 @@ END |
 DELIMITER ;
 
 /* createDoc(creator_id, name, event_id, visibility_type)
-  creates a document, if the user has the rights TODO: check creation rights
+  creates a document, if the user has the rights TODO: check creation rights  @pinair DONE
  */
 DELIMITER |
 CREATE PROCEDURE createDoc(IN creator_id INT, IN name VARCHAR(100), IN event_id INT, IN visibility_type ENUM('0', '1'))
 BEGIN
-  -- TODO: check user rights... and duplication!
-  INSERT INTO documents (creator, name, event, public) VALUES (creator_id, name, event_id, visibility_type);
+  DECLARE alreadyExists VARCHAR(150) DEFAULT NULL;
+  SELECT name INTO alreadyExists FROM documents AS doc WHERE doc.creator_id = creator_id AND doc.event_id = event_id;
+  IF alreadyExists = NULL
+  THEN
+    SIGNAL sqlstate '4500' set message_text = "The documents already exists!";
+  ELSE
+    INSERT INTO documents (creator, name, event, public) VALUES (creator_id, name, event_id, visibility_type);
+  END IF;
 END |
 DELIMITER ;
 
@@ -661,7 +682,7 @@ BEGIN
   IF checkCreation = 1 THEN
     UPDATE documents AS doc SET doc.public = public WHERE doc.id = user_id;
   ELSE
-    SIGNAL sqlstate '45000' set message_text = "A user can't update other user's document";
+    SIGNAL sqlstate '45000' set message_text = "An user can't update other user's document";
   END IF;
 END |
 DELIMITER ;
@@ -734,13 +755,35 @@ END |
 DELIMITER ;
 
 /* getEventPartecipants(event_id)
-  Gets every users that partecipate to an event TODO: all or only "accepted"?
+  Gets every users that partecipate to an event TODO: all or only "accepted"? @pinair only accepted here, only waiting and declined below
 */
 DELIMITER |
 CREATE PROCEDURE getEventPartecipants(IN event_id INT)
 BEGIN
   SELECT * FROM partecipations as part, usersInfo as usr
   WHERE (part.event_id = event_id) AND (part.user_id = usr.id) AND (part.status = "accepted"); -- all or only "accepted" ?
+END |
+DELIMITER ;
+
+/* getEventWaitingPartecipans(event_id)
+  Gets every users that haven't still answered to the invitation @pinair NEW
+*/
+DELIMITER |
+CREATE PROCEDURE getEventWaitingPartecipants(IN event_id INT)
+BEGIN
+  SELECT * FROM partecipations as part, usersInfo as usr
+  WHERE (part.event_id = event_id) AND (part.user_id = usr.id) AND (part.status = "waiting"); -- all or only "accepted" ?
+END |
+DELIMITER ;
+
+/* getEventDeclinedPartecipans(event_id)
+  Gets every users that won't enjoy the event @pinair NEW
+*/
+DELIMITER |
+CREATE PROCEDURE getEventDeclinedPartecipants(IN event_id INT)
+BEGIN
+  SELECT * FROM partecipations as part, usersInfo as usr
+  WHERE (part.event_id = event_id) AND (part.user_id = usr.id) AND (part.status = "declined"); -- all or only "accepted" ?
 END |
 DELIMITER ;
 
@@ -811,7 +854,7 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE addPartecipant(IN eventId INT, IN userId INT)
 BEGIN
-  INSERT INTO partecipations (event_id, user_id) VALUES (eventId, userId);
+  INSERT INTO partecipations (event_id, user_id, status) VALUES (eventId, userId, 'waiting');
 END |
 DELIMITER ;
 
@@ -819,7 +862,7 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE updatePartecipation(IN idI INT, IN eventId INT, IN userId INT, IN statusI VARCHAR(20))
 BEGIN
-  UPDATE parteciparions
+  UPDATE partecipations
     SET event_id = eventId, user_id = userId, status = statusI
     WHERE id = idI;
 END |
@@ -843,7 +886,7 @@ DELIMITER ;
 
 /* updateNote */
 DELIMITER |
-CREATE PROCEDURE updateNote(IN idI INT, IN typeI VARCHAR(7), IN contentI TEXT, IN description VARCHAR(200))
+CREATE PROCEDURE updateNote(IN idI INT, IN typeI VARCHAR(7), IN ccall updateNote(1, 'link', 'www.google.it', 'Sito di Google'); ontentI TEXT, IN descriptionI VARCHAR(200))
 BEGIN
   UPDATE notes
     SET type = typeI, content = contentI, description = descriptionI
@@ -855,7 +898,7 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE searchUser(IN text VARCHAR(200))
 BEGIN
- SELECT userid, name, lastname FROM usersInfo WHERE ( CONCAT_WS(' ', name, lastname) LIKE CONCAT('%', text , '%') OR CONCAT_WS(' ', lastname, name) LIKE CONCAT('%', text , '%') ) LIMIT 10;
+ SELECT id, name, lastname FROM usersInfo WHERE ( CONCAT_WS(' ', name, lastname) LIKE CONCAT('%', text , '%') OR CONCAT_WS(' ', lastname, name) LIKE CONCAT('%', text , '%') ) LIMIT 10;
 END |
 DELIMITER ;
 
@@ -874,7 +917,7 @@ CREATE PROCEDURE addGroupToEvent(IN groupID INT, IN eventID INT)
     BEGIN
       DECLARE cursor_ID INT;
       DECLARE done INT DEFAULT FALSE;
-      DECLARE cursor_i CURSOR FOR SELECT iduser FROM members WHERE idgroup= groupID AND accepted=1 ;
+      DECLARE cursor_i CURSOR FOR SELECT user_id FROM members WHERE group_id= groupID AND accepted=1 ;
       DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
       OPEN cursor_i;
       read_loop: LOOP
@@ -901,3 +944,7 @@ CREATE PROCEDURE checkRights(IN user_id INT, IN doc_id INT, OUT result INT)
 
   END |
 DELIMITER ;
+
+
+
+
