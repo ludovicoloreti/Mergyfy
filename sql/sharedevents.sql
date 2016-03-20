@@ -281,7 +281,7 @@ BEFORE INSERT ON merge.groups
 FOR EACH ROW
 BEGIN
   -- random image if no profile image is provided
-  IF (NEW.image IS NULL) THEN
+  IF ((NEW.image IS NULL) OR (NEW.image = "null")) THEN
     SET NEW.image = "https://unsplash.it/200/200/?random";
   END IF;
 END //
@@ -816,9 +816,12 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE createGroup(IN name VARCHAR (100), IN image VARCHAR(300), IN description VARCHAR(2000), IN admin_id INT)
 BEGIN
+  DECLARE lastid INT DEFAULT -1;
   -- transaction
   INSERT INTO groups (name, image, description) VALUES (name, image, description);
+  SET lastid = last_insert_id();
   call addMember(admin_id, last_insert_id());
+  SELECT lastid; 
 END |
 DELIMITER ;
 

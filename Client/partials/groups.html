@@ -156,7 +156,7 @@
             <img src="http://placehold.it/400x400" alt="" class="center-block img-circle img-responsive">
             <div>
               <p>Upload photo</p>
-              <input type="file" base-sixty-four-input class="form-control-file block well well-sm col-sm-12" id="exampleInputFile" ng-model="gruppo.image">
+              <input type="file" base-sixty-four-input class="form-control-file block well well-sm col-sm-12" id="exampleInputFile" ng-model="m.image">
 
             </div>
           </div>
@@ -167,30 +167,34 @@
               <form>
                 <fieldset class="form-group">
                   <label >Nome gruppo</label>
-                  <input type="text" class="form-control" id="" placeholder="Inserisci titolo">
+                  <input type="text" class="form-control" id="" ng-model="m.name" placeholder="Inserisci titolo">
                 </fieldset>
 
                 <fieldset class="form-group">
                   <label for="group-description">Descrizione</label>
-                  <textarea class="form-control" id="group-description" placeholder="Inserisci testo" rows="4"></textarea>
+                  <textarea class="form-control" id="group-description" ng-model="m.description" placeholder="Inserisci testo" rows="4"></textarea>
                 </fieldset>
 
                 <fieldset>
                   <label >Aggiungi membri</label>
                   <div>
                     <div class="input-group">
-                      <input type="text" class="form-control" placeholder="Search for...">
+                      <input type="text" class="form-control" placeholder="Search for..." ng-model="searchtext">
                       <span class="input-group-btn">
                         <button class="btn btn-default" type="button">Cerca</button>
                       </span>
                     </div>
                     <div class="search-results">
-
+                        <h4 ng-repeat="result in results" ng-click="pushToarray(result.id)">
+                        >>>  <b>{{result.name}} {{result.lastname}}</b>
+                        </h4>
                     </div>
 
-                    <h4>Persone che hai invitato</h4>
-                    <div class="invited-list">
-                      nessuno
+                    <h4>ID delle Persone che hai invitato</h4>
+                    <div class="invited-list" >
+                        <span ng-repeat="partecipant in partecipantList">
+                          <b>{{partecipant}}</b>,
+                        </span>
                     </div>
                   </div>
 
@@ -198,7 +202,7 @@
 
 
                 <div class="">
-                  <button type="submit" ng-click="" class="btn btn-primary">Crea gruppo</button>
+                  <button class="btn btn-primary" ng-click="creaGruppo(m,partecipantList)">Crea gruppo</button>
                 </div>
 
               </form>

@@ -27,7 +27,7 @@ app.config(['$routeProvider', function ($routeProvider) {
 
 app.run(function($rootScope, NgMap) {
   window.localStorage['id'] = 1;
-  $rootScope.url = "http://localhost:8888/Mergify/Server_v02/handler.php";
+  $rootScope.url = "http://localhost:8888/MDEF/Server_v02/handler.php";
   NgMap.getMap().then(function(map) {
     $rootScope.map = map;
   });
