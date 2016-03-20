@@ -10,7 +10,7 @@
    7 -  nodes
    8 -  notes
    9 -  places: an event location
-  10 -  partecipation: user's partecipation to events
+  10 -  partevsdfgsdfgdvsdfdfcipation: user's partecipation to events
 
   NOTE:
     1 - In mysql we can only have one table with CURRENT_TIMESTAMP as default (or on update value)
@@ -254,6 +254,8 @@ BEGIN
 END //
 DELIMITER ;
 
+
+
 /* 4 - check_note
   Checks if an image note or a link note has the description associated
   (NECESSARLY?)
@@ -270,7 +272,20 @@ BEGIN
 END //
 DELIMITER ;
 
-
+/* 5 - check_group
+  Checks ...
+*/
+DELIMITER //
+create trigger check_group
+BEFORE INSERT ON merge.groups
+FOR EACH ROW
+BEGIN
+  -- random image if no profile image is provided
+  IF (NEW.image IS NULL) THEN
+    SET NEW.image = "https://unsplash.it/200/200/?random";
+  END IF;
+END //
+DELIMITER ;
 /******************** STORED PROCEDURES **********************/
 
 /* login( mail, password, latitude, longitude )
@@ -364,14 +379,13 @@ DELIMITER ;
 
 /* getUserEvents( user_id, which )
     Select events in which the user has been invited to. We can decide wheter
-    to get all the set of events or only the next/past ones. TODO: change names.
+    to get all the set of events or only the next/past ones.
 */
 DELIMITER |
 CREATE PROCEDURE getUserEvents( IN user_id INT, IN which ENUM('next','past','all') )
 BEGIN
   CASE which
     WHEN 'next' THEN
-<<<<<<< HEAD
       SELECT evnt.*, part.status AS status
         FROM partecipations AS part, eventsInfo AS evnt
           WHERE ( (part.event_id = evnt.event_id) AND (part.user_id = user_id) AND (evnt.startdate > current_timestamp()) );
@@ -383,28 +397,6 @@ BEGIN
       SELECT evnt.*, part.status AS status
         FROM partecipations AS part, eventsInfo AS evnt
           WHERE ( (part.event_id = evnt.event_id) AND (part.user_id = user_id) );
-=======
-      SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
-             usr.id AS creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname,
-             plc.id AS place_id, plc.name AS place_name, plc.address AS address, plc.latitude AS latitude, plc.longitude AS longitude,
-             part.status AS status
-       FROM partecipations AS part, events AS evnt, places AS plc, users AS usr
-        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) AND (evnt.startdate > current_timestamp()) );
-    WHEN 'past' THEN
-      SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
-             usr.id AS creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname,
-             plc.id AS place_id, plc.name AS place_name, plc.address AS address, plc.latitude AS latitude, plc.longitude AS longitude,
-             part.status AS status
-      FROM partecipations AS part, events AS evnt, places AS plc, users AS usr
-        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) AND (evnt.stopdate < current_timestamp()) );
-    ELSE
-      SELECT evnt.id AS event_id, evnt.name AS event_name, evnt.creationdate AS creationdate, evnt.startdate AS startdate, evnt.stopdate AS stopdate, evnt.description AS event_description,
-             usr.id AS creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname,
-             plc.id AS place_id, plc.name AS place_name, plc.address AS address, plc.latitude AS latitude, plc.longitude AS longitude,
-             part.status AS status
-      FROM partecipations AS part, events AS evnt, places AS plc, users AS usr
-        WHERE ( (part.event_id = evnt.id) AND (part.user_id = user_id) AND (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) );
->>>>>>> b061433699d8e7381f97ec6907fe2a9822d6da43
   END CASE;
 END |
 DELIMITER ;
@@ -845,6 +837,21 @@ BEGIN
 END |
 DELIMITER ;
 
+/* removeMember(user_id, group_id)
+*/
+DELIMITER |
+CREATE PROCEDURE removeMember(IN user_id INT, IN group_id INT)
+BEGIN
+  DECLARE isMember INT DEFAULT 0;
+  SELECT COUNT(*) INTO isMember FROM members AS mmbr WHERE ( (mmbr.group_id= group_id) AND (mmbr.user_id= user_id) );
+  IF( isMember = 0 ) THEN
+    SIGNAL sqlstate '45000' SET message_text = "The specified user is not a member of the group";
+  ELSE
+    DELETE FROM members AS mmbr WHERE ( (mmbr.user_id= user_id) AND (mmbr.group_id= group_id));
+  END IF;
+END |
+DELIMITER ;
+
 /* acceptMembership(user_id, group_id)
   Accept invitation to a group.
 */
@@ -897,7 +904,7 @@ END |
 DELIMITER ;
 
 /* addPartecipant(event_id, user_id)
-  Adds a partreciaption to an Event
+  Adds a partrecipation to an Event
 */
 DELIMITER |
 CREATE PROCEDURE addPartecipant(IN event_id INT, IN user_id INT)
@@ -905,6 +912,7 @@ BEGIN
   DECLARE alreadyPartecipant INT DEFAULT 0;
   SELECT COUNT(*) INTO alreadyPartecipant FROM partecipations AS part WHERE ((part.event_id= event_id) AND (part.user_id= user_id));
   IF alreadyPartecipant <> 0 THEN
+    SIGNAL sqlstate '45000' SET message_text = "The user is already a partecipant";
   ELSE
     INSERT INTO partecipations(event_id, user_id, status) VALUES (event_id, user_id, 'waiting');
   END IF;

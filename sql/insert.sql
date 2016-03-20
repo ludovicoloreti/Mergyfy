@@ -4,7 +4,7 @@ INSERT INTO `users` (`id`, `name`, `lastname`, `born`, `subscriptiondate`, `type
 (2, 'Riccardo', 'Sibani', '1994-09-24', '2016-02-29 22:34:38', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail2.com', '0'),
 (3, 'Ludovico', 'Loreti', '1992-11-11', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail3.com', '0'),
 (4, 'Antonio', 'Messina', '1899-01-01', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail4.com', '0'),
-(5, 'Andrea', 'Diprè', '1960-01-01', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail5.com', '0');
+(5, 'Andrea', 'Dipre', '1960-01-01', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail5.com', '0');
 
 INSERT INTO categories (name, description, colour) VALUES
 ("workshop", "Cool thing", "#45A78B"),
