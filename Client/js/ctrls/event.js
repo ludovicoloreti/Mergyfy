@@ -72,7 +72,7 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
           dataObj.lat = data.results[0].geometry.location.lat;
           dataObj.lng = data.results[0].geometry.location.lng;
           // faccio la post
-          var createEventLinkToPost = "http://localhost:8888/MDEF/Server/handler.php?action=addEvent&model=event";
+          var createEventLinkToPost = $rootScope.url+"?action=addEvent&model=event";
           $http.post(createEventLinkToPost, dataObj).success(function(data, status, headers, config) {
             console.info(JSON.stringify(data));
             $scope.data = data;

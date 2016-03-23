@@ -7,7 +7,7 @@ INSERT INTO `users` (`id`, `name`, `lastname`, `born`, `subscriptiondate`, `type
 (5, 'Andrea', 'Dipre', '1960-02-09', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail5.com', '0'),
 (6, 'Marco', 'Giuliano', '1978-06-20', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail6.com', '0'),
 (7, 'Andrea', 'Dipre', '1983-12-31', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail7.com', '0'),
-(8, 'Andrea', 'Dipre', '1981-08-05', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail8.com', '0'),
+(8, 'Andrea', 'Dipre', '1981-08-05', '2016-02-29 22:08:42', 'basic', NULL, '44.48407585', '11.23867035', 'HASHEDPASS', 'mail@mail8.com', '0');
 
 
 INSERT INTO categories (name, description, colour) VALUES

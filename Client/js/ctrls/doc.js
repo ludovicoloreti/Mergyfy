@@ -14,12 +14,13 @@ app.controller('DocCtrl', function($scope, $rootScope, $http /*DOC*/){
   console.log(obj)
   $scope.addNodo = function(data){
     console.log(data)
-    var url = $rootScope.url+"?action=createNote&model=lol";
-    obj.type = data.type;
-    obj.title = data.title;
-    obj.content = data.content;
-    obj.description = data.description;
-    obj.docid = "1";
+    var url = $rootScope.url;
+    obj.action = "addNoteToDoc";
+    data.type = data.type;
+    data.title = data.title;
+    data.content = data.content;
+    data.description = data.description;
+    obj.data = data;
     $http.post(url, obj).success(function(r) {
       console.log(r);
     }).error(function(er) {

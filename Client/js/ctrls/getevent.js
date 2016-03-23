@@ -22,10 +22,18 @@ app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Even
 
   $http.post($rootScope.url, obj).success(function(res) {
     resGetEvent = res[0].data;
+
     $scope.partecipanti = res[1].data;
     console.log(res[1].data)
     for (i = 0; i<resGetEvent.length; i++)
     $scope.evento = resGetEvent[i];
+    if (typeof $scope.evento === "undefined") {
+      console.log("succhia")
+      window.location.href=$rootScope.urlClient+"index.html#/events";
+    } else {
+      console.log("succhia23");
+
+    }
   }).error(function(error) {
     console.log(error, "non vaaaa");
   })
@@ -38,13 +46,13 @@ app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Even
   }
 
   // crea documento
-  $scope.createDoc = function(){
+  $scope.createDoc = function(nomeEvento){
     // da sistemare
     obj = {};
     obj.action = "createDoc";
     data = {};
     data.creator_id = parseInt(window.localStorage['id']);
-    data.name = "Nome evento"; // sistemare evento
+    data.name = nomeEvento;
     data.event_id = parseInt(Evento.id);
     data.visibility_type = '1';
     obj.data = data;
@@ -53,7 +61,7 @@ app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Even
       console.log(res);
       var link = "#/doc";
       console.log("clicked on a group link. Going to -> " + link)
-      window.location.href = link;
+      window.location.href = $rootScope.urlClient+link;
     }).error(function(error) {
       console.log(error, "non vaaaa");
     })
