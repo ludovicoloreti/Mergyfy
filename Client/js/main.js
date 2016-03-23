@@ -10,7 +10,7 @@ app.config(['$routeProvider', function ($routeProvider) {
   .when("/", {templateUrl: "partials/home.html", controller: "HomeCtrl"})
   // Pages
   .when("/events", {templateUrl: "partials/events.html",controller: "EventsCtrl"})
-  .when("/doc", {templateUrl: "partials/document.html", controller: "DocCtrl"})
+  .when("/doc/:id", {templateUrl: "partials/document.html", controller: "DocCtrl",resolve:{Documento:function($routeParams){return $routeParams;}}})
   .when("/profile", {templateUrl: "partials/profile.html", controller: "ProfileCtrl"})
   .when("/groups", {templateUrl: "partials/groups.html", controller: "GroupsCtrl"})
   .when("/group/:id", {templateUrl: "partials/groups.html", controller: "GroupCtrl",resolve:{Gruppo:function($routeParams){return $routeParams;}}})

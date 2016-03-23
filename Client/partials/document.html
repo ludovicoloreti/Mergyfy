@@ -8,85 +8,17 @@
         <div class="docs-cont">
           <!--REPLACE WITH ng-repeat-->
 
-          <div class="media clearfix doc-thumb-container">
+          <div class="media clearfix doc-thumb-container" ng-repeat="nodo in nodi">
             <div class="pull-left media-top">
               <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
             </div>
-            <div class="">
-              <h4 class="">Note title</h4>
-              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
+            <div class="" ng-click="addNodo(nodo)">
+              <h4 class="">{{nodo.title}}</h4>
+              <p class="small">{{nodo.description}}</p>
             </div>
           </div>
 
-          <div class="media clearfix doc-thumb-container">
-            <div class="pull-left media-top">
-              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-            </div>
-            <div class="">
-              <h4 class="">Note title</h4>
-              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-            </div>
-          </div>
 
-          <div class="media clearfix doc-thumb-container">
-            <div class="pull-left media-top">
-              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-            </div>
-            <div class="">
-              <h4 class="">Note title</h4>
-              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-            </div>
-          </div>
-
-          <div class="media clearfix doc-thumb-container">
-            <div class="pull-left media-top">
-              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-            </div>
-            <div class="">
-              <h4 class="">Note title</h4>
-              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-            </div>
-          </div>
-
-          <div class="media clearfix doc-thumb-container">
-            <div class="pull-left media-top">
-              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-            </div>
-            <div class="">
-              <h4 class="">Note title</h4>
-              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-            </div>
-          </div>
-
-          <div class="media clearfix doc-thumb-container">
-            <div class="pull-left media-top">
-              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-            </div>
-            <div class="">
-              <h4 class="">Note title</h4>
-              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-            </div>
-          </div>
-
-          <div class="media clearfix doc-thumb-container">
-            <div class="pull-left media-top">
-              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-            </div>
-            <div class="">
-              <h4 class="">Note title</h4>
-              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-            </div>
-          </div>
-
-          <div class="media clearfix doc-thumb-container">
-            <div class="pull-left media-top">
-              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
-            </div>
-            <div class="">
-              <h4 class="">Note title</h4>
-              <p class="small">[[Lorem Ipsum è un testo segnaposto utilizzatadsfawdsfasf asfasdfsf..]]</p>
-            </div>
-          </div>
 
           <!--STOP REPLACE-->
         </div>
@@ -96,12 +28,13 @@
       <div class="col-md-9 main-content center-block" style="background-color: rgba(152, 152, 152, 0.87);;">
         <div class="document-container">
           <div class="document">
-            <h1>Nome documento</h1>
-            <p><i>Mario Rossi</i></p>
+            <h1>Nome Doc: {{doc.name}}</h1>
+            <p>Autore: <i>{{doc.creator_name}} {{doc.creator_lastname}}</i></p>
             <div class="text-cont"></div>
-            <div class="new-node">
-              <h4>{{title}}</h4>
-              <p>{{text}}</p>
+            <div class="new-node" ng-repeat="nota in note">
+              <fieldset><legend>Nota ({{nota.note_id}})</legend><h3>Titolo: {{nota.title}}</h3>
+              <p><b>Descrizione:</b> {{nota.description}}</p>
+              <p><b>Contenuto:<br></b> {{nota.content}}</p><br><br></fieldset><br>
             </div>
 
           </div>

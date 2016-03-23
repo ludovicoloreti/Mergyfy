@@ -1,3 +1,3 @@
-app.controller('HomeCtrl', function ($scope) {
+app.controller('HomeCtrl', function ($scope, $rootScope) {
   $scope.clock = new Date();
 });

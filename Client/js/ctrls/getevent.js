@@ -59,8 +59,8 @@ app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Even
     console.log(obj);
     $http.post($rootScope.url, [obj]).success(function(res) {
       console.log(res);
-      var link = "#/doc";
-      console.log("clicked on a group link. Going to -> " + link)
+      var link = "#/doc/"+res[0].data[0].id;
+      // console.log(link)
       window.location.href = $rootScope.urlClient+link;
     }).error(function(error) {
       console.log(error, "non vaaaa");

@@ -666,8 +666,8 @@ BEGIN
   SELECT COUNT(*) INTO alreadyExists FROM documents AS doc WHERE ( (doc.creator_id = creator_id) AND (doc.event_id = event_id) );
   IF alreadyExists > 0
   THEN
+    SELECT doc.id FROM documents AS doc WHERE ( (doc.creator_id = creator_id) AND (doc.event_id = event_id) );
     SIGNAL sqlstate '45000' set message_text = "The documents already exists!";
-    -- SELECT doc.id FROM documents AS doc WHERE ( (doc.creator_id = creator_id) AND (doc.event_id = event_id) );
   ELSE
     INSERT INTO documents (creator_id, name, event_id, public) VALUES (creator_id, name, event_id, visibility_type);
     SELECT last_insert_id();
@@ -715,7 +715,7 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE getDoc(IN doc_id INT)
 BEGIN
-  SELECT * FROM documents AS doc WHERE (doc.id= doc_id);
+  SELECT doc.*, usr.name as creator_name, usr.lastname as creator_lastname FROM documents AS doc, usersInfo as usr WHERE (doc.id= doc_id) AND (doc.creator_id = usr.id);
 END |
 DELIMITER ;
 

@@ -4,8 +4,8 @@
 
       <h2>Events</h2>
       <ul class="nav nav-pills">
-        <li class="active"><a ng-click="changeEvents(true)" data-toggle="pill">Vicino</a></li>
-        <li class=""><a ng-click="changeEvents(false)" data-toggle="pill">Partecipo</a></li>
+        <li class="active"><a ng-click="changeEvents(true)" data-toggle="pill">Partecipo</a></li>
+        <li class=""><a ng-click="changeEvents(false)" data-toggle="pill">Vicino</a></li>
       </ul>
       <div class="row " style="margin:0px;">
         <div class="input-group">
@@ -19,7 +19,7 @@
       <div class="docs-cont">
         <!--REPLACE WITH ng-repeat-->
         <!--TAB 1-->
-        <div class="pill-content" ng-show="eventsNavbar">
+        <div class="pill-content" ng-hide="eventsNavbar">
           <div class="pill-pane active" id="near">
 
             <div class="media clearfix doc-thumb-container" ng-repeat="eventoV in eventiVicini">
@@ -36,7 +36,7 @@
           </div>
 
           <!--TAB 2-->
-          <div class="pill-content" ng-hide="eventsNavbar" style="overflow: scroll; height: 90%;">
+          <div class="pill-content" ng-show="eventsNavbar" style="overflow: scroll; height: 90%;">
             <div class="pill-pane active" id="joined">
 
               <div class="media clearfix doc-thumb-container" ng-repeat="eventoP in eventiPartecipo">
