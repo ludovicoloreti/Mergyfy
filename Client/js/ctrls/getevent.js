@@ -1,5 +1,4 @@
 app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Evento){
-  console.log(Evento.id);
   data1 = {}; data2 = {}
   action1 = "getEvent";
   data1.event_id = parseInt(Evento.id);
@@ -18,20 +17,18 @@ app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Even
       "data": data20
     }
   ];
-  console.log(JSON.stringify(obj));
 
   $http.post($rootScope.url, obj).success(function(res) {
+    console.log(res)
     resGetEvent = res[0].data;
-
     $scope.partecipanti = res[1].data;
-    console.log(res[1].data)
     for (i = 0; i<resGetEvent.length; i++)
     $scope.evento = resGetEvent[i];
     if (typeof $scope.evento === "undefined") {
-      console.log("succhia")
+      console.log("non puoi vederlo")
       window.location.href=$rootScope.urlClient+"index.html#/events";
     } else {
-      console.log("succhia23");
+      console.log("Puoi e lo stai vedendo");
 
     }
   }).error(function(error) {

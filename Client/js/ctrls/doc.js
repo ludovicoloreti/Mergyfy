@@ -1,5 +1,4 @@
 app.controller('DocCtrl', function($scope, $rootScope, $http, Documento){
-  console.log(Documento.id);
   $scope.toggle = false;
   $scope.toggleView = function() {
     $scope.toggle = ($scope.toggle) ? false : true;
@@ -9,7 +8,6 @@ app.controller('DocCtrl', function($scope, $rootScope, $http, Documento){
   var data0 = {};
   var data1 = {};
   $scope.addNodo = function(data0){
-    console.log(data0)
     var url = $rootScope.url;
     action0 = "addNoteToDoc";
     data1.type = data0.type;
@@ -23,7 +21,6 @@ app.controller('DocCtrl', function($scope, $rootScope, $http, Documento){
         data: data1
       }
     ]
-    console.log("stampaaa",obj0);
     $http.post(url, obj0).success(function(risultato) {
       console.log(risultato);
       window.location.reload(true);
