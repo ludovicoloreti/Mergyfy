@@ -28,13 +28,29 @@
       <div class="col-md-9 main-content center-block" style="background-color: rgba(152, 152, 152, 0.87);;">
         <div class="document-container">
           <div class="document">
-            <h1>Nome Doc: {{doc.name}}</h1>
+
+            <h1>{{doc.name}}</h1>
             <p>Autore: <i>{{doc.creator_name}} {{doc.creator_lastname}}</i></p>
             <div class="text-cont"></div>
-            <div class="new-node" ng-repeat="nota in note">
-              <fieldset><legend>Nota ({{nota.note_id}})</legend><h3>Titolo: {{nota.title}}</h3>
-              <p><b>Descrizione:</b> {{nota.description}}</p>
-              <p><b>Contenuto:<br></b> {{nota.content}}</p><br><br></fieldset><br>
+
+            <div class="new-node" id="node-{{nota.note_id}}"ng-repeat="nota in note">
+              <fieldset>
+                <legend class="text-success text-right" style="font-size:10px;">
+                  Nota ({{nota.note_id}})
+                </legend>
+                <h3 style="margin-top:2px">{{nota.title}}<span ng-click="editDoc(nota)" class="glyphicon glyphicon-edit pull-right text-muted"></span></h3>
+                <p ng-hide="clicked">{{nota.description}}</p><input type="text" class="form-control" ng-show="clicked" ng-model="nota.description"/>
+                <p ng-hide="clicked">{{nota.content}}</p><input type="text" class="form-control" ng-show="clicked" ng-model="nota.content"/>
+              </fieldset>
+            </div>
+
+            <div class="">
+              <fieldset>
+                <legend class="text-primary" style="font-size:10px;">Nuova nota</legend>
+                <h3>{{data.title}}</h3>
+                <p>{{data.description}}</p>
+                <p>{{data.content}}</p>
+              </fieldset>
             </div>
 
           </div>
@@ -89,4 +105,4 @@
       </div>
     </div>
   </div>
-</div>bower install angular-base64-upload
+</div>

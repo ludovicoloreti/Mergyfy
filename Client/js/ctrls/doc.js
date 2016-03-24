@@ -1,8 +1,13 @@
 app.controller('DocCtrl', function($scope, $rootScope, $http, Documento){
   $scope.toggle = false;
+  $scope.clicked= false;
   $scope.toggleView = function() {
     $scope.toggle = ($scope.toggle) ? false : true;
   };
+
+  $scope.editDoc = function(nota) {
+    $scope.clicked= ($scope.clicked) ? false: true;
+  }
 
   var obj0 = {};
   var data0 = {};

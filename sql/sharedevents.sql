@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS places (
 /* CATEGORIES */
 CREATE TABLE IF NOT EXISTS categories (
   name VARCHAR(100) NOT NULL,
-  description VARCHAR(2000),
+  description VARCHAR(3000),
   colour VARCHAR(6),
   PRIMARY KEY (name)
 ) engine=INNODB;
@@ -416,6 +416,18 @@ CREATE PROCEDURE searchEvents(IN user_id INT, IN chars VARCHAR(200))
   END |
 DELIMITER ;
 
+/* searchPlaces( chars )
+    Search places by name.
+*/
+DELIMITER |
+CREATE PROCEDURE searchPlaces(IN chars VARCHAR(200))
+  BEGIN
+    -- search
+    SELECT plc.* FROM places AS plc
+      WHERE ( (plc.name LIKE CONCAT('%', chars , '%')) OR (CONCAT(plc.address, " ",plc.city) LIKE CONCAT(TRIM(chars) , '%')) ) LIMIT 6;
+  END |
+DELIMITER ;
+
 /* suggestedEvents()
   Suggest some public events 5km near the user.
 */
@@ -548,7 +560,10 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE addPlace(IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8), IN name VARCHAR(100), IN address VARCHAR(200), IN cap VARCHAR(10), IN city VARCHAR(50), IN nation VARCHAR(50))
 BEGIN
+  DECLARE lastid INT DEFAULT -1;
   INSERT INTO places (latitude, longitude, name, address, cap, city, nation) VALUES (latitude, longitude, name, address, cap, city, nation);
+  SET lastid= last_insert_id();
+  SELECT lastid;
 END |
 DELIMITER ;
 
@@ -573,6 +588,7 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE addEvent(IN name VARCHAR(100), IN description VARCHAR(2000), IN place_id INT, IN startdate TIMESTAMP, IN stopdate TIMESTAMP, IN creator_id INT, IN event_type VARCHAR(20), category_name VARCHAR(20))
 BEGIN
+  DECLARE lastid INT DEFAULT -1;
   DECLARE user_type VARCHAR(20);
   SELECT usr.type INTO user_type FROM users AS usr WHERE usr.id = creator_id;
 
@@ -582,6 +598,8 @@ BEGIN
   ELSE
     INSERT INTO events (name, place_id, startdate, stopdate, creator_id, type, description, category_name)
       VALUES (name, place_id, startdate, stopdate, creator_id, event_type, description, category_name);
+    SET lastid = last_insert_id();
+    SELECT lastid;  
   END IF;
 
 END |
@@ -1051,5 +1069,13 @@ DELIMITER |
 CREATE PROCEDURE checkRights(IN user_id INT, IN doc_id INT, OUT result INT)
   BEGIN
 
+  END |
+DELIMITER ;
+
+/**** getUserGroup ****/
+DELIMITER |
+CREATE PROCEDURE getUserGroup(IN userID INT)
+  BEGIN
+   SELECT * FROM MEMBERS WHERE user_id = userID AND accepted = true;
   END |
 DELIMITER ;

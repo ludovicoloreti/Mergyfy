@@ -73,7 +73,7 @@
 .document {
   width: 92%;
   padding:20px 30px;
-  height: 200%;/*auto;*/
+  height: auto;
   min-height: 70%;
   margin: 15px auto;
   background-color: #ffffff;

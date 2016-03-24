@@ -25,14 +25,14 @@ app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Even
     for (i = 0; i<resGetEvent.length; i++)
     $scope.evento = resGetEvent[i];
     if (typeof $scope.evento === "undefined") {
-      console.log("non puoi vederlo")
+      console.log("Nessun risultato, non puoi vedere questo evento")
       window.location.href=$rootScope.urlClient+"index.html#/events";
     } else {
-      console.log("Puoi e lo stai vedendo");
+      console.log("Hai il diritto di vedere questo evento");
 
     }
   }).error(function(error) {
-    console.log(error, "non vaaaa");
+    console.log(error, "Errore durante la comunicazione");
   })
 
   /* APRI MAPPA */
