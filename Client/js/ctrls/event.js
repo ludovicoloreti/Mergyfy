@@ -146,7 +146,7 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
   function createEvent(placeid){
     console.log($scope.event);
 
-    var params0 = {};
+    var params = {};
     params = $scope.event;
     params.place_id= parseInt(placeid);
     params.creator_id= parseInt(window.localStorage['id']);
@@ -155,7 +155,7 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
 
     var request1 = {
       action: "addEvent",
-      data: params0
+      data: params
     };
     console.log(request1);
 
