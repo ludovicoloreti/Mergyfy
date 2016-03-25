@@ -132,7 +132,7 @@ call addNote('link', 'www.google.com', "Google's Website");       -- ok
 /* getNote */ -- ??
 call getNote(1);      -- ok
 /* updateNote */ -- ?? 
-call updateNote(1, 'link', 'www.google.it', 'Sito di Google'); 
+call updateNote(1, 'link', 'www.google.it', 'Sito di Google');    -- ok
 /* searchUser */ 
 call searchUser('ani');     -- ok
 /* searchGroup */

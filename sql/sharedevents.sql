@@ -538,11 +538,11 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE similarPlaces(IN latitude DECIMAL(11,8), IN longitude DECIMAL(11,8))
 BEGIN
-  --Get all the places in 50 meters
-  SELECT evnt, ( 3959 * acos( cos( radians(latitude) ) * cos( radians( plc.latitude ) ) * cos( radians( plc.longitude ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( plc.latitude ) ) ) ) AS calculated_distance
-  FROM events AS evnt
+  -- Get all the places in 50 meters
+  SELECT plc, ( 3959 * acos( cos( radians(latitude) ) * cos( radians( plc.latitude ) ) * cos( radians( plc.longitude ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( plc.latitude ) ) ) ) AS calculated_distance
+  FROM places AS plc
   HAVING calculated_distance < 50
-  ORDER BY calculated_distance 
+  ORDER BY calculated_distance ;
 END |
 DELIMITER ;
 
@@ -646,7 +646,7 @@ BEGIN
   SELECT name INTO alreadyExists FROM documents AS doc WHERE doc.creator_id = creator_id AND doc.event_id = event_id;
   IF alreadyExists = NULL
   THEN
-    SIGNAL sqlstate '4500' set message_text = "The documents already exists!";
+    SIGNAL sqlstate '45000' set message_text = "The documents already exists!";
   ELSE
     INSERT INTO documents (creator, name, event, public) VALUES (creator_id, name, event_id, visibility_type);
   END IF;
@@ -860,11 +860,11 @@ DELIMITER ;
 
 /* updatePartecipation */
 DELIMITER |
-CREATE PROCEDURE updatePartecipation(IN idI INT, IN eventId INT, IN userId INT, IN statusI VARCHAR(20))
+CREATE PROCEDURE updatePartecipation(IN eventId INT, IN userId INT, IN statusI VARCHAR(20))
 BEGIN
   UPDATE partecipations
     SET event_id = eventId, user_id = userId, status = statusI
-    WHERE id = idI;
+    WHERE event_id = eventId AND user_id = userId;
 END |
 DELIMITER ;
 
@@ -886,7 +886,7 @@ DELIMITER ;
 
 /* updateNote */
 DELIMITER |
-CREATE PROCEDURE updateNote(IN idI INT, IN typeI VARCHAR(7), IN ccall updateNote(1, 'link', 'www.google.it', 'Sito di Google'); ontentI TEXT, IN descriptionI VARCHAR(200))
+CREATE PROCEDURE updateNote(IN idI INT, IN typeI VARCHAR(7), IN contentI TEXT, IN descriptionI VARCHAR(200))
 BEGIN
   UPDATE notes
     SET type = typeI, content = contentI, description = descriptionI

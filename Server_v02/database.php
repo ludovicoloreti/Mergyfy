@@ -75,7 +75,7 @@ class Database extends PDO{
         if($this->stmt){
             try{
                 $this->stmt->execute();
-            } catch(Exception $pdo){
+            } catch(PDOException $pdo){
                 $this->errors = $pdo;
             }
 
@@ -86,7 +86,13 @@ class Database extends PDO{
     }
 
     public function getResult() {
-        return is_null($this->errors)? $this->stmt->fetchAll(PDO::FETCH_ASSOC) : $this->errors;
+        try{
+            $response = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch(PDOException $pdo){
+            $this->errors = "maybe";
+        }
+
+        return is_null($this->errors)?  $response : $this->errors;
 
     }
 
