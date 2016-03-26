@@ -62,9 +62,9 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
   $scope.$watch('searchPlace', function() {
     noPlace = false;
     searchPlace = $scope.searchPlace;
-    console.log($scope.searchPlace);
+    console.log(searchPlace);
 
-    if ($scope.newPlace != true && searchPlace.length >= 2) {
+    if ($scope.newPlace != true && searchPlace.length >= 1) {
       // reset the list of places
       $scope.places = [];
       // create request object
@@ -76,7 +76,7 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
       request.data = params;
       // post
       $http.post($rootScope.url, [request]).success(function(results) {
-        console.log(results);
+        console.log(results[0].data.length);
         if(results[0].data.length == 0){
           noPlace = true;
           $scope.places = [{noPlace: true, message: "No place found"}];
@@ -97,9 +97,12 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
   $scope.setPlace = function(place){
     console.log(place);
     if(!angular.isUndefined(place.noPlace) && place.noPlace == true){
+      console.log("nuovo")
       $scope.newPlace = true;
       $scope.places = [];
     }else{
+      console.log("vecchio")
+      $scope.iddi = place.id;
       $scope.newPlace = false;
       $scope.selectedPlace = place;
       $scope.searchPlace = place.name;
@@ -122,24 +125,28 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
   // ADDPLACE
   $scope.createPlace = function() {
     console.log("createPlace")
-    placeToAdd.name = $scope.new.name;
-    placeToAdd.cap = $scope.place.cap;
-    placeToAdd.nation= $scope.place.nation;
-    console.log(placeToAdd);
+    if ($scope.newPlace === true) {
+      placeToAdd.name = $scope.new.name;
+      placeToAdd.cap = $scope.place.cap;
+      placeToAdd.nation= $scope.place.nation;
+      console.log(placeToAdd);
 
-    var request = {};
-    var params = {};
-    request.action = "addPlace";
-    request.data = placeToAdd;
+      var request = {};
+      var params = {};
+      request.action = "addPlace";
+      request.data = placeToAdd;
 
-    $http.post($rootScope.url, [request]).success(function(results) {
-      console.log(results);
-      lastid = results[0].data[0].lastid;
-      createEvent(lastid);
+      $http.post($rootScope.url, [request]).success(function(results) {
+        console.log(results);
+        lastid = results[0].data[0].lastid;
+        createEvent(lastid);
 
-    }).error(function(error) {
-      console.log(error, "Errore nell caricamento dei nomi");
-    })
+      }).error(function(error) {
+        console.log(error, "Errore nell caricamento dei nomi");
+      })
+    } else {
+      createEvent($scope.iddi);
+    }
 
   }
 

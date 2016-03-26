@@ -586,7 +586,7 @@ DELIMITER ;
   TODO: Use a trigger to control the insertion @pinair isn't already done here?
 */
 DELIMITER |
-CREATE PROCEDURE addEvent(IN name VARCHAR(100), IN description VARCHAR(2000), IN place_id INT, IN startdate TIMESTAMP, IN stopdate TIMESTAMP, IN creator_id INT, IN event_type VARCHAR(20), category_name VARCHAR(20))
+CREATE PROCEDURE addEvent(IN name VARCHAR(100), IN description VARCHAR(2000), IN place_id INT, IN startdate DATE, IN stopdate DATE, IN creator_id INT, IN event_type VARCHAR(20), category_name VARCHAR(20))
 BEGIN
   DECLARE lastid INT DEFAULT -1;
   DECLARE user_type VARCHAR(20);
@@ -599,7 +599,7 @@ BEGIN
     INSERT INTO events (name, place_id, startdate, stopdate, creator_id, type, description, category_name)
       VALUES (name, place_id, startdate, stopdate, creator_id, event_type, description, category_name);
     SET lastid = last_insert_id();
-    SELECT lastid;  
+    SELECT lastid;
   END IF;
 
 END |

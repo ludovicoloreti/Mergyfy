@@ -42,7 +42,7 @@
           <div class="search-results">
             <ul class="list-group">
               <li class="list-group-item" ng-repeat="place in places" ng-click="setPlace(place)">
-                  <div ng-if="place.noPlaces = true">
+                  <div ng-if="place.noPlace === true">
                     <b>{{place.message}} <span class="glyphicon glyphicon-plus"></span></b>
 
                   </div>

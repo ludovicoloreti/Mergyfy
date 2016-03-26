@@ -26,7 +26,7 @@ app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Even
     $scope.evento = resGetEvent[i];
     if (typeof $scope.evento === "undefined") {
       console.log("Nessun risultato, non puoi vedere questo evento")
-      window.location.href=$rootScope.urlClient+"index.html#/events";
+      //window.location.href=$rootScope.urlClient+"index.html#/events";
     } else {
       console.log("Hai il diritto di vedere questo evento");
 
