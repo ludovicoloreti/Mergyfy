@@ -1,4 +1,5 @@
 app.controller("ProfileCtrl", function($rootScope, $scope, $http, $window){
+  document.title = "Profile | Mergefy";
   data = {};
   action1 = "getUser";
   data.user_id = parseInt(window.localStorage['id']);

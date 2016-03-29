@@ -5,26 +5,27 @@
         <div>
           <h1>NODI</h1>
         </div>
-        <div class="docs-cont">
-          <!--REPLACE WITH ng-repeat-->
-
-          <div class="media clearfix doc-thumb-container" ng-repeat="nodo in nodi">
+        <div class="docs-cont"><!-- Lista dei nodi -->
+          <div ng-if="nodi.length != 0" class="media clearfix doc-thumb-container" ng-repeat="nodo in nodi">
             <div class="pull-left media-top">
-              <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+              <img class="media-object mg-responsive doc-img" src="css/img/node3.png" alt="...">
             </div>
             <div class="" ng-click="addNodo(nodo)">
               <h4 class="">{{nodo.title}}</h4>
               <p class="small">{{nodo.description}}</p>
             </div>
           </div>
-
-
-
-          <!--STOP REPLACE-->
+          <div ng-if="nodi.length == 0" class="media clearfix doc-thumb-container">
+            <div class="pull-left media-top">
+              <img class="media-object mg-responsive doc-img" src="css/img/node3.png" alt="...">
+            </div>
+            <div class="" ng-click="">
+              <h4 class="">Nessun Nodo Ancora</h4>
+            </div>
+          </div>
         </div>
-
-
       </div>
+
       <div class="col-md-9 main-content center-block" style="background-color: rgba(152, 152, 152, 0.87);;">
         <div class="document-container">
           <div class="document">
@@ -38,9 +39,33 @@
                 <legend class="text-success text-right" style="font-size:10px;">
                   Nota ({{nota.note_id}})
                 </legend>
-                <h3 style="margin-top:2px">{{nota.title}}<span ng-click="editDoc(nota)" class="glyphicon glyphicon-edit pull-right text-muted"></span></h3>
-                <p ng-hide="clicked">{{nota.description}}</p><input type="text" class="form-control" ng-show="clicked" ng-model="nota.description"/>
-                <p ng-hide="clicked">{{nota.content}}</p><input type="text" class="form-control" ng-show="clicked" ng-model="nota.content"/>
+                <span ng-click="editDoc(nota)" style="margin:0 10px;" title="Edit Note" class="glyphicon glyphicon-edit pull-right text-muted"></span><span ng-click="" title="Remove Note" class="glyphicon glyphicon-remove pull-right text-muted"></span>
+                <h3 style="margin-top:2px">{{nota.title}}</h3>
+                <div ng-switch="nota.type">
+                  <div ng-switch-when="code">
+                    <p ng-hide="clicked">{{nota.description}}</p><input type="text" class="form-control" ng-show="clicked" ng-model="nota.description"/>
+                    <pre>
+                      <div ng-hide="clicked">{{nota.content}}</div>
+                    </pre>
+                    <input type="text" class="form-control" ng-show="clicked" ng-model="nota.content"/>
+                  </div>
+                  <div ng-switch-when="link">
+                    <a ng-hide="clicked" href={{nota.content}}>{{nota.description}}</a><input type="text" class="form-control" ng-show="clicked" ng-model="nota.description"/>
+                  </div>
+                  <div ng-switch-when="image">
+                    <p ng-hide="clicked">{{nota.description}}</p><input type="text" class="form-control" ng-show="clicked" ng-model="nota.description"/>
+                    <img ng-hide="clicked" src="{{nota.content}}"/>
+                  </div>
+                  <div ng-switch-default>
+                    <i><h4 class="text-muted" ng-hide="clicked">{{nota.description}}</h4></i><input type="text" class="form-control" ng-show="clicked" ng-model="nota.description"/>
+                    <blockquote>
+
+                      <p style="white-space: pre-wrap;" ng-hide="clicked">{{nota.content}}</p>
+                    </blockquote>
+                    <textarea class="form-control" ng-show="clicked"  rows="4" ng-model="nota.content"></textarea>
+                  </div>
+                </div>
+
               </fieldset>
             </div>
 
@@ -63,45 +88,77 @@
               <fieldset class="form-group col-md-6">
                 <label>Titolo nodo</label>
                 <input type="text" class="form-control" id="note-title" ng-model="data.title"/>
-
               </fieldset>
-              <fieldset class="form-group col-md-6">
-                <label for="exampleTextarea">Inserisci qui la tua Descrizione</label>
-                <textarea class="form-control" id="exampleTextarea" rows="4" ng-model="data.description"></textarea>
+              <fieldset class="form-group col-md-6" align="center">
+                <label for="aaaaa">Seleziona tipo NODO </label>
+                <select id="aaaaa" class="c-select" ng-model="data.type">
+                  <option value="">-Please select-</option> <!-- not selected / blank option -->
+                  <option value="text" selected>Testo</option>
+                  <option value="image">Immagine</option>
+                  <option value="link">Link</option>
+                  <option value="code">Codice</option>
+                </select>
               </fieldset>
               <!-- <div class="col-md-7">
               <span class="glyphicon  pull-right" ng-class="{'glyphicon-chevron-down': toggle, 'glyphicon-chevron-up': !toggle}" ng-click="toggleView()"></span>
             </div> -->
           </div>
           <div class="row">
-            <fieldset class="form-group col-md-6" align="center">
-              <label for="aaaaa">Seleziona tipo NODO </label>
-              <select id="aaaaa" class="c-select" ng-model="data.type">
-                <option value="text">Testo</option>
-                <option value="image">Immagine</option>
-                <option value="link">Link</option>
-              </select>
-            </fieldset>
             <span ng-switch on="data.type">
-              <fieldset ng-switch-when="image" class="form-group col-md-6">
-                <label for="exampleInputFile">Carica immagine</label>
-                <input type="file" base-sixty-four-input class="form-control-file block well well-sm" id="exampleInputFile" ng-model="data.content">
-              </fieldset>
-              <fieldset ng-switch-when="text" class="form-group col-md-6">
-                <label for="exampleTextarea">Inserisci qui la tua nota</label>
-                <textarea class="form-control" id="exampleTextarea" rows="4" ng-model="data.content"></textarea>
-              </fieldset>
-              <fieldset ng-switch-when="link" class="form-group col-md-6">
-                <label for="asd">Inserisci qui la tua nota</label>
-                <input type="link" class="form-control" id="asd" ng-model="data.content"></textarea>
-              </fieldset>
-            </div>
-            <div class="row">
-              <button type="submit" class="btn btn-primary" ng-click="addNodo(data)">Aggiungi nodo</button>
-              <button type="submit" class="btn btn-primary">Fine</button>
-            </div>
-          </form>
-        </div>
+
+              <div ng-switch-when="image">
+                <fieldset class="form-group col-md-6">
+                  <label for="exampleTextarea">Descrizione dell'immagine</label>
+                  <textarea class="form-control" id="exampleTextarea" rows="4" ng-model="data.description"></textarea>
+                </fieldset>
+                <fieldset  class="form-group col-md-6">
+                  <label for="exampleInputFile">Carica immagine</label>
+                  <input type="file" base-sixty-four-input class="form-control-file block well well-sm" id="exampleInputFile" ng-model="data.content">
+                </fieldset>
+              </div>
+
+              <div ng-switch-when="text">
+                <fieldset class="form-group col-md-6">
+                  <label for="exampleTextarea">Sottotitolo (opzionale)</label>
+                  <input class="form-control" id="exampleTextarea" ng-model="data.description"></input>
+                </fieldset>
+                <fieldset  class="form-group col-md-6">
+                  <label for="exampleTextarea">Inserisci qui la tua nota</label>
+                  <textarea class="form-control" id="exampleTextarea" rows="4" ng-model="data.content"></textarea>
+                </fieldset>
+              </div>
+
+              <div ng-switch-when="link">
+                <fieldset class="form-group col-md-6">
+                  <label for="exampleTextarea">Testo del link</label>
+                  <input class="form-control" id="exampleTextarea" ng-model="data.description"></input>
+                </fieldset>
+                <fieldset class="form-group col-md-6">
+                  <label for="asd">Inserisci URL</label>
+                  <input type="link" class="form-control" id="asd" ng-model="data.content"></input>
+                </fieldset>
+              </div>
+
+              <div ng-switch-when="code">
+                <fieldset class="form-group col-md-6">
+                  <label for="exampleTextarea">Descrizione del codice</label>
+                  <textarea class="form-control" id="exampleTextarea" rows="4" ng-model="data.description"></textarea>
+                </fieldset>
+                <fieldset  class="form-group col-md-6">
+                  <label for="asd">Inserisci il codice</label>
+                  <textarea type="code" class="form-control" rows="4" id="asd" ng-model="data.content"></textarea>
+                </fieldset>
+
+              </div>
+            </span>
+          </div>
+          <div class="row">
+            <button type="submit" class="btn btn-primary" ng-click="addNodo(data)">Aggiungi nodo</button>
+            <button type="submit" class="btn btn-primary">Fine</button>
+          </div>
+        </form>
+
+      </div>
       </div>
     </div>
   </div>

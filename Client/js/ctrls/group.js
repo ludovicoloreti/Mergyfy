@@ -1,4 +1,5 @@
 app.controller('GroupCtrl', function ($scope, $http, $location, $rootScope,Gruppo) {
+  document.title = "Group| Mergefy";
   if (parseInt(Gruppo.id)) {
     $scope.cane = true;
   }

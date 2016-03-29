@@ -11,6 +11,7 @@ class Server {
   private $action = null;
   private $badRequest = false;
   private $sendingArray = array();
+
   /**
   *
   *  execute
@@ -38,6 +39,10 @@ class Server {
     //Check param
     $analyse = $this->analyse($this->action, $operation->data);
 
+    //save images
+    $this->saveImages($operation->data);
+    //print_r($this->sendingArray);
+
     if($analyse && !$this->badRequest){
       $db = new Database();
       $sending = array_values((array) $operation->data);
@@ -48,6 +53,9 @@ class Server {
 
   }
 
+  /**
+  * function analyze
+  */
   private function analyse($action, $data){
     // Get the params from the db and check the type
     $query = "SELECT * FROM INFORMATION_SCHEMA.PARAMETERS WHERE SPECIFIC_NAME=?";
@@ -83,7 +91,7 @@ class Server {
             (((string) (int) $data->$req_type === $data->$req_type) && ($data->$req_type <= PHP_INT_MAX) && ($data->$req_type >= ~PHP_INT_MAX))? null : $this->badRequest=true;
             break;
             case 'varchar':
-            (is_string($data->$req_type) && $result[$i]['CHARACTER_MAXIMUM_LENGTH']>=strlen($data->$req_type))? null : $this->badRequest = true;
+            ((is_string($data->$req_type) && ($result[$i]['CHARACTER_MAXIMUM_LENGTH']>=strlen($data->$req_type)  || (substr($req_type, 0, 5) === "image"))))? null : $this->badRequest = true;
             break;
             case 'enum':
             (is_string($data->$req_type) && $result[$i]['CHARACTER_MAXIMUM_LENGTH']>=strlen($data->$req_type))? null : $this->badRequest = true;
@@ -117,5 +125,35 @@ class Server {
       echo '[{ "error" : "Wrong Number of Inputs}]';
       return false;
     }
+  }
+
+  /**
+  * function saveImages
+  */
+  public function saveImages(&$sending){
+    foreach($sending as $key=>$val){
+      if(substr($key, 0, 5) === "image"){
+        //it is an image
+        $path = $this->base64_to_jpeg($val, '../Server_v02/images/');
+
+        for($i=0; $i<count($this->sendingArray); $i++){
+          if($this->sendingArray[$i] == $val){
+            $this->sendingArray[$i] = $path;
+          }
+        }
+      }
+    }
+  }
+
+  function base64_to_jpeg($base64_string, $output_file) {
+    $name = uniqid().".jpeg";
+    $ifp = fopen($output_file.$name, "wb");
+
+    $data = explode(',', $base64_string);
+
+    fwrite($ifp, base64_decode($data[1]));
+    fclose($ifp);
+
+    return $name;
   }
 }

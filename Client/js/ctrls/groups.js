@@ -1,4 +1,5 @@
 app.controller('GroupsCtrl', function($scope, $location, $http, $rootScope) {
+  document.title = "Groups | Mergefy";
   $scope.searchtext = "";
   $scope.cane = false;
   obj = {};

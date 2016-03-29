@@ -1079,3 +1079,73 @@ CREATE PROCEDURE getUserGroup(IN userID INT)
    SELECT * FROM MEMBERS WHERE user_id = userID AND accepted = true;
   END |
 DELIMITER ;
+
+DELIMITER |
+CREATE PROCEDURE getEventsGroupByUserId(IN userID INT, IN groupID INT)
+  BEGIN
+    SELECT *
+    FROM EVENTS
+    WHERE type = "public"
+          AND creationdate >= (
+                            SELECT creationdate
+                            FROM GROUPS
+                            WHERE id = groupID
+                          )
+          AND id =  (
+                      SELECT event_id
+                      FROM PARTECIPATIONS
+                      WHERE user_id = userID AND
+                      event_id =  (
+                                    SELECT distinct event_id
+                                    FROM PARTECIPATIONS
+                                    WHERE status = "accepted" AND
+                                            user_id = (
+                                                        SELECT user_id
+                                                        FROM MEMBERS
+                                                        WHERE group_id = groupID AND
+                                                                user_id <> userID AND
+                                                                accepted = true
+                                                      )
+                                  )
+                    );
+END |
+DELIMITER ;
+
+
+DELIMITER |
+CREATE PROCEDURE getDocumentsGroupByUserId(IN userID INT, IN groupID INT)
+ BEGIN
+ SELECT *
+ FROM DOCUMENTS
+ WHERE creationdate >= (
+       SELECT creationdate
+       FROM GROUPS
+       WHERE id = groupID
+       ) AND
+   creator_id = (
+       SELECT user_id
+       FROM MEMBERS
+       WHERE group_id = groupID
+         AND user_id <> userID
+         AND accepted = true
+       ) AND
+   event_id = (
+       SELECT event_id
+       FROM PARTECIPATIONS
+       WHERE user_id = userID
+         AND event_id = (
+              SELECT distinct event_id
+              FROM PARTECIPATIONS
+              WHERE status = "accepted"
+                AND user_id = (
+                    SELECT user_id
+                    FROM MEMBERS
+                    WHERE group_id = groupID
+                      AND user_id = userID
+                      AND accepted = true;
+                    )
+             )
+      ) AND
+   public = true;
+END |
+DELIMITER ;

@@ -1,4 +1,5 @@
 app.controller("GetEventCtrl", function($rootScope, $scope, $http, $window, Evento){
+  document.title = "Event | Mergefy";
   data1 = {}; data2 = {}
   action1 = "getEvent";
   data1.event_id = parseInt(Evento.id);

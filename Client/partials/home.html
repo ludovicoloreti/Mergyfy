@@ -21,9 +21,28 @@
 
 
     </div>
-    <div class="col-md-9 main-content" style="background-color: transparent;">
-        <h1 style="font-size: 84px;color: #ffffff;position: absolute;bottom: 30px;left:40px;"> 15:22</h1>
 
+    <div class="col-md-9 main-content" style="background-color: transparent;">
+      <div class="jumbotron" style="background-color:transparent;color:#ffffff;">
+        <h1><b>Benvenuto, {{user.name}}<b/></h1>
+        <p>
+          Mergefy è una piattaforma che ti permette di creare documenti in modo interattivo.
+        </p>
+        <p>
+          La particolarità è che, mentre stai partecipando ad un evento, puoi vedere quello che stanno scrivendo i tuoi compagni e importare
+          ciò che hanno pubblicato nel tuo documento.
+        </p>
+        <p>
+          Non perderti neanche una parola! <button class="btn btn-primary">Iniziamo</button>
+        </p>
+
+      </div>
+
+
+        <div class="jumbotron" style="background-color:transparent;color:#ffffff;position:absolute; bottom:0">
+          <h1 style=""><div class="glyphicon glyphicon-time"></div> {{clock}}</h1>
+          <h2 style=""><div class="glyphicon glyphicon-calendar"></div> {{date}}</h2>
+        </div>
 
     </div>
   </div>

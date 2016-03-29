@@ -1,5 +1,5 @@
 app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
-
+  document.title = "Add Event | Mergefy";
   console.log("Contoller EventCtrl attivato");
 
   /**** init ****/

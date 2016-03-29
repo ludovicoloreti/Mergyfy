@@ -27,7 +27,8 @@ app.config(['$routeProvider', function ($routeProvider) {
 
 app.run(function($rootScope, NgMap) {
   window.localStorage['id'] = 1;
-  var personalFolder = "Mergify";
+  document.title = "Dashboard | Mergefy";
+  var personalFolder = "MDEF";
   $rootScope.url = "http://localhost:8888/"+personalFolder+"/Server_v02/handler.php";
   $rootScope.urlClient = "http://localhost:8888/"+personalFolder+"/Client/";
   NgMap.getMap().then(function(map) {
