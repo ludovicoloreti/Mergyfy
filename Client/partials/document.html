@@ -54,7 +54,7 @@
                   </div>
                   <div ng-switch-when="image">
                     <p ng-hide="clicked">{{nota.description}}</p><input type="text" class="form-control" ng-show="clicked" ng-model="nota.description"/>
-                    <img ng-hide="clicked" src="{{nota.content}}"/>
+                    <img class="img-responsive" style="max-width:50%; max-height:300px;" ng-hide="clicked" src="{{nota.content}}"/>
                   </div>
                   <div ng-switch-default>
                     <i><h4 class="text-muted" ng-hide="clicked">{{nota.description}}</h4></i><input type="text" class="form-control" ng-show="clicked" ng-model="nota.description"/>

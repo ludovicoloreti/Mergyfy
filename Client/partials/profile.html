@@ -19,9 +19,11 @@
             </div><!--/col-->
             <div class="col-xs-12 col-sm-4 text-center">
               <img ng-src="{{user.image_profile}}" alt="" class="center-block img-circle img-responsive">
-              <p>Upload different photo</p>
-                <input type="file" base-sixty-four-input class="form-control-file block well well-sm col-sm-12" id="exampleInputFile" ng-model="user.image_profile">
-            </div><!--/col-->
+              <div ng-show="clicked">
+                <p>Upload different photo</p>
+                  <input type="file" base-sixty-four-input class="form-control-file block well well-sm col-sm-12" id="exampleInputFile" ng-model="user.content">
+              </div>
+              </div><!--/col-->
 
             <div class="col-xs-12 col-sm-4 text-center">
               <h2><strong> {{docs.length}} </strong></h2>

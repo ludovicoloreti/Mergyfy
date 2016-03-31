@@ -32,14 +32,12 @@ app.controller('DocCtrl', function($scope, $rootScope, $http, Documento){
     }
     data1.description = data0.description;
     data1.document_id = parseInt(Documento.id);
-    obj0 = [
-      {
-        action: action0,
-        data: data1
-      }
-    ]
+    obj0.action = action0;
+    obj0.data = data1;
+
+
     console.log(obj0);
-    $http.post(url, obj0).success(function(risultato) {
+    $http.post(url, [obj0]).success(function(risultato) {
       console.log(risultato);
       //window.location.reload(true);
       getPageContent();

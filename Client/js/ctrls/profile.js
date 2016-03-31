@@ -55,9 +55,13 @@ app.controller("ProfileCtrl", function($rootScope, $scope, $http, $window){
     data.lastname = user.lastname;
     data.mail = user.mail;
     data.born = user.born;
-    data.image_profile = user.image_profile;
+    if(user.content.base64 === undefined){
+      data.image_profile = user.image_profile;
+    }else{
+      data.image_profile = "data:"+user.content.filetype+";base64,"+ user.content.base64;
+    }
     obj.data = data;
-    console.log(JSON.stringify(obj));
+    console.log(obj);
     $http.post($rootScope.url, [obj]).success(function(res) {
       console.log(res);
     }).error(function(er) {
