@@ -6,13 +6,18 @@
       </div>
       <div class="docs-cont">
         <!--REPLACE WITH ng-repeat-->
-        <div class="media clearfix doc-thumb-container" ng-repeat="doc in documenti"  ng-click="goto(doc.id)">
+        <div class="media clearfix doc-thumb-container" ng-repeat="doc in documenti"  style="position:relative;" ng-click="goto('doc',doc.id)">
+
           <div class="pull-left media-top">
-            <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+            <img class="media-object mg-responsive doc-img" src="css/img/document1.png" alt="...">
           </div>
-          <div class="">
+          <div class="" style="padding:5px 0px;">
             <h4 class="">{{doc.name}}</h4>
+            <span class="label label-primary tags" style="background-color:{{doc.category_colour}}">{{doc.category_name}}</span>
           </div>
+          <span style="position:absolute; height:100%; width:8px; left:0; top:0;background-color:{{doc.category_colour}}; ">
+
+          </span>
         </div>
 
 
@@ -23,27 +28,44 @@
     </div>
 
     <div class="col-md-9 main-content" style="background-color: transparent;">
-      <div class="jumbotron" style="background-color:transparent;color:#ffffff;">
-        <h1><b>Benvenuto, {{user.name}}<b/></h1>
-        <p>
-          Mergefy è una piattaforma che ti permette di creare documenti in modo interattivo.
-        </p>
-        <p>
-          La particolarità è che, mentre stai partecipando ad un evento, puoi vedere quello che stanno scrivendo i tuoi compagni e importare
-          ciò che hanno pubblicato nel tuo documento.
-        </p>
-        <p>
-          Non perderti neanche una parola! <button class="btn btn-primary">Iniziamo</button>
-        </p>
-
-      </div>
-
-
-        <div class="jumbotron" style="background-color:transparent;color:#ffffff;position:absolute; bottom:0">
-          <h1 style=""><div class="glyphicon glyphicon-time"></div> {{clock}}</h1>
-          <h2 style=""><div class="glyphicon glyphicon-calendar"></div> {{date}}</h2>
+      <div class="row">
+        <div class="col-md-8">
+          <div class="jumbotron" style="background-color:transparent;color:#ffffff;">
+            <h1><b>Benvenuto, {{user.name}}<b/></h1>
+            <p>
+              Mergefy è una piattaforma che ti permette di creare documenti in modo interattivo.
+            </p>
+            <p>
+              La particolarità è che, mentre stai partecipando ad un evento, puoi vedere quello che stanno scrivendo i tuoi compagni e importare
+              ciò che hanno pubblicato nel tuo documento.
+            </p>
+            <p>
+              Non perderti neanche una parola! <button class="btn btn-primary">Iniziamo</button>
+            </p>
+          </div>
+          <div class="jumbotron" style="background-color:transparent;color:#ffffff;">
+            <h1 style=""><div class="glyphicon glyphicon-time"></div> {{clock}}</h1>
+            <h2 style=""><div class="glyphicon glyphicon-calendar"></div> {{date}}</h2>
+          </div>
         </div>
+        <div class="col-md-4 ">
+          <div class="jumbotron" style="background-color:transparent;color:#ffffff;">
+            <h3 class="page-header">Events Status</h3>
+              <div ng-repeat="event in events" class="" ng-click="goto('event', event.event_id)" style="border-bottom: solid 0.5px;">
+                <h4>  {{event.event_name}}</h4>
 
+                <div ng-switch="event.status">
+                  <p class="small">
+                    Status: <label ng-switch-when="accepted" class="label label-success tags">{{event.status}}</label>
+                    <label ng-switch-when="waiting" class="label label-warning tags">{{event.status}}</label>
+                    <label ng-switch-when="declined" class="label label-danger tags">{{event.status}}</label>
+                  </p>
+
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

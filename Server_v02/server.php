@@ -11,7 +11,6 @@ class Server {
   private $action = null;
   private $badRequest = false;
   private $sendingArray = array();
-
   /**
   *
   *  execute
@@ -53,9 +52,6 @@ class Server {
 
   }
 
-  /**
-  * function analyze
-  */
   private function analyse($action, $data){
     // Get the params from the db and check the type
     $query = "SELECT * FROM INFORMATION_SCHEMA.PARAMETERS WHERE SPECIFIC_NAME=?";
@@ -75,6 +71,13 @@ class Server {
           //The data exist and has the right name
           //check the input type
           switch($result[$i]['DATA_TYPE']){
+            case 'enum':
+                  $params = explode("(",$result[$i]['DTD_IDENTIFIER']);
+                  $params = explode(")", $params[1]);
+                  $params = explode(",", $params[0]);
+                  $params = str_replace("'", "", $params);
+                  (in_array($data->$req_type, $params))? null : $this->badRequest=true;
+            break;
             case 'date':
             (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$data->$req_type))? null : $this->badRequest=true;
             break;
@@ -93,9 +96,6 @@ class Server {
             case 'varchar':
             ((is_string($data->$req_type) && ($result[$i]['CHARACTER_MAXIMUM_LENGTH']>=strlen($data->$req_type)  || (substr($req_type, 0, 5) === "image"))))? null : $this->badRequest = true;
             break;
-            case 'enum':
-            (is_string($data->$req_type) && $result[$i]['CHARACTER_MAXIMUM_LENGTH']>=strlen($data->$req_type))? null : $this->badRequest = true;
-            break;
             default:
             $this->badRequest = true;
           }
@@ -109,7 +109,6 @@ class Server {
           $this->badRequest = true;
           return false;
         }
-
 
         $i++;
       }
@@ -127,25 +126,38 @@ class Server {
     }
   }
 
-  /**
-  * function saveImages
-  */
   public function saveImages(&$sending){
+
     foreach($sending as $key=>$val){
-      if(substr($key, 0, 5) === "image"){
+      if(substr($key, 0, 5) === "image" || $key=="content"){
         //it is an image
-        $path = $this->base64_to_jpeg($val, '../Server_v02/images/');
+        $path = $this->base64ToSave($val, '../Server_v02/images/');
 
         for($i=0; $i<count($this->sendingArray); $i++){
           if($this->sendingArray[$i] == $val){
             $this->sendingArray[$i] = $path;
           }
         }
+
       }
     }
   }
 
-  function base64_to_jpeg($base64_string, $output_file) {
+  function base64ToSave($base64String, $output_file){
+    $data = explode(',', $base64String);
+    $extension = $data[0];
+    $extension = explode(";", explode("/", $extension)[1])[0];
+    $image = $data[1];
+
+    $name = uniqid().".".$extension;
+
+    $ifp = fopen($output_file.$name, "wb");
+    fwrite($ifp, base64_decode($data[1]));
+    fclose($ifp);
+    return $name;
+  }
+/*
+  function base64_to_save($base64_string, $output_file) {
     $name = uniqid().".jpeg";
     $ifp = fopen($output_file.$name, "wb");
 
@@ -156,4 +168,15 @@ class Server {
 
     return $name;
   }
+
+  function base64_to_jpeg($base64_string, $output_file) {
+    $ifp = fopen($output_file, "wb");
+
+    $data = explode(',', $base64_string);
+
+    fwrite($ifp, base64_decode($data[1]));
+    fclose($ifp);
+
+    return $output_file;
+  }*/
 }

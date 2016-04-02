@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS places (
 CREATE TABLE IF NOT EXISTS categories (
   name VARCHAR(100) NOT NULL,
   description VARCHAR(3000),
-  colour VARCHAR(6),
+  colour VARCHAR(7),
   PRIMARY KEY (name)
 ) engine=INNODB;
 
@@ -171,11 +171,12 @@ CREATE VIEW usersInfo(id, name, lastname, born, subscriptiondate, type, image_pr
   SELECT id, name, lastname, born, subscriptiondate, type, image_profile, mail FROM users WHERE deleted="0";
 
 CREATE VIEW eventsInfo(event_id, event_name, type, creationdate, startdate, stopdate, event_description, creator_id,
-  creator_name, creator_lastname, place_id, place_name, address, cap, city, nation, latitude, longitude) AS
+  creator_name, creator_lastname, place_id, place_name, address, cap, city, nation, latitude, longitude, category_name, category_description, category_colour) AS
   SELECT evnt.id, evnt.name, evnt.type, evnt.creationdate, evnt.startdate, evnt.stopdate, evnt.description,
-         usr.id, usr.name, usr.lastname, plc.id, plc.name, plc.address, plc.cap, plc.city, plc.nation, plc.latitude, plc.longitude
-  FROM events AS evnt, places AS plc, usersInfo AS usr
-  WHERE ( (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) );
+         usr.id, usr.name, usr.lastname, plc.id, plc.name, plc.address, plc.cap, plc.city, plc.nation, plc.latitude, plc.longitude,
+         evnt.category_name, cat.description, cat.colour
+  FROM events AS evnt, places AS plc, usersInfo AS usr, categories AS cat
+  WHERE ( (evnt.place_id = plc.id) AND (evnt.creator_id = usr.id) AND (cat.name = evnt.category_name) );
 
 /******************** TRIGGERS **********************/
 
@@ -368,8 +369,10 @@ BEGIN
   IF ( ((userLat IS NULL) AND (userLng IS NULL)) OR ((userLat = 0) AND (userLng = 0)) ) THEN
     SIGNAL sqlstate '45000' SET message_text = "No position, no party";
   ELSE
+    -- Update Position
+    call updatePosition(user_id, userLat, userLng);
     -- Find Events
-    SELECT *, ( 3959 * acos( cos( radians(userLat) ) * cos( radians( evnt.latitude ) ) * cos( radians( evnt.longitude ) - radians(userLng) ) + sin( radians(userLat) ) * sin( radians( evnt.latitude ) ) ) ) AS calculated_distance
+    SELECT *, ( 6367 * acos( cos( radians(userLat) ) * cos( radians( evnt.latitude ) ) * cos( radians( evnt.longitude ) - radians(userLng) ) + sin( radians(userLat) ) * sin( radians( evnt.latitude ) ) ) ) AS calculated_distance
     FROM eventsInfo as evnt
     HAVING (calculated_distance < dist)
     ORDER BY calculated_distance;
@@ -545,8 +548,8 @@ BEGIN
   IF presenza = 1 THEN
     SELECT evnt.id AS event_id, evnt.type AS event_type, evnt.name AS event_name, evnt.description AS event_description, evnt.creationdate, evnt.startdate, evnt.stopdate,
     evnt.category_name, evnt.place_id, plc.name AS place_name, plc.latitude, plc.longitude, plc.address, plc.city, plc.cap, plc.nation,
-    evnt.creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname, usr.image_profile AS creator_image_profile
-    FROM events AS evnt, places AS plc, usersInfo AS usr, categories AS cat WHERE (evnt.creator_id = usr.id) AND  (evnt.place_id = plc.id) AND (evnt.id = event_id) AND (evnt.category_name = cat.name);
+    evnt.creator_id, usr.name AS creator_name, usr.lastname AS creator_lastname, usr.image_profile AS creator_image_profile, part.status AS status
+    FROM events AS evnt, places AS plc, usersInfo AS usr, categories AS cat, partecipations AS part WHERE ( (evnt.creator_id = usr.id) AND  (evnt.place_id = plc.id) AND (evnt.id = event_id) AND (evnt.category_name = cat.name) AND (part.event_id = evnt.id) AND (part.user_id = user_id) );
   ELSE
     SIGNAL sqlstate '45000' set message_text = "You are not a partecipant!";
     -- cat.name AS category_name, cat.description AS category_description, cat.colour AS category_colour,
@@ -660,7 +663,8 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE getUserDocs(IN user_id INT)
 BEGIN
-  SELECT * FROM documents AS doc WHERE (doc.creator_id = user_id);
+  SELECT doc.*, cat.name AS category_name, cat.colour AS category_colour, cat.description AS category_description
+  FROM documents AS doc, events AS evnt, categories AS cat WHERE ((doc.creator_id = user_id) AND (doc.event_id = evnt.id) AND (evnt.category_name = cat.name));
 END |
 DELIMITER ;
 
@@ -680,15 +684,18 @@ DELIMITER ;
 DELIMITER |
 CREATE PROCEDURE createDoc(IN creator_id INT, IN name VARCHAR(100), IN event_id INT, IN visibility_type ENUM('0', '1'))
 BEGIN
+  DECLARE lastid INT DEFAULT -1;
   DECLARE alreadyExists VARCHAR(150) DEFAULT 0;
   SELECT COUNT(*) INTO alreadyExists FROM documents AS doc WHERE ( (doc.creator_id = creator_id) AND (doc.event_id = event_id) );
   IF alreadyExists > 0
   THEN
+    -- Returns the already existent document
     SELECT doc.id FROM documents AS doc WHERE ( (doc.creator_id = creator_id) AND (doc.event_id = event_id) );
     SIGNAL sqlstate '45000' set message_text = "The documents already exists!";
   ELSE
     INSERT INTO documents (creator_id, name, event_id, public) VALUES (creator_id, name, event_id, visibility_type);
-    SELECT last_insert_id();
+    SET lastid = last_insert_id();
+    SELECT lastid;
   END IF;
 END |
 DELIMITER ;
@@ -701,7 +708,7 @@ CREATE PROCEDURE updateDocName(IN doc_id INT, IN user_id INT, IN name VARCHAR(10
 BEGIN
   DECLARE checkCreation INT DEFAULT 0;
   -- check rights
-  SELECT COUNT(*) INTO checkCreation FROM document AS doc WHERE doc.id = doc_id AND doc.creator_id = user_id;
+  SELECT COUNT(*) INTO checkCreation FROM documents AS doc WHERE doc.id = doc_id AND doc.creator_id = user_id;
   IF checkCreation = 1 THEN
     UPDATE documents AS doc SET doc.name = name WHERE doc.id = user_id;
   ELSE
@@ -759,6 +766,8 @@ BEGIN
 END |
 DELIMITER ;
 
+
+
 /* createNode(document_id, note_id, title)
   Creates a node given document id and a note id
 */
@@ -793,24 +802,68 @@ BEGIN
 END |
 DELIMITER ;
 
+/* deleteNode(doc_id, note_id)
+  Delete the node and the related note if not imported in other documents.
+*/
+DELIMITER |
+CREATE PROCEDURE deleteNode(IN doc_id INT, IN note_id INT)
+BEGIN
+  DECLARE num_of_instances INT default -1;
+  DELETE FROM nodes WHERE ((nodes.document_id = doc_id) AND (nodes.note_id = note_id));
+  -- Count the number of notes inserted.
+  SELECT COUNT(*) INTO num_of_instances FROM nodes AS nd WHERE nd.note_id = note_id;
+  IF num_of_instances = 0 THEN
+    DELETE FROM notes WHERE (notes.id = note_id);
+  END IF;
+END |
+DELIMITER ;
+
 /* getEventNodes()
+  TODO DEPRECATED use getEventNotes!!
   Get all event nodes during the writing of the document.
+  Devo prendere tutti i documenti dell'evento e tutte le note di quei documenti attraverso i nodi
 */
 DELIMITER |
 CREATE PROCEDURE getEventNodes(IN doc_id INT)
 BEGIN
   DECLARE event_id INT DEFAULT 0;
   DECLARE creator_id INT DEFAULT 0;
-  -- select
+  -- select the event and the creator
   SELECT doc.event_id, doc.creator_id INTO event_id, creator_id FROM documents AS doc WHERE (doc.id = doc_id);
   IF (event_id <> 0 AND creator_id <> 0) THEN
 
-    SELECT * FROM nodes AS nd, notes AS nt, documents AS doc WHERE ( (nd.note_id = nt.id) AND (nd.document_id = ANY (SELECT id FROM documents AS dcmt WHERE ( (dcmt.event_id = event_id) AND (dcmt.creator_id <> creator_id) ))));
+    SELECT * FROM nodes AS nd, notes AS nt WHERE ( (nd.note_id = nt.id) AND (nd.document_id = ANY (SELECT id FROM documents AS dcmt WHERE ( (dcmt.event_id = event_id) AND (dcmt.creator_id <> creator_id) ))));
   ELSE
     SIGNAL sqlstate '45000' set message_text = "Event does not exists";
   END IF;
 END |
 DELIMITER ;
+
+/* getEventNotes()
+  Get all event nodes during the writing of the document.
+  Devo prendere tutti i documenti dell'evento e tutte le note di quei documenti attraverso i nodi
+*/
+DELIMITER |
+CREATE PROCEDURE getEventNotes(IN doc_id INT)
+BEGIN
+  DECLARE event_id INT DEFAULT 0;
+  DECLARE creator_id INT DEFAULT 0;
+  -- select the event and the creator
+  SELECT doc.event_id, doc.creator_id INTO event_id, creator_id FROM documents AS doc WHERE (doc.id = doc_id);
+  IF (event_id <> 0 AND creator_id <> 0) THEN
+
+    SELECT nt.*, COUNT(*) AS copies_number FROM nodes AS nd1, notes AS nt WHERE (
+              (nd1.note_id <> ALL (SELECT nd2.note_id FROM nodes as nd2 WHERE (nd2.document_id = doc_id) ))
+              AND (nd1.note_id = nt.id)
+              AND (nd1.document_id <> doc_id)
+              AND (nd1.document_id = ANY (SELECT id FROM documents AS dcmt WHERE dcmt.event_id = event_id ))
+            ) GROUP BY nt.id, nt.type, nt.description, nt.content;
+  ELSE
+    SIGNAL sqlstate '45000' set message_text = "Event does not exists";
+  END IF;
+END |
+DELIMITER ;
+
 
 /* getGroupMembers(group_id)
   Get members given a group id.
@@ -913,7 +966,7 @@ BEGIN
   IF( isMember = 0 ) THEN
     SIGNAL sqlstate '45000' SET message_text = "The specified user is not a member of the group";
   ELSE
-    DELETE FROM members AS mmbr WHERE ( (mmbr.user_id= user_id) AND (mmbr.group_id= group_id));
+    DELETE FROM members WHERE ( (members.user_id= user_id) AND (members.group_id= group_id));
   END IF;
 END |
 DELIMITER ;
@@ -995,7 +1048,7 @@ BEGIN
 END |
 DELIMITER ;
 
-/* addNote */
+/* addNote TODO duplicated!! */
 DELIMITER |
 CREATE PROCEDURE addNote(IN typeI VARCHAR(7), IN contentI TEXT, IN descriptionI VARCHAR(200))
 BEGIN
@@ -1057,6 +1110,15 @@ CREATE PROCEDURE addGroupToEvent(IN groupID INT, IN eventID INT)
       CLOSE cursor_i;
     END;
 
+  END |
+DELIMITER ;
+
+/* getNotification(user_id)
+*/
+DELIMITER |
+CREATE PROCEDURE getNotifications(IN user_id INT)
+  BEGIN
+    SELECT evnt.*, part.status FROM partecipations AS part, eventsInfo AS evnt WHERE part.user_id = user_id AND evnt.event_id = part.event_id AND part.status="waiting";
   END |
 DELIMITER ;
 

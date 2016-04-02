@@ -6,16 +6,16 @@
         <div class="panel-body">
           <div class="row">
             <div class="col-xs-12 col-sm-8">
-              <p><strong>Name: </strong> <span ng-hide="clicked">{{user.name}}</span><input type="text" class="form-control" ng-show="clicked" ng-model="user.name"></p>
-              <p><strong>Lastname: </strong><span ng-hide="clicked"> {{user.lastname}}</span><input type="text" class="form-control" ng-show="clicked"  ng-model="user.lastname"></p>
-              <p><strong>Mail: </strong><span ng-hide="clicked"> {{user.mail}}</span><input type="email" class="form-control"  ng-show="clicked" ng-model="user.mail"> </p>
-              <p><strong>Born: </strong> <span ng-hide="clicked">{{user.born}}</span><input type="date" class="form-control" ng-show="clicked" ng-model="user.born"> </p>
-              <p><strong>Subscription date: {{user.subscriptiondate}}</strong></p>
-              <p ng-switch on="user.type"><strong>Type: </strong>
+              <h4><strong>Name: </strong> <span ng-hide="clicked">{{user.name}}</span><input type="text" class="form-control" ng-show="clicked" ng-model="user.name"></h4>
+              <h4><strong>Lastname: </strong><span ng-hide="clicked"> {{user.lastname}}</span><input type="text" class="form-control" ng-show="clicked"  ng-model="user.lastname"></h4>
+              <h4><strong>Mail: </strong><span ng-hide="clicked"> {{user.mail}}</span><input type="email" class="form-control"  ng-show="clicked" ng-model="user.mail"> </h4>
+              <h4><strong>Born: </strong> <span ng-hide="clicked">{{user.born}}</span><input type="date" class="form-control" ng-show="clicked" ng-model="user.born"> </h4>
+              <h4><strong>Subscription date: {{user.subscriptiondate}}</strong></h4>
+              <h4 ng-switch on="user.type"><strong>Type: </strong>
                 <span ng-switch-when="basic" class="label label-primary tags">basic</span>
                 <span ng-switch-when="premium" class="label label-success tags">premium</span>
                 <span ng-switch-when="admin" class="label label-warning tags">admin</span>
-              </p>
+              </h4>
             </div><!--/col-->
             <div class="col-xs-12 col-sm-4 text-center">
               <img ng-src="{{user.image_profile}}" alt="" class="center-block img-circle img-responsive">
@@ -24,21 +24,21 @@
                   <input type="file" base-sixty-four-input class="form-control-file block well well-sm col-sm-12" id="exampleInputFile" ng-model="user.content">
               </div>
               </div><!--/col-->
-
+            </div><!--/row-->
+          <div class="row">
             <div class="col-xs-12 col-sm-4 text-center">
               <h2><strong> {{docs.length}} </strong></h2>
               <p><small>Documents</small></p>
-              <button class="btn btn-success btn-block" ng-click="goto('doc')"><span class="fa fa-file-word-o"></span> View Docs </button>
+              <button class="btn btn-success btn-block" ng-click="goto('home')"><span class="fa fa-file-word-o"></span> View Docs </button>
             </div><!--/col-->
             <div class="col-xs-12 col-sm-4 text-center">
               <h2><strong>{{groups.length}}</strong></h2>
               <p><small>Groups</small></p>
               <button class="btn btn-info btn-block" ng-click="goto('groups')"><span class="fa fa-users"></span> View Groups </button>
             </div><!--/col-->
-
-          </div><!--/row-->
+          </div>
           <div class="row">
-            <div class="col-xs-12 col-sm-2 col-md-offset-10">
+            <div class="col-xs-12 col-sm-4 col-md-offset-8">
               <button class="btn btn-info btn-block" ng-show="clicked" ng-click="update(user)"><span class="fa fa-cogs"></span> Salva </button>
               <button class="btn btn-info btn-block" ng-show="clicked" ng-click="edit()"><span class="fa fa-cogs"></span> Annulla </button>
               <button class="btn btn-info btn-block" ng-hide="clicked"ng-click="edit()"><span class="fa fa-cogs"></span> Edit </button>

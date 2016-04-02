@@ -22,15 +22,18 @@
         <div class="pill-content" ng-hide="eventsNavbar">
           <div class="pill-pane active" id="near">
 
-            <div class="media clearfix doc-thumb-container" ng-repeat="eventoV in eventiVicini">
-              <div class="pull-left media-top">
+            <div class="media clearfix doc-thumb-container" ng-repeat="eventoV in eventiVicini" style="position:relative;">
+              <div class="pull-left media-top" style="min-height:80px">
                 <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
+                <span style="padding-left:10px;">{{eventoV.calculated_distance | number: 2}} km</span>
               </div>
-              <div class="" ng-click="gotoEvent(eventoV.event_id)">
-                <h4 class="">{{eventoV.event_name}}</h4>
-                <p class="small">{{eventoV.event_description}}</p>
-                </div>
+              <div class="thumb-info" style="display:block;" ng-click="gotoEvent(eventoV.event_id)">
+                <h4 class="small-custom" style="margin-bottom: 2px;">{{eventoV.event_name | cut:true:50:' ...'}}</h4>
+                <span class="label label-primary tags" style="background-color:{{eventoV.category_colour}}">{{eventoV.category_name}}</span>
+                <p class="small">{{eventoV.event_description | cut:true:100:' ...'}}</p>
               </div>
+              <span style="position:absolute; height:100%; width:10px; left:0; top:0;background-color:{{eventoV.category_colour}}; "></span>
+            </div>
 
             </div>
           </div>
@@ -39,14 +42,19 @@
           <div class="pill-content" ng-show="eventsNavbar" style="overflow: scroll; height: 90%;">
             <div class="pill-pane active" id="joined">
 
-              <div class="media clearfix doc-thumb-container" ng-repeat="eventoP in eventiPartecipo">
-                <div class="pull-left media-top">
+              <div class="media clearfix doc-thumb-container" ng-repeat="eventoP in eventiPartecipo" style="position:relative;">
+                <div class="pull-left media-top" style="height:80px">
                   <img class="media-object mg-responsive doc-img" src="css/img/place.png" alt="...">
                 </div>
-                <div class="" ng-click="gotoEvent(eventoP.event_id)">
-                  <h4 class="">{{eventoP.event_name}}</h4>
-                  <p class="small">{{eventoP.event_description}}</p>
+                <div style="display:block;" ng-click="gotoEvent(eventoP.event_id)">
+                  <h4 class="small-custom"  style="margin-bottom: 2px;">{{eventoP.event_name | cut:true:50:' ...'}}</h4>
+                  <span class="label label-primary tags" style="background-color:{{eventoP.category_colour}}">{{eventoP.category_name}}</span>
+                  <p class="small">{{eventoP.event_description | cut:true:100:' ...'}}</p>
                 </div>
+                <div>
+
+                </div>
+                <span style="position:absolute; height:100%; width:10px; left:0; top:0;background-color:{{eventoP.category_colour}}; "></span>
               </div>
 
 
@@ -71,13 +79,13 @@
 
         <div class="row">
           <div map-lazy-load="https://maps.google.com/maps/api/js">
-            <ng-map default-style="true" center="{{latitudine}}, {{longitudine}}" zoom="12">
+            <ng-map default-style="true" center="{{latitudine}}, {{longitudine}}" zoom="11">
               <info-window id="infoW" class="ng-scope" max-width="300">
                 <div ng-non-bindable>
                   <div class="col-md-12">
                     <h2>{{eventoVic.event_name}}</h2>
                     <p><strong>Category: </strong>
-                      <span class="label label-primary tags">...</span>
+                      <span class="label label-primary tags" style="background-color:{{eventoVic.category_colour}}">{{eventoVic.category_name}}</span>
                     </p>
                     <p><i>Creator: {{eventoVic.creator_name}} {{eventoVic.creator_lastname}}, {{eventoVic.creationdate}}</i></p>
                     <h3>Description</h3>
@@ -88,13 +96,13 @@
                   <div class="row-fluid">
                     <div class="col-md-12">
                       <br>
-                      <button ng-click="gotoEvent(eventoVic.event_id)" class="btn">View event <span class="glyphicon glyphicon-share"></span></button>
+                      <button ng-click="gotoEvent(eventoVic.event_id)" class="btn" style="background-color:{{eventoVic.category_colour}}; color: #ffffff;">View event <span class="glyphicon glyphicon-share"></span></button>
                     </div>
                   </div>
                 </div>
               </info-window>
 
-              <marker ng-repeat="eventoVic in eventiVicini" position="{{eventoVic.latitude}}, {{eventoVic.longitude}}" clickable="true" id="{{eventoVic.event_id}}" draggable="false" on-click="detail(event, eventoVic)">
+              <marker ng-repeat="eventoVic in eventiVicini" position="{{eventoVic.latitude}}, {{eventoVic.longitude}}" clickable="true" animation="Animation.DROP" id="{{eventoVic.event_id}}" draggable="false" on-click="detail(event, eventoVic)">
               </marker>
             </ng-map>
           </div>

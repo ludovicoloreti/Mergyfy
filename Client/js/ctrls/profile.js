@@ -33,7 +33,11 @@ app.controller("ProfileCtrl", function($rootScope, $scope, $http, $window){
 
   // switch page on button pression
   $scope.goto = function(page) {
-    var link = "#/"+page+"/";
+    if(page == 'home'){
+      var link = "#/"
+    }else{
+      var link = "#/"+page+"/";
+    }
     console.log("clicked. Going to -> "+link)
     window.location.href=link;
   }

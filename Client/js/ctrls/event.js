@@ -1,26 +1,32 @@
 app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
+
+  // INFO
   document.title = "Add Event | Mergefy";
   console.log("Contoller EventCtrl attivato");
 
-  /**** init ****/
+  /* INIT */
+  // vars
+  $scope.partecipantList = []; // partecipantList to send to the Server
   $scope.searchPlace = "";
   $scope.searchUser = "";
   $scope.new = {};
   placeToAdd = {};
+  // functions
+  getCategories();
 
   /**** Funcitons activated as the contoller loads ****/
-  // Get all categories
-  var request = {};
-  request.action = "getCategories";
-  request.data = {},
-  $http.post($rootScope.url, [request]).success(function(result) {
-    console.log(result);
-    $scope.categories = result[0].data;
-  }).error(function(error) {
-    console.log(error, "Errore nel caricamento delle categorie.");
-  })
-
-  /**** Funcions called by interface ****/
+  function getCategories(){
+    // Get all categories
+    var request = {};
+    request.action = "getCategories";
+    request.data = {},
+    $http.post($rootScope.url, [request]).success(function(result) {
+      console.log(result);
+      $scope.categories = result[0].data;
+    }).error(function(error) {
+      console.log(error, "Errore nel caricamento delle categorie.");
+    })
+  }
 
   // SEARCH USER
   $scope.$watch('searchUser', function() {
@@ -42,8 +48,8 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
     }
     if(searchUser.length == 0) {$scope.results = [];}
   })
-  // partecipantList to send to the Server
-  $scope.partecipantList = [];
+
+  // PUSH TO ARRAY
   // add partecipant to the list that will be sent to the Server
   $scope.pushToarray = function(id) {
     if ($scope.partecipantList.indexOf(id) == -1) {
@@ -52,13 +58,15 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
     }
   }
 
-  // SHOW/HIDE PARTECIPANT BOX
-  $scope.custom = true;
-  $scope.toggleCustom = function() {
-    $scope.custom = $scope.custom === false ? true: false;
-  };
+  // CREAR ARRAY
+  $scope.clearArray = function() {
+    $scope.searchUser = "";
+    $scope.partecipantList = [];
+    console.log("No partecipants");
+    console.log($scope.partecipantList);
+  }
 
-  // SEARCHPLACE
+  // SEARCH PLACE
   $scope.$watch('searchPlace', function() {
     noPlace = false;
     searchPlace = $scope.searchPlace;
@@ -93,7 +101,7 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
     if((searchPlace.length == 0 || !angular.isUndefined(searchPlace) ) && noPlace == false) {$scope.places = [];}
   });
 
-  // SETPLACE
+  // SET PLACE
   $scope.setPlace = function(place){
     console.log(place);
     if(!angular.isUndefined(place.noPlace) && place.noPlace == true){
@@ -110,6 +118,7 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
     }
   }
 
+  // NEW PLACE
   $scope.$watch('new', function() {
     console.log("watched");
     var urlToGmaps = "http://maps.google.com/maps/api/geocode/json?address="+$scope.new.address+"+"+$scope.new.city+"&sensor=false";
@@ -122,7 +131,7 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
     });
   }, true);
 
-  // ADDPLACE
+  // ADD PLACE
   $scope.createPlace = function() {
     console.log("createPlace")
     if ($scope.newPlace === true) {
@@ -150,6 +159,7 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
 
   }
 
+  // CREATE EVENT
   function createEvent(placeid){
     console.log($scope.event);
 
@@ -169,61 +179,46 @@ app.controller('EventCtrl', function($rootScope, $scope, $http,$window){
     $http.post($rootScope.url, [request1]).success(function(res) {
       console.log(res);
       $scope.results = res[0].data;
+      var lastid = res[0].data[0].lastid;
+      addPartecipant(lastid);
+      goto('event', lastid);
     }).error(function(error) {
       console.log(error, "non vaaaa");
     })
   }
 
+  // ADD PARTECIPANT
   function addPartecipant(eventid){
     console.log(eventid);
     request = [];
     action = "addPartecipant";
-    angular.forEach( $scope.partecipantList, function(v, k){
-      data = {};
-      data.event_id = parseInt(eventid);
-      data.user_id = parseInt(v);
-      request.push({
-        action: action,
-        data: data
+    if($scope.partecipantList.length != 0){
+      angular.forEach( $scope.partecipantList, function(value, key){
+        data = {};
+        data.event_id = parseInt(eventid);
+        data.user_id = parseInt(value.id);
+        request.push({
+          action: action,
+          data: data
+        });
+
       });
+      console.log(request);
+      //aggiungo partecipanti all'evento
+      $http.post($rootScope.url, request).success(function(results) {
+        console.log(results);
 
-    });
-    console.log(request);
-    //aggiungo partecipanti all'evento
-    $http.post($rootScope.url, request).success(function(results) {
-      console.log(results);
-
-    }).error(function(error) {
-      console.log(error, "Errore nella aggiunta dei partecipanti");
-    })
-
+      }).error(function(error) {
+        console.log(error, "Errore nella aggiunta dei partecipanti");
+      })
+    }
   }
 
-  /* invita gruppi */
-  var linkPerLaGet = $rootScope.url+"?user_id="+window.localStorage['id'];
-  $http.get(linkPerLaGet).success(function(r) {
-    $scope.gruppi = r;
-  }).error(function(err) {
-    console.log(err);
-    $scope.gruppi = [
-      {
-        nome: "Errore",
-        id: 1
-      },
-      {
-        nome: "Nella",
-        id: 2
-      },
-      {
-        nome: "Get",
-        id: 3
-      }
-    ];
-  })
-
-
-
-
+  // GO TO PAGE
+  function goto(page, id) {
+  	var link = "#/"+page+"/"+id;
+    window.location.href = $rootScope.urlClient+link;
+  }
 
   /*
   POST createEvent

@@ -7,12 +7,17 @@
         </div>
         <div class="docs-cont"><!-- Lista dei nodi -->
           <div ng-if="nodi.length != 0" class="media clearfix doc-thumb-container" ng-repeat="nodo in nodi">
-            <div class="pull-left media-top">
-              <img class="media-object mg-responsive doc-img" src="css/img/node3.png" alt="...">
+            <div class="pull-left media-top" ng-switch="nodo.type">
+              <img class="media-object mg-responsive doc-img"  ng-switch-when="code" src="css/img/code.png" alt="...">
+              <img class="media-object mg-responsive doc-img"  ng-switch-when="link" src="css/img/link.png" alt="...">
+              <img class="media-object mg-responsive doc-img"  ng-switch-when="text" src="css/img/text.png" alt="...">
+              <img class="media-object mg-responsive doc-img"  ng-switch-when="image" src="css/img/image.png" alt="...">
+              <span>{{nodo.copies_number}}</span>
             </div>
-            <div class="" ng-click="addNodo(nodo)">
-              <h4 class="">{{nodo.title}}</h4>
-              <p class="small">{{nodo.description}}</p>
+            <div class="" ng-click="">
+              <div data-toggle="modal" data-target="#myModal" ng-click="showModalNote(nodo)" class="glyphicon glyphicon-info-sign"></div>
+              <h4 class="">{{nodo.description}}</h4>
+              <p class="small">{{nodo.content}}</p>
             </div>
           </div>
           <div ng-if="nodi.length == 0" class="media clearfix doc-thumb-container">
@@ -30,7 +35,8 @@
         <div class="document-container">
           <div class="document">
 
-            <h1>{{doc.name}}</h1>
+            <h1 ng-click="editTitle()" ng-show="!docClicked">{{doc.name}}</h1><input type="text" ng-keyup="saveTitle($event, doc.name)" class="form-control" ng-show="docClicked" ng-model="doc.name"/>
+
             <p>Autore: <i>{{doc.creator_name}} {{doc.creator_lastname}}</i></p>
             <div class="text-cont"></div>
 
@@ -39,7 +45,8 @@
                 <legend class="text-success text-right" style="font-size:10px;">
                   Nota ({{nota.note_id}})
                 </legend>
-                <span ng-click="editDoc(nota)" style="margin:0 10px;" title="Edit Note" class="glyphicon glyphicon-edit pull-right text-muted"></span><span ng-click="" title="Remove Note" class="glyphicon glyphicon-remove pull-right text-muted"></span>
+
+                <span ng-click="editDoc(nota)" style="margin:0 10px;" title="Edit Note" class="glyphicon glyphicon-edit pull-right text-muted"></span><span ng-click="deleteNode(nota.note_id)" title="Remove Note" class="glyphicon glyphicon-remove pull-right text-muted"></span>
                 <h3 style="margin-top:2px">{{nota.title}}</h3>
                 <div ng-switch="nota.type">
                   <div ng-switch-when="code">
@@ -76,6 +83,56 @@
                 <p>{{data.description}}</p>
                 <p>{{data.content}}</p>
               </fieldset>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="myModal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <span class="pull-left media-top" ng-switch="modalNote.type">
+                  <img class="media-object mg-responsive doc-img"  ng-switch-when="code" src="css/img/code.png" alt="...">
+                  <img class="media-object mg-responsive doc-img"  ng-switch-when="link" src="css/img/link.png" alt="...">
+                  <img class="media-object mg-responsive doc-img"  ng-switch-when="text" src="css/img/text.png" alt="...">
+                  <img class="media-object mg-responsive doc-img"  ng-switch-when="image" src="css/img/image.png" alt="...">
+                </span>
+                <h4 class="modal-title">Informazini del nodo</h4>
+              </div>
+              <div class="modal-body">
+                <span><b>N quotes:</b> {{modalNote.copies_number}}</span>
+                <div ng-switch="modalNote.type">
+                  <div ng-switch-when="code">
+                    <p ng-hide="clicked">{{modalNote.description}}</p>
+                    <pre>
+                      <div ng-hide="clicked">{{modalNote.content}}</div>
+                    </pre>
+                    <input type="text" class="form-control" ng-show="clicked" ng-model="modalNote.content"/>
+                  </div>
+                  <div ng-switch-when="link">
+                    <a ng-hide="clicked" href={{modalNote.content}}>{{modalNote.description}}</a>
+                  </div>
+                  <div ng-switch-when="image">
+                    <p ng-hide="clicked">{{modalNote.description}}</p>
+                    <img class="img-responsive" style="max-width:50%; max-height:300px;" ng-hide="clicked" src="{{modalNote.content}}"/>
+                  </div>
+                  <div ng-switch-default>
+                    <i><h4 class="text-muted" ng-hide="clicked">{{modalNote.description}}</h4></i>
+                    <blockquote>
+                      <p style="white-space: pre-wrap;" ng-hide="clicked">{{modalNote.content}}</p>
+                    </blockquote>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn" ng-click="addNodo(modalNote)"><span class="glyphicon glyphicon-plus-sign"></span>Add to doc</button>
+              </div>
+
             </div>
 
           </div>
@@ -154,7 +211,7 @@
           </div>
           <div class="row">
             <button type="submit" class="btn btn-primary" ng-click="addNodo(data)">Aggiungi nodo</button>
-            <button type="submit" class="btn btn-primary">Fine</button>
+            <button type="submit" class="btn btn-primary" ng-click="goto('home')">Fine</button>
           </div>
         </form>
 

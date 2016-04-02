@@ -19,7 +19,8 @@
 
 .aside {
   height: 100%;
-  background-color: rgba(212, 212, 214, 0.88);
+  background-color: rgba(70, 70, 71, 0.88);
+  color:#ffffff;
 }
 
 .docs-cont{
@@ -36,21 +37,27 @@
 
 .doc-thumb-container {
   margin: 5px 0px;
+  padding: 0 5px;
   background-color: rgb(225, 232, 237);
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
   color: #292f33;
 
-}
 
+}
+.thumb-info {
+}
+.small-custom {
+  font-size: 92% 
+}
 .image-cont, .text-cont, .text-cont h3 {
   margin:0px;
   padding: 3px;
 }
 .doc-img {
-  margin:15px 5px;
-  height: 35px;
+  margin:15px 5px 15px 10px;
+  height: 30px;
 }
 .main-content {
   height: 100%;

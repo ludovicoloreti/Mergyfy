@@ -17,7 +17,7 @@ app.controller('EventsCtrl', function ($scope, $rootScope, $compile, $window,$ht
         data.longitude = parseFloat(position.coords.longitude);
         $scope.latitudine = data.latitude;
         $scope.longitudine = data.longitude;
-        data.dist = parseInt("100");
+        data.dist = parseInt("1000");
         obj.data = data;
         console.log("Posizione presa! ",obj);
         $http.post($rootScope.url, [obj]).success(function(result) {

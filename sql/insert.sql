@@ -11,14 +11,14 @@ INSERT INTO `users` (`id`, `name`, `lastname`, `born`, `subscriptiondate`, `type
 ;
 
 
-INSERT INTO categories (name, description, colour) VALUES
-("Workshop", "A seminar, discussion group, or the like, that emphasizes exchange of ideas and the demonstration and application of techniques, skills, etc..", "#45A78B"),
-("Lesson", "A lesson is a structured period of time where learning is intended to occur. It involves one or more students (also called pupils or learners in some circumstances) being taught by a teacher or instructor.", "#45AAAA"),
-("Meeting", "In a meeting, two or more people come together to discuss one or more topics, often in a formal setting.", "#4FAFAA"),
-("Press Conference", "Convention, meeting of a, usually large, group of individuals and companies in a certain field. Academic conference, in science and academic, a formal event where researchers present results, workshops, and other activities.", "#4FAFAA"),
-("Seminar", "Educational events for the training of managers and employees. Most seminars are not comparable with boring lectures. Interactivity is core!", "#56A78B"),
-("Product Launch", "A product launch is when a company decides to launch a new product in the market. It can be an existing product which is already in the market or it can be a completed new innovative product which the company has made.", "#56A78B"),
-("Shareholders Meeting", "Meeting of the shareholders of a corporation, held at least annually, to elect members to the board of directors and hear reports on the business' financial situation as well as new policy initiatives from the corporation's management. In larger corporations, many shareholders vote via proxy.", "#56A78B")
+INSERT INTO `categories` (`name`, `description`, `colour`) VALUES
+('Lesson', 'A lesson is a structured period of time where learning is intended to occur. It involves one or more students (also called pupils or learners in some circumstances) being taught by a teacher or instructor.', '#388DD1'),
+('Meeting', 'In a meeting, two or more people come together to discuss one or more topics, often in a formal setting.', '#FF9800'),
+('Press Conference', 'Convention, meeting of a, usually large, group of individuals and companies in a certain field. Academic conference, in science and academic, a formal event where researchers present results, workshops, and other activities.', '#8D6E63'),
+('Product Launch', 'A product launch is when a company decides to launch a new product in the market. It can be an existing product which is already in the market or it can be a completed new innovative product which the company has made.', '#F44336'),
+('Seminar', 'Educational events for the training of managers and employees. Most seminars are not comparable with boring lectures. Interactivity is core!', '#9C27B0'),
+('Shareholders Meeting', 'Meeting of the shareholders of a corporation, held at least annually, to elect members to the board of directors and hear reports on the business'' financial situation as well as new policy initiatives from the corporation''s management. In larger corporations, many shareholders vote via proxy.', '#3F51B5'),
+('Workshop', 'A seminar, discussion group, or the like, that emphasizes exchange of ideas and the demonstration and application of techniques, skills, etc..', '#4CAF50')
 ;
 
 INSERT INTO `places` (`id`, `latitude`, `longitude`, `name`, `address`, `cap`, `city`, `nation`) VALUES

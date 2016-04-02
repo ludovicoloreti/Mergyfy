@@ -4,6 +4,7 @@ app.controller('HomeCtrl', function ($http, $scope, $rootScope, $window) {
   // Init
   getUser();
   getUserDocs();
+  getNotifications();
 
   // Date
   var monthNames = [
@@ -46,17 +47,39 @@ app.controller('HomeCtrl', function ($http, $scope, $rootScope, $window) {
     obj.action = "getUserDocs";
     data.user_id = parseInt(window.localStorage['id']);
     obj.data = data;
-    $http.post($rootScope.url, [obj]).success(function(ris) {
-    	console.log(ris);
-    	$scope.documenti = ris[0].data;
-    }).error(function(errore) {
-    	alert("trovat un errore!", errore);
+    $http.post($rootScope.url, [obj]).success(function(res) {
+    	console.log(res);
+    	$scope.documenti = res[0].data;
+    }).error(function(error) {
+    	alert("trovat un errore!", error);
+    })
+  }
+
+  //GET ALL EVENTS status
+  function getNotifications(){
+    var request = {}; var data = {};
+    request.action = "getNotifications";
+    data.user_id = parseInt(window.localStorage['id']);
+    request.data = data;
+    console.log(request);
+
+    $http.post($rootScope.url, [request]).success(function(res){
+      console.log(res);
+      $scope.events = res[0].data;
+    }).error(function(error){
+      console.log("Error in events notifications", error);
+      $scope.events = [];
     })
   }
 
   // GOTO SINGLE DOC
-  $scope.goto = function(id) {
-  	var link = "#/doc/"+id;
-    window.location.href = $rootScope.urlClient+link;
+  $scope.goto = function(page, id) {
+    if(page == 'home'){
+      var link = "#/"
+    }else{
+      var link = "#/"+page+"/"+id;
+    }
+    console.log("clicked. Going to -> "+link)
+    window.location.href=link;
   }
 });
